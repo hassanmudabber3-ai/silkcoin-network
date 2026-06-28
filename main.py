@@ -17,20 +17,12 @@ create()
 
 # ================= WEB APP =================
 
-web = Flask(
-    __name__,
-    static_folder="web",
-    static_url_path=""
-)
+web = Flask(__name__)
 
 
 @web.route("/")
 def home():
-
-    return send_from_directory(
-        "web",
-        "index.html"
-    )
+    return "SILKCOIN WEB OK"
 
 
 
