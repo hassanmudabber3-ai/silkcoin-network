@@ -17,23 +17,9 @@ create()
 
 # ---------- WEB APP ----------
 
-web = Flask(__name__)
-
-
 @web.route("/")
 def home():
-    return send_from_directory(
-        "web",
-        "index.html"
-    )
-
-
-@web.route("/<path:file>")
-def files(file):
-    return send_from_directory(
-        "web",
-        file
-    )
+    return "Silkcoin Web is Running"
 
 
 
