@@ -1,6 +1,15 @@
-from flask import Flask, send_from_directory, jsonify, request
+import os
+import threading
+import random
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from flask import Flask, send_file, jsonify, request
+
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    WebAppInfo
+)
 
 from telegram.ext import *
 
@@ -8,38 +17,61 @@ from config import TOKEN
 
 from database import *
 
-import threading
-import random
 
 
 create()
 
 
-# ================= WEB APP =================
+
+# ================= WEB =================
+
+
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
+
 
 web = Flask(__name__)
+
+
 
 
 @web.route("/")
 def home():
 
-    return send_from_directory(
-        "web",
-        "index.html"
+    return send_file(
+
+        os.path.join(
+            BASE_DIR,
+            "web",
+            "index.html"
+        )
+
     )
+
+
 
 
 @web.route("/<path:file>")
 def files(file):
 
-    return send_from_directory(
-        "web",
-        file
+    return send_file(
+
+        os.path.join(
+            BASE_DIR,
+            "web",
+            file
+        )
+
     )
 
 
 
+
+
+
 # ================= API =================
+
 
 
 @web.route("/api/user")
@@ -51,11 +83,16 @@ def user():
     if not tg_id:
 
         return jsonify({
-            "error": "No user id"
+
+            "error":"No user id"
+
         })
 
 
-    data = get_user(int(tg_id))
+
+    data = get_user(
+        int(tg_id)
+    )
 
 
     if data:
@@ -63,31 +100,39 @@ def user():
         return jsonify({
 
             "wallet_id": data[3],
+
             "balance": data[4],
+
             "spins": data[7],
+
             "mining": data[5]
 
         })
 
 
+
     return jsonify({
 
-        "error": "User not found"
+        "error":"User not found"
 
     })
+
 
 
 
 
 
 @web.route("/api/mine/start")
-def start_mine():
+def mine_start():
+
 
     return jsonify({
 
-        "message": "Mining Started"
+        "message":
+        "Mining Started"
 
     })
+
 
 
 
@@ -96,10 +141,13 @@ def start_mine():
 @web.route("/api/ad")
 def ad():
 
+
     return jsonify({
 
-        "message": "Ad Complete",
-        "spin": 1
+        "message":
+        "Ad Complete",
+
+        "spin":1
 
     })
 
@@ -107,8 +155,10 @@ def ad():
 
 
 
+
 @web.route("/api/spin")
 def spin():
+
 
     rewards = [
         1,2,3,4,5,
@@ -118,7 +168,8 @@ def spin():
 
     return jsonify({
 
-        "reward": random.choice(rewards)
+        "reward":
+        random.choice(rewards)
 
     })
 
@@ -126,8 +177,10 @@ def spin():
 
 
 
+
 @web.route("/api/send", methods=["POST"])
 def send_coin():
+
 
     data = request.json
 
@@ -137,7 +190,9 @@ def send_coin():
     )
 
 
+
     if amount < 100 or amount > 1000:
+
 
         return jsonify({
 
@@ -145,6 +200,7 @@ def send_coin():
             "Transfer limit 100-1000 SCN"
 
         })
+
 
 
     return jsonify({
@@ -160,7 +216,9 @@ def send_coin():
 
 
 
+
 def run_web():
+
 
     web.run(
 
@@ -169,6 +227,7 @@ def run_web():
         port=5000
 
     )
+
 
 
 
@@ -186,8 +245,7 @@ threading.Thread(
 
 
 
-
-# ================= TELEGRAM BOT =================
+# ================= TELEGRAM =================
 
 
 
@@ -197,9 +255,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
 
 
+
     add_user(
 
         user.id,
+
         user.first_name
 
     )
@@ -210,17 +270,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         [
 
-        InlineKeyboardButton(
+            InlineKeyboardButton(
 
-            "📱 Open Silkcoin App",
+                "📱 Open Silkcoin App",
 
-            web_app=WebAppInfo(
+                web_app=WebAppInfo(
 
-                url="https://silkcoin-network.onrender.com"
+                    url=
+                    "https://silkcoin-network.onrender.com"
+
+                )
 
             )
-
-        )
 
         ]
 
@@ -230,6 +291,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
 
+
         """
 🚀 Welcome to Silkcoin Network
 
@@ -238,10 +300,11 @@ Open your Wallet App
 
         """,
 
-        reply_markup=InlineKeyboardMarkup(keyboard)
+
+        reply_markup=
+        InlineKeyboardMarkup(keyboard)
 
     )
-
 
 
 
@@ -287,7 +350,10 @@ app.add_error_handler(
 
 
 
-print("🚀 Silkcoin Network Running")
+
+print(
+    "🚀 Silkcoin Network Running"
+)
 
 
 
