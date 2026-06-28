@@ -25,25 +25,21 @@ create()
 
 web = Flask(__name__)
 
-
-
 @web.route("/")
 def home():
+    return send_from_directory(".", "index.html")
 
-    return send_from_directory(
-        "web",
-        "index.html"
-    )
 
+@web.route("/style.css")
+def style():
+    return send_from_directory(".", "style.css")
 
 
 def start_web():
-
     web.run(
         host="0.0.0.0",
         port=5000
     )
-
 
 
 threading.Thread(
