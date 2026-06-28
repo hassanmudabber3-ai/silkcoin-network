@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Silkcoin Network</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="card">
+
+
+<h1>🚀 Silkcoin</h1>
+
+
+<h3 id="name">
+Loading...
+</h3>
+
+
+
+<div class="box">
+
+💰 Balance
+
+<h2 id="balance">
+0 SCN
+</h2>
+
+</div>
+
+
+
+
+<div class="box">
+
+⛏ Live Mining
+
+<h2 id="mining">
+
+0.0000 SCN
+
+</h2>
+
+
+<p id="timer">
+
+00:00:00
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="box">
+
+
+⚡ Mining Speed
+
+
+<h2 id="speed">
+
+0 SCN/hour
+
+</h2>
+
+
+</div>
+
+
+
+<div class="box">
+
+
+👥 Referrals
+
+
+<h2 id="ref">
+
+0
+
+</h2>
+
+
+</div>
+
+
+
+
+<button>
+
+⛏ Start Mining
+
+</button>
+
+
+
+<button>
+
+⚡ Watch Ad Boost
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+<script>
+
+
+let user_id = 123456;
+
+
+
+let balance = 0;
+
+let speed = 1;
+
+
+
+fetch("/user/"+user_id)
+
+.then(r=>r.json())
+
+.then(data=>{
+
+
+document.getElementById("name").innerHTML =
+data.name;
+
+
+balance = Number(data.balance);
+
+
+speed = Number(data.speed);
+
+
+
+document.getElementById("balance").innerHTML =
+balance.toFixed(4)+" SCN";
+
+
+
+document.getElementById("speed").innerHTML =
+speed+" SCN/hour";
+
+
+
+document.getElementById("ref").innerHTML =
+data.referrals;
+
+
+
+});
+
+
+
+
+
+let mined = 0;
+
+
+let seconds = 0;
+
+
+
+
+setInterval(()=>{
+
+
+seconds++;
+
+
+
+// mining per second
+
+let add = speed / 3600;
+
+
+mined += add;
+
+
+
+document.getElementById("mining").innerHTML =
+
+mined.toFixed(6)+" SCN";
+
+
+
+
+
+let h = Math.floor(seconds/3600);
+
+let m = Math.floor((seconds%3600)/60);
+
+let s = seconds%60;
+
+
+
+document.getElementById("timer").innerHTML =
+
+h+":"+m+":"+s;
+
+
+
+},1000);
+
+
+
+
+</script>
+
+
+
+</body>
+
+
+</html>
