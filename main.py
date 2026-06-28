@@ -17,13 +17,11 @@ import threading
 
 
 
-# Database
 create()
 
 
 
-# ---------------- WEB APP ----------------
-
+# -------- WEB APP --------
 
 web = Flask(__name__)
 
@@ -56,12 +54,10 @@ threading.Thread(
 
 
 
-# ---------------- TELEGRAM BOT ----------------
+# -------- TELEGRAM BOT --------
 
 
-
-async def start(update:Update, context:ContextTypes.DEFAULT_TYPE):
-
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
 
@@ -75,13 +71,9 @@ async def start(update:Update, context:ContextTypes.DEFAULT_TYPE):
 
 
     add_user(
-
         user.id,
-
         user.first_name,
-
         inviter
-
     )
 
 
@@ -97,7 +89,7 @@ async def start(update:Update, context:ContextTypes.DEFAULT_TYPE):
 
         web_app=WebAppInfo(
 
-        url="YOUR_SERVER_LINK"
+        url="https://silkcoin-network.onrender.com"
 
         )
 
@@ -165,8 +157,6 @@ async def start(update:Update, context:ContextTypes.DEFAULT_TYPE):
 
 
 
-
-
     await update.message.reply_text(
 
 f"""
@@ -174,10 +164,11 @@ f"""
 🚀 Welcome to Silkcoin Network
 
 
-⛏ 24/7 Mining
+⛏ 24/7 Mining Active
 
 
 User:
+
 {user.first_name}
 
 
@@ -208,7 +199,7 @@ async def button(update:Update, context:ContextTypes.DEFAULT_TYPE):
 
 
 
-    if query.data == "mine":
+    if query.data=="mine":
 
 
         reward = mine(uid)
@@ -225,7 +216,7 @@ f"""
 +{reward:.4f} SCN
 
 
-Keep mining 🚀
+Mining Active ⚡
 
 """
 
@@ -234,12 +225,10 @@ Keep mining 🚀
 
 
 
+    elif query.data=="balance":
 
-    elif query.data == "balance":
 
-
-        user = get_user(uid)
-
+        user=get_user(uid)
 
 
         await query.edit_message_text(
@@ -269,9 +258,7 @@ f"""
 
 
 
-
-    elif query.data == "ref":
-
+    elif query.data=="ref":
 
 
         await query.edit_message_text(
@@ -284,14 +271,13 @@ f"""
 Your referral link:
 
 
-
 https://t.me/{context.bot.username}?start={uid}
 
 
 
 Reward:
 
-100 SCN
+100 SCN per friend
 
 """
 
@@ -300,8 +286,7 @@ Reward:
 
 
 
-
-    elif query.data == "ad":
+    elif query.data=="ad":
 
 
         boost(uid)
@@ -312,13 +297,10 @@ Reward:
 
 """
 
-✅ Ad Completed
+✅ Advertisement Completed
 
 
 ⚡ Mining Speed Increased
-
-
-+1 Speed
 
 """
 
@@ -328,7 +310,6 @@ Reward:
 
 
 
-# Run Bot
 
 
 app = Application.builder().token(TOKEN).build()
@@ -336,27 +317,13 @@ app = Application.builder().token(TOKEN).build()
 
 
 app.add_handler(
-
-CommandHandler(
-
-"start",
-
-start
-
-)
-
+CommandHandler("start", start)
 )
 
 
 
 app.add_handler(
-
-CallbackQueryHandler(
-
-button
-
-)
-
+CallbackQueryHandler(button)
 )
 
 
