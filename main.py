@@ -1,19 +1,16 @@
-from telegram import (
-    Update,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    WebAppInfo
-)
+from flask import Flask, send_from_directory, jsonify, request
+
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 
 from telegram.ext import *
-
-from flask import Flask, send_from_directory
 
 from config import TOKEN
 
 from database import *
 
 import threading
+import random
+import time
 
 
 
@@ -21,129 +18,265 @@ create()
 
 
 
-# -------- WEB APP --------
-
 web = Flask(__name__)
+
+
+
+
+# ---------- WEB APP ----------
+
 
 @web.route("/")
 def home():
-    return send_from_directory(".", "index.html")
 
-
-@web.route("/style.css")
-def style():
-    return send_from_directory(".", "style.css")
-
-
-def start_web():
-    web.run(
-        host="0.0.0.0",
-        port=5000
+    return send_from_directory(
+        "web",
+        "index.html"
     )
 
 
+
+@web.route("/<path:file>")
+def files(file):
+
+    return send_from_directory(
+        "web",
+        file
+    )
+
+
+
+
+
+# ---------- API USER ----------
+
+
+@web.route("/api/user")
+def user():
+
+    tg_id = request.args.get("id")
+
+
+    if not tg_id:
+
+        return jsonify({
+
+            "error":"No user id"
+
+        })
+
+
+
+    data = get_user(int(tg_id))
+
+
+
+    if data:
+
+
+        return jsonify({
+
+            "wallet_id":data[3],
+
+            "balance":data[4],
+
+            "spins":data[7],
+
+            "mining":data[5]
+
+        })
+
+
+
+    return jsonify({
+
+        "error":"User not found"
+
+    })
+
+
+
+
+
+
+
+# ---------- MINING ----------
+
+
+@web.route("/api/mine/start")
+def start_mine():
+
+
+    return jsonify({
+
+        "message":"Mining Started"
+
+    })
+
+
+
+
+
+
+
+# ---------- AD BOOST ----------
+
+
+@web.route("/api/ad")
+def ad():
+
+
+    return jsonify({
+
+        "message":"Ad Complete",
+
+        "spin":1
+
+    })
+
+
+
+
+
+
+
+# ---------- LUCKY WHEEL ----------
+
+
+@web.route("/api/spin")
+def spin():
+
+
+    rewards=[1,2,3,4,5,6,7,8,9,10]
+
+
+    prize=random.choice(rewards)
+
+
+
+    return jsonify({
+
+        "reward":prize
+
+    })
+
+
+
+
+
+
+
+# ---------- P2P SEND ----------
+
+
+@web.route("/api/send", methods=["POST"])
+
+def send_coin():
+
+
+    data=request.json
+
+
+    receiver=data.get("receiver")
+
+    amount=float(data.get("amount"))
+
+
+
+    if amount < 100 or amount > 1000:
+
+
+        return jsonify({
+
+            "message":
+
+            "Transfer limit 100-1000 SCN"
+
+        })
+
+
+
+    return jsonify({
+
+        "message":
+
+        "Transfer complete"
+
+    })
+
+
+
+
+
+
+
+
+
+def run_web():
+
+
+    web.run(
+
+        host="0.0.0.0",
+
+        port=5000
+
+    )
+
+
+
+
+
 threading.Thread(
-    target=start_web
+
+    target=run_web
+
 ).start()
 
 
 
 
 
-# -------- TELEGRAM BOT --------
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    user = update.effective_user
 
 
-    inviter = 0
+# ---------- TELEGRAM BOT ----------
 
 
-    if context.args:
 
-        inviter = int(context.args[0])
+async def start(update:Update, context:ContextTypes.DEFAULT_TYPE):
+
+
+    user=update.effective_user
+
 
 
     add_user(
+
         user.id,
-        user.first_name,
-        inviter
+
+        user.first_name
+
     )
 
 
 
-    keyboard = [
+
+    keyboard=[
 
 
         [
 
         InlineKeyboardButton(
 
-        "📱 Open Silkcoin App",
+            "📱 Open Silkcoin App",
 
-        web_app=WebAppInfo(
+            web_app=WebAppInfo(
 
-        url="https://silkcoin-network.onrender.com"
+            url="https://silkcoin-network.onrender.com"
 
-        )
-
-        )
-
-        ],
-
-
-
-        [
-
-        InlineKeyboardButton(
-
-        "⛏ Start Mining",
-
-        callback_data="mine"
-
-        )
-
-        ],
-
-
-
-        [
-
-        InlineKeyboardButton(
-
-        "💰 Balance",
-
-        callback_data="balance"
-
-        )
-
-        ],
-
-
-
-        [
-
-        InlineKeyboardButton(
-
-        "👥 Invite Friends",
-
-        callback_data="ref"
-
-        )
-
-        ],
-
-
-
-        [
-
-        InlineKeyboardButton(
-
-        "⚡ Ad Boost",
-
-        callback_data="ad"
+            )
 
         )
 
@@ -153,154 +286,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
+
     await update.message.reply_text(
 
-f"""
 
-🚀 Welcome to Silkcoin Network
+        "🚀 Welcome to Silkcoin Network\n\nOpen your Wallet App",
 
+        reply_markup=InlineKeyboardMarkup(keyboard)
 
-⛏ 24/7 Mining Active
-
-
-User:
-
-{user.first_name}
-
-
-
-Choose:
-
-""",
-
-reply_markup=InlineKeyboardMarkup(keyboard)
-
-)
-
-
-
-
-
-
-async def button(update:Update, context:ContextTypes.DEFAULT_TYPE):
-
-
-    query = update.callback_query
-
-
-    uid = query.from_user.id
-
-
-    await query.answer()
-
-
-
-    if query.data=="mine":
-
-
-        reward = mine(uid)
-
-
-
-        await query.edit_message_text(
-
-f"""
-
-⛏ Mining Complete
-
-
-+{reward:.4f} SCN
-
-
-Mining Active ⚡
-
-"""
-
-)
-
-
-
-
-    elif query.data=="balance":
-
-
-        user=get_user(uid)
-
-
-        await query.edit_message_text(
-
-f"""
-
-💰 Silkcoin Balance
-
-
-{user[2]:.4f} SCN
-
-
-
-⚡ Speed:
-
-{user[3]} SCN/hour
-
-
-👥 Referrals:
-
-{user[6]}
-
-"""
-
-)
-
-
-
-
-    elif query.data=="ref":
-
-
-        await query.edit_message_text(
-
-f"""
-
-👥 Invite Friends
-
-
-Your referral link:
-
-
-https://t.me/{context.bot.username}?start={uid}
-
-
-
-Reward:
-
-100 SCN per friend
-
-"""
-
-)
-
-
-
-
-    elif query.data=="ad":
-
-
-        boost(uid)
-
-
-
-        await query.edit_message_text(
-
-"""
-
-✅ Advertisement Completed
-
-
-⚡ Mining Speed Increased
-
-"""
-
-)
+    )
 
 
 
@@ -313,13 +307,15 @@ app = Application.builder().token(TOKEN).build()
 
 
 app.add_handler(
-CommandHandler("start", start)
+
+CommandHandler(
+
+"start",
+
+start
+
 )
 
-
-
-app.add_handler(
-CallbackQueryHandler(button)
 )
 
 
