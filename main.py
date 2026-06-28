@@ -17,7 +17,11 @@ create()
 
 # ================= WEB APP =================
 
-web = Flask(__name__)
+web = Flask(
+    __name__,
+    static_folder="web",
+    static_url_path=""
+)
 
 
 @web.route("/")
@@ -26,15 +30,6 @@ def home():
     return send_from_directory(
         "web",
         "index.html"
-    )
-
-
-@web.route("/<path:file>")
-def files(file):
-
-    return send_from_directory(
-        "web",
-        file
     )
 
 
@@ -63,11 +58,8 @@ def user():
         return jsonify({
 
             "wallet_id": data[3],
-
             "balance": data[4],
-
             "spins": data[7],
-
             "mining": data[5]
 
         })
@@ -102,7 +94,6 @@ def ad():
     return jsonify({
 
         "message": "Ad Complete",
-
         "spin": 1
 
     })
@@ -163,6 +154,7 @@ def send_coin():
 
 
 
+
 def run_web():
 
     web.run(
@@ -189,6 +181,7 @@ threading.Thread(
 
 
 
+
 # ================= TELEGRAM BOT =================
 
 
@@ -202,7 +195,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     add_user(
 
         user.id,
-
         user.first_name
 
     )
@@ -244,6 +236,7 @@ Open your Wallet App
         reply_markup=InlineKeyboardMarkup(keyboard)
 
     )
+
 
 
 
