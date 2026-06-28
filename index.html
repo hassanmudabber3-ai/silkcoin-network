@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
 
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Silkcoin Network</title>
 
+
 <link rel="stylesheet" href="style.css">
+
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 
 </head>
 
@@ -14,101 +22,64 @@
 <body>
 
 
-<div class="card">
+<div class="container">
 
 
-<h1>🚀 Silkcoin</h1>
+<h1>🚀 Silkcoin Network</h1>
 
 
-<h3 id="name">
+<div class="wallet">
+
+
+<h2>💰 Wallet</h2>
+
+<p>
+Wallet ID:
+</p>
+
+<h3 id="wallet">
 Loading...
 </h3>
 
 
-
-<div class="box">
-
-💰 Balance
+<p>
+Balance:
+</p>
 
 <h2 id="balance">
 0 SCN
 </h2>
 
-</div>
-
-
-
-
-<div class="box">
-
-⛏ Live Mining
-
-<h2 id="mining">
-
-0.0000 SCN
-
-</h2>
-
-
-<p id="timer">
-
-00:00:00
-
-</p>
-
 
 </div>
 
 
 
 
-<div class="box">
+
+<div class="buttons">
 
 
-⚡ Mining Speed
-
-
-<h2 id="speed">
-
-0 SCN/hour
-
-</h2>
-
-
-</div>
-
-
-
-<div class="box">
-
-
-👥 Referrals
-
-
-<h2 id="ref">
-
-0
-
-</h2>
-
-
-</div>
-
-
-
-
-<button>
-
+<button onclick="startMining()">
 ⛏ Start Mining
-
 </button>
 
 
 
-<button>
+<button onclick="openSpin()">
+🎡 Lucky Wheel
+</button>
 
-⚡ Watch Ad Boost
 
+
+<button onclick="boost()">
+⚡ Ad Boost
+</button>
+
+
+
+<button onclick="friends()">
+👥 Friends
 </button>
 
 
@@ -119,114 +90,20 @@ Loading...
 
 
 
-<script>
+<div id="message">
 
+</div>
 
-let user_id = 123456;
 
 
+</div>
 
-let balance = 0;
 
-let speed = 1;
 
 
-
-fetch("/user/"+user_id)
-
-.then(r=>r.json())
-
-.then(data=>{
-
-
-document.getElementById("name").innerHTML =
-data.name;
-
-
-balance = Number(data.balance);
-
-
-speed = Number(data.speed);
-
-
-
-document.getElementById("balance").innerHTML =
-balance.toFixed(4)+" SCN";
-
-
-
-document.getElementById("speed").innerHTML =
-speed+" SCN/hour";
-
-
-
-document.getElementById("ref").innerHTML =
-data.referrals;
-
-
-
-});
-
-
-
-
-
-let mined = 0;
-
-
-let seconds = 0;
-
-
-
-
-setInterval(()=>{
-
-
-seconds++;
-
-
-
-// mining per second
-
-let add = speed / 3600;
-
-
-mined += add;
-
-
-
-document.getElementById("mining").innerHTML =
-
-mined.toFixed(6)+" SCN";
-
-
-
-
-
-let h = Math.floor(seconds/3600);
-
-let m = Math.floor((seconds%3600)/60);
-
-let s = seconds%60;
-
-
-
-document.getElementById("timer").innerHTML =
-
-h+":"+m+":"+s;
-
-
-
-},1000);
-
-
-
-
-</script>
-
+<script src="app.js"></script>
 
 
 </body>
-
 
 </html>
