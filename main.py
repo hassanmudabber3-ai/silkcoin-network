@@ -10,20 +10,15 @@ from database import *
 
 import threading
 import random
-import time
-
 
 
 create()
 
 
+# ---------- WEB APP ----------
 
 web = Flask(__name__)
 
-
-
-
-# ---------- WEB APP ----------
 
 @web.route("/")
 def home():
@@ -42,45 +37,35 @@ def files(file):
 
 
 
-
 # ---------- API USER ----------
-
 
 @web.route("/api/user")
 def user():
 
     tg_id = request.args.get("id")
 
-
     if not tg_id:
-
         return jsonify({
-
-            "error":"No user id"
-
+            "error": "No user id"
         })
-
 
 
     data = get_user(int(tg_id))
 
 
-
     if data:
-
 
         return jsonify({
 
-            "wallet_id":data[3],
+            "wallet_id": data[3],
 
-            "balance":data[4],
+            "balance": data[4],
 
-            "spins":data[7],
+            "spins": data[7],
 
-            "mining":data[5]
+            "mining": data[5]
 
         })
-
 
 
     return jsonify({
@@ -93,14 +78,10 @@ def user():
 
 
 
-
-
 # ---------- MINING ----------
-
 
 @web.route("/api/mine/start")
 def start_mine():
-
 
     return jsonify({
 
@@ -112,14 +93,10 @@ def start_mine():
 
 
 
-
-
 # ---------- AD BOOST ----------
-
 
 @web.route("/api/ad")
 def ad():
-
 
     return jsonify({
 
@@ -133,25 +110,22 @@ def ad():
 
 
 
-
-
 # ---------- LUCKY WHEEL ----------
-
 
 @web.route("/api/spin")
 def spin():
 
+    rewards = [
+        1,2,3,4,5,
+        6,7,8,9,10
+    ]
 
-    rewards=[1,2,3,4,5,6,7,8,9,10]
-
-
-    prize=random.choice(rewards)
-
+    prize = random.choice(rewards)
 
 
     return jsonify({
 
-        "reward":prize
+        "reward": prize
 
     })
 
@@ -159,42 +133,31 @@ def spin():
 
 
 
-
-
-# ---------- P2P SEND ----------
-
+# ---------- P2P ----------
 
 @web.route("/api/send", methods=["POST"])
-
 def send_coin():
 
+    data = request.json
 
-    data=request.json
+    receiver = data.get("receiver")
 
-
-    receiver=data.get("receiver")
-
-    amount=float(data.get("amount"))
-
+    amount = float(data.get("amount"))
 
 
     if amount < 100 or amount > 1000:
 
-
         return jsonify({
 
             "message":
-
             "Transfer limit 100-1000 SCN"
 
         })
 
 
-
     return jsonify({
 
         "message":
-
         "Transfer complete"
 
     })
@@ -204,11 +167,7 @@ def send_coin():
 
 
 
-
-
-
 def run_web():
-
 
     web.run(
 
@@ -220,16 +179,13 @@ def run_web():
 
 
 
-
-
 threading.Thread(
 
-    target=run_web
+    target=run_web,
+
+    daemon=True
 
 ).start()
-
-
-
 
 
 
@@ -239,12 +195,10 @@ threading.Thread(
 # ---------- TELEGRAM BOT ----------
 
 
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-async def start(update:Update, context:ContextTypes.DEFAULT_TYPE):
 
-
-    user=update.effective_user
-
+    user = update.effective_user
 
 
     add_user(
@@ -257,9 +211,7 @@ async def start(update:Update, context:ContextTypes.DEFAULT_TYPE):
 
 
 
-
-    keyboard=[
-
+    keyboard = [
 
         [
 
@@ -281,13 +233,33 @@ async def start(update:Update, context:ContextTypes.DEFAULT_TYPE):
 
 
 
-
     await update.message.reply_text(
 
+        """
+🚀 Welcome to Silkcoin Network
 
-        "🚀 Welcome to Silkcoin Network\n\nOpen your Wallet App",
+
+Open your Wallet App
+
+        """,
 
         reply_markup=InlineKeyboardMarkup(keyboard)
+
+    )
+
+
+
+
+
+
+
+async def error_handler(update, context):
+
+    print(
+
+        "BOT ERROR:",
+
+        context.error
 
     )
 
@@ -303,13 +275,21 @@ app = Application.builder().token(TOKEN).build()
 
 app.add_handler(
 
-CommandHandler(
+    CommandHandler(
 
-"start",
+        "start",
 
-start
+        start
+
+    )
 
 )
+
+
+
+app.add_error_handler(
+
+    error_handler
 
 )
 
