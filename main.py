@@ -25,7 +25,6 @@ web = Flask(__name__)
 
 # ---------- WEB APP ----------
 
-
 @web.route("/")
 def home():
 
@@ -33,7 +32,6 @@ def home():
         "web",
         "index.html"
     )
-
 
 
 @web.route("/<path:file>")
