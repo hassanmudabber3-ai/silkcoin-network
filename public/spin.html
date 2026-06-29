@@ -20,17 +20,17 @@ Silkcoin Lucky Spin
 
 #wheel{
 
-width:260px;
+width:270px;
 
-height:260px;
+height:270px;
 
 border-radius:50%;
 
-margin:30px auto;
+margin:25px auto;
 
 position:relative;
 
-transition:5s;
+transition:5s cubic-bezier(.17,.67,.12,.99);
 
 
 background:
@@ -60,12 +60,15 @@ conic-gradient(
 );
 
 
+box-shadow:
+
+0 0 30px #ffd700;
+
 }
 
 
 
 .number{
-
 
 position:absolute;
 
@@ -75,14 +78,15 @@ height:100%;
 
 display:flex;
 
-align-items:center;
-
 justify-content:center;
 
-font-size:22px;
+align-items:center;
+
+font-size:24px;
 
 font-weight:bold;
 
+color:white;
 
 }
 
@@ -92,14 +96,13 @@ font-weight:bold;
 
 .pointer{
 
+text-align:center;
 
 font-size:40px;
 
 color:#ffd700;
 
-
 }
-
 
 
 
@@ -110,11 +113,12 @@ color:#ffd700;
 
 
 
-
 <body>
 
 
 <div class="app">
+
+
 
 
 
@@ -142,6 +146,7 @@ color:#ffd700;
 </button>
 
 
+
 </div>
 
 
@@ -162,8 +167,8 @@ color:#ffd700;
 
 
 
-<div id="wheel">
 
+<div id="wheel">
 
 </div>
 
@@ -176,6 +181,7 @@ color:#ffd700;
 Ready
 
 </h2>
+
 
 
 
@@ -198,6 +204,7 @@ Chance:
 
 
 
+
 <button onclick="watchAd()">
 
 📺 Watch Advertisement
@@ -206,7 +213,9 @@ Chance:
 
 
 
-<button onclick="spin()">
+
+
+<button onclick="spin()" id="spinBtn">
 
 🎡 Spin
 
@@ -214,7 +223,17 @@ Chance:
 
 
 
+<p id="msg">
+
+</p>
+
+
+
 </div>
+
+
+
+
 
 
 
@@ -230,6 +249,7 @@ Chance:
 </button>
 
 
+
 <button onclick="location.href='mining.html'">
 
 ⛏
@@ -237,11 +257,13 @@ Chance:
 </button>
 
 
+
 <button>
 
 🎡
 
 </button>
+
 
 
 <button onclick="location.href='wallet.html'">
@@ -252,6 +274,7 @@ Chance:
 
 
 </div>
+
 
 
 
@@ -270,6 +293,7 @@ Chance:
 <script>
 
 
+
 let user = JSON.parse(
 
 localStorage.getItem("user")
@@ -286,7 +310,9 @@ location.href="login.html";
 
 
 
-let activeSpin=false;
+
+
+let canSpin=false;
 
 
 let rotation=0;
@@ -294,76 +320,38 @@ let rotation=0;
 
 
 
-let rewards=[
-
-1,2,3,4,5,6,7,8,9,10
-
-];
-
-
-
-
-// ساخت شماره های چرخ
 
 
 let wheel=document.getElementById("wheel");
 
 
 
+
+// ساخت اعداد 1 تا 10
+
+
 for(let i=1;i<=10;i++){
 
 
-let div=document.createElement("div");
+
+let item=document.createElement("div");
 
 
-div.className="number";
+item.className="number";
 
 
-div.style.transform=
-
-"rotate("+
-
-(i*36-18)
-
-+"deg) translateY(-100px)";
-
-
-
-div.innerHTML=i;
-
-
-wheel.appendChild(div);
-
-
-}
+item.innerHTML=i;
 
 
 
 
+item.style.transform=
+
+"rotate("+(i*36-18)+"deg) translateY(-110px)";
 
 
 
-
-function load(){
-
-
-fetch("/api/spin/"+user.id)
-
-
-.then(r=>r.json())
-
-.then(data=>{
-
-
-let left=5-data.spin_count;
-
-
-document.getElementById("chance")
-.innerHTML=left;
-
-
-
-});
+wheel.appendChild(item);
 
 
 
@@ -371,206 +359,10 @@ document.getElementById("chance")
 
 
 
-function watchAd(){
 
 
 
-fetch("/api/spin/ad",{
 
 
-method:"POST",
 
-
-headers:{
-
-
-"Content-Type":"application/json"
-
-},
-
-
-body:JSON.stringify({
-
-id:user.id
-
-})
-
-
-})
-
-
-.then(r=>r.json())
-
-.then(data=>{
-
-
-if(data.success){
-
-
-activeSpin=true;
-
-
-alert(
-
-"Spin activated 🎉"
-
-);
-
-
-}
-
-
-else{
-
-
-alert(data.message);
-
-
-}
-
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-function spin(){
-
-
-
-if(!activeSpin){
-
-
-alert(
-
-"Watch ad first"
-
-);
-
-
-return;
-
-}
-
-
-
-activeSpin=false;
-
-
-
-let win=
-
-Math.floor(
-
-Math.random()*10
-
-)+1;
-
-
-
-
-
-let stop=
-
-360-(win*36);
-
-
-
-
-rotation +=
-
-1440+stop;
-
-
-
-
-wheel.style.transform=
-
-"rotate("+rotation+"deg)";
-
-
-
-
-
-
-setTimeout(()=>{
-
-
-
-fetch("/api/spin",{
-
-
-method:"POST",
-
-
-headers:{
-
-
-"Content-Type":"application/json"
-
-},
-
-
-body:JSON.stringify({
-
-id:user.id
-
-})
-
-
-})
-
-.then(r=>r.json())
-
-.then(data=>{
-
-
-document.getElementById("result")
-.innerHTML=
-
-"🎉 You won "
-
-+
-
-data.reward
-
-+
-
-" SILK";
-
-
-
-load();
-
-
-
-});
-
-
-
-},5000);
-
-
-
-
-}
-
-
-
-load();
-
-
-
-</script>
-
-
-</body>
-
-</html>
+function
