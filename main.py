@@ -1,6 +1,10 @@
-import os
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    WebAppInfo
+)
 
-from telegram import Update
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -10,46 +14,71 @@ from telegram.ext import (
 
 
 # ==========================
-# Telegram Bot Token
+# Silkcoin Bot Settings
 # ==========================
 
+BOT_TOKEN = "PUT_YOUR_BOT_TOKEN_HERE"
 
-TOKEN = os.getenv("TOKEN")
-
-
+WEB_APP_URL = "https://YOUR-SILKCOIN-WEBAPP-URL.com"
 
 
 
 # ==========================
-# Start Command
+# START COMMAND
 # ==========================
 
-
-async def start(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
-
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
 
 
+    keyboard = [
+
+        [
+
+            InlineKeyboardButton(
+
+                text="🚀 Open Silkcoin Network Coin",
+
+                web_app=WebAppInfo(
+
+                    url=WEB_APP_URL
+
+                )
+
+            )
+
+        ]
+
+    ]
+
+
+    button = InlineKeyboardMarkup(keyboard)
+
+
 
     await update.message.reply_text(
 
-        f"""
-🪙 Silkcoin Network
+f"""
+💎 Silkcoin Network
 
-Welcome {user.first_name}
+Welcome {user.first_name} 🚀
 
-Commands:
 
-⛏ Mining
+Your Silkcoin journey starts here.
+
+
+⛏ Mine SILK every 24 hours
+
 🎡 Lucky Spin
+
 💰 Wallet
 
-Your account is ready.
-"""
+🌐 Silkcoin Network Coin
+
+""",
+
+        reply_markup=button
 
     )
 
@@ -58,27 +87,32 @@ Your account is ready.
 
 
 
-
 # ==========================
-# Help
+# HELP COMMAND
 # ==========================
 
-
-async def help_command(
-
-    update: Update,
-
-    context: ContextTypes.DEFAULT_TYPE
-
-):
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
     await update.message.reply_text(
 
-        """
-Silkcoin Help:
+"""
+💎 Silkcoin Network Help
 
-/start - Start App
+
+⛏ Mining:
+Every 24 hours
+
+
+🎡 Lucky Spin:
+Watch ads and earn spins
+
+
+💰 Wallet:
+Check your SILK
+
+
+🚀 Open Web App from /start
 
 """
 
@@ -89,80 +123,50 @@ Silkcoin Help:
 
 
 
-
 # ==========================
-# Bot Run
+# RUN BOT
 # ==========================
-
 
 def main():
 
 
-    if not TOKEN:
+    application = Application.builder().token(
 
+        BOT_TOKEN
 
-        print(
-            "ERROR: TOKEN not found"
-        )
-
-        return
+    ).build()
 
 
 
-
-
-    app = Application.builder()\
-        .token(TOKEN)\
-        .build()
-
-
-
-
-
-    app.add_handler(
+    application.add_handler(
 
         CommandHandler(
-
             "start",
-
             start
-
         )
 
     )
 
 
 
-
-    app.add_handler(
+    application.add_handler(
 
         CommandHandler(
-
             "help",
-
             help_command
-
         )
 
     )
-
-
-
 
 
 
     print(
-
-        "🪙 Silkcoin Telegram Bot Started"
-
+        "💎 Silkcoin Bot is running..."
     )
 
 
 
-
-
-    app.run_polling()
-
+    application.run_polling()
 
 
 
@@ -170,6 +174,5 @@ def main():
 
 
 if __name__ == "__main__":
-
 
     main()
