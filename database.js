@@ -2,12 +2,26 @@ const sqlite3 = require("sqlite3").verbose();
 
 
 const db = new sqlite3.Database(
-"./silkcoin.db"
-);
+"./silkcoin.db",
+(err)=>{
+
+if(err){
+
+console.log(err);
+
+}else{
+
+console.log("Database Connected");
+
+}
+
+});
+
 
 
 
 db.serialize(()=>{
+
 
 
 db.run(`
@@ -59,8 +73,8 @@ created INTEGER
 
 
 
-
 });
+
 
 
 
