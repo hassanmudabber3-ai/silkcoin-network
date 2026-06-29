@@ -1,10 +1,7 @@
-// Silkcoin Test Login
-
-
 function login(){
 
 
-console.log("LOGIN CLICKED");
+alert("LOGIN WORKED");
 
 
 
@@ -15,40 +12,9 @@ document.getElementById("dashboard").style.display="block";
 
 
 
-document.getElementById("balance").innerHTML="0 SCN";
+document.getElementById("wallet").innerHTML =
 
-
-
-let wallet =
-localStorage.getItem("walletID");
-
-
-
-if(!wallet){
-
-
-wallet =
 "SILK" + Math.floor(Math.random()*999999);
-
-
-
-localStorage.setItem(
-"walletID",
-wallet
-);
-
-
-}
-
-
-
-document.getElementById("wallet")
-.innerHTML = wallet;
-
-
-
-document.getElementById("myID")
-.innerHTML = wallet;
 
 
 
