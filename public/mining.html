@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Silkcoin Mining</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -12,40 +16,224 @@
 <body>
 
 
-<div class="app">
+<div class="container">
 
 
-<h1>⛏ Mining 24H</h1>
+<h1>
+⛏ Silkcoin Mining
+</h1>
 
 
-<h2 id="timer">
-24:00:00
+
+<div class="card">
+
+
+<h2>
+Mining Status
 </h2>
 
 
+<h1 id="timer">
+30:00
+</h1>
+
+
+
+<h3 id="status">
+Ready
+</h3>
+
+
+
 <button onclick="startMining()">
-
-START MINING
-
+🚀 Start Mining
 </button>
 
 
-<p id="msg"></p>
+<br><br>
 
 
-<a href="index.html">
-<button>
+<button onclick="location.href='index.html'">
 🏠 Home
 </button>
-</a>
 
 
 </div>
 
 
-<script src="app.js"></script>
+</div>
+
+
+
+<script>
+
+
+let miningTime = 30 * 60;
+
+
+let timer;
+
+
+function startMining(){
+
+
+let saved =
+localStorage.getItem("miningEnd");
+
+
+if(saved){
+
+let remaining =
+Math.floor((saved - Date.now()) / 1000);
+
+
+if(remaining > 0){
+
+miningTime = remaining;
+
+}
+
+}
+
+
+
+if(timer)
+clearInterval(timer);
+
+
+
+localStorage.setItem(
+"miningEnd",
+Date.now() + miningTime * 1000
+);
+
+
+
+document.getElementById("status").innerHTML =
+"Mining started...";
+
+
+
+timer =
+setInterval(()=>{
+
+
+let end =
+localStorage.getItem("miningEnd");
+
+
+let remaining =
+Math.floor((end - Date.now()) / 1000);
+
+
+
+if(remaining <= 0){
+
+
+clearInterval(timer);
+
+
+document.getElementById("timer").innerHTML =
+"00:00";
+
+
+document.getElementById("status").innerHTML =
+"Mining completed 🎉";
+
+
+
+let balance =
+Number(localStorage.getItem("balance") || 0);
+
+
+
+balance += 1;
+
+
+
+localStorage.setItem(
+"balance",
+balance
+);
+
+
+
+return;
+
+}
+
+
+
+let min =
+Math.floor(remaining / 60);
+
+
+
+let sec =
+remaining % 60;
+
+
+
+document.getElementById("timer").innerHTML =
+
+String(min).padStart(2,"0")
++
+":"
++
+String(sec).padStart(2,"0");
+
+
+
+},1000);
+
+
+
+}
+
+
+
+
+window.onload=function(){
+
+
+let end =
+localStorage.getItem("miningEnd");
+
+
+
+if(end){
+
+
+let remaining =
+Math.floor(
+(end - Date.now()) / 1000
+);
+
+
+
+if(remaining > 0){
+
+
+miningTime = remaining;
+
+startMining();
+
+
+}
+
+
+
+}
+
+
+}
+
+
+
+</script>
 
 
 </body>
+
 
 </html>
