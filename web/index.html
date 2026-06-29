@@ -5,7 +5,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Silkcoin</title>
+<title>Silkcoin Login</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -20,30 +20,28 @@
 <div class="app">
 
 
-<h1>🚀 Silkcoin</h1>
+<div id="login">
 
 
-<div class="menu">
+<h1>
+🚀 Silkcoin
+</h1>
 
 
-<button onclick="show('wallet')">
-💰 Wallet
+<p>
+Secure Mining Network
+</p>
+
+
+
+<button onclick="login()">
+
+🔐 Connect Telegram
+
 </button>
 
 
-<button onclick="show('mine')">
-⛏ Mining
-</button>
-
-
-<button onclick="show('spin')">
-🎡 Spin
-</button>
-
-
-<button onclick="show('friends')">
-👥 Friends
-</button>
+<p id="loginMsg"></p>
 
 
 </div>
@@ -52,93 +50,55 @@
 
 
 
-<div id="wallet" class="page">
 
-<h2>Wallet</h2>
+<div id="panel" class="hidden">
 
-<p id="address">
-Loading...
+
+<h1>
+💎 Silkcoin
+</h1>
+
+
+<div class="card">
+
+
+<h2>
+Wallet
+</h2>
+
+
+<p id="wallet">
+-
 </p>
+
 
 
 <h1 id="balance">
 0 SCN
 </h1>
 
+
+
 </div>
 
 
 
 
 
-
-
-<div id="mine" class="page hidden">
-
-
-<h2>Mining</h2>
-
-
-<p>
-Mine Silkcoin every day
-</p>
-
-
-<button onclick="startMining()">
-
+<button onclick="startMine()">
 ⛏ Start Mining
-
 </button>
-
-
-<h3 id="mineMsg"></h3>
-
-
-</div>
-
-
-
-
-
-
-
-<div id="spin" class="page hidden">
-
-
-<h2>Lucky Wheel 🎡</h2>
 
 
 <button onclick="spin()">
-
-Spin
-
+🎡 Spin
 </button>
 
 
-<h3 id="spinMsg"></h3>
+<p id="msg"></p>
 
 
 </div>
-
-
-
-
-
-
-
-
-<div id="friends" class="page hidden">
-
-
-<h2>Friends</h2>
-
-<p>
-Invite friends and earn SCN
-</p>
-
-
-</div>
-
 
 
 
