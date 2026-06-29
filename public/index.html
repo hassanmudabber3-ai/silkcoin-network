@@ -18,40 +18,46 @@
 <div class="app">
 
 
-<h1>
-💎 SILKCOIN
-</h1>
+<div id="login">
 
+
+<h1>💎 SILKCOIN</h1>
 
 <p>
 Secure Mining Network
 </p>
 
 
-<button onclick="testLogin()">
+<button onclick="login()">
 
 🔐 Connect Telegram
 
 </button>
 
 
-
-<div id="dashboard" style="display:none">
-
-
-<h2>
-Welcome To Silkcoin
-</h2>
+</div>
 
 
-<p>
-Wallet:
+
+<div id="dashboard" style="display:none;">
+
+
+<h1>
+💎 Silkcoin Dashboard
+</h1>
+
+
+<div class="wallet">
+
+
+<p id="wallet">
+-
 </p>
 
 
-<h3 id="wallet">
--
-</h3>
+<h2 id="balance">
+0 SCN
+</h2>
 
 
 </div>
@@ -61,22 +67,11 @@ Wallet:
 
 
 
-<script>
-
-function testLogin(){
-
-
-document.body.innerHTML +=
-
-"<h2>LOGIN OK</h2>";
+</div>
 
 
 
-}
-
-
-</script>
-
+<script src="/app.js?v=10"></script>
 
 
 </body>
