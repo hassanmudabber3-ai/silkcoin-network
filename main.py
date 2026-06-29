@@ -1,102 +1,56 @@
-from flask import Flask, send_from_directory, jsonify, request
 import os
 
-
-app = Flask(
-    __name__,
-    static_folder="public"
+from telegram import Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes
 )
 
 
 
 # ==========================
-# Frontend
+# Telegram Bot Token
 # ==========================
 
 
-@app.route("/")
-def home():
-
-    return send_from_directory(
-        "public",
-        "index.html"
-    )
-
-
-
-@app.route("/<path:file>")
-def public_files(file):
-
-    return send_from_directory(
-        "public",
-        file
-    )
+TOKEN = os.getenv("TOKEN")
 
 
 
 
 
 # ==========================
-# Test Backend
+# Start Command
 # ==========================
 
 
-@app.route("/api/status")
-def status():
+async def start(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
 
-    return jsonify({
 
-        "name":"Silkcoin Network",
-
-        "status":"online"
-
-    })
+    user = update.effective_user
 
 
 
+    await update.message.reply_text(
 
+        f"""
+🪙 Silkcoin Network
 
-# ==========================
-# Register User
-# ==========================
+Welcome {user.first_name}
 
+Commands:
 
-users = {}
+⛏ Mining
+🎡 Lucky Spin
+💰 Wallet
 
+Your account is ready.
+"""
 
-
-@app.post("/api/register")
-def register():
-
-
-    data = request.json
-
-
-    user_id = data.get(
-        "telegram_id"
-    )
-
-
-    if user_id not in users:
-
-
-        users[user_id] = {
-
-
-            "wallet":
-
-            "SILK"+str(user_id),
-
-
-            "balance":0
-
-
-        }
-
-
-
-    return jsonify(
-        users[user_id]
     )
 
 
@@ -106,23 +60,116 @@ def register():
 
 
 # ==========================
-# Run Server
+# Help
 # ==========================
 
 
-PORT = int(
-    os.environ.get(
-        "PORT",
-        10000
+async def help_command(
+
+    update: Update,
+
+    context: ContextTypes.DEFAULT_TYPE
+
+):
+
+
+    await update.message.reply_text(
+
+        """
+Silkcoin Help:
+
+/start - Start App
+
+"""
+
     )
-)
 
 
 
-app.run(
 
-    host="0.0.0.0",
 
-    port=PORT
 
-)
+
+# ==========================
+# Bot Run
+# ==========================
+
+
+def main():
+
+
+    if not TOKEN:
+
+
+        print(
+            "ERROR: TOKEN not found"
+        )
+
+        return
+
+
+
+
+
+    app = Application.builder()\
+        .token(TOKEN)\
+        .build()
+
+
+
+
+
+    app.add_handler(
+
+        CommandHandler(
+
+            "start",
+
+            start
+
+        )
+
+    )
+
+
+
+
+    app.add_handler(
+
+        CommandHandler(
+
+            "help",
+
+            help_command
+
+        )
+
+    )
+
+
+
+
+
+
+    print(
+
+        "🪙 Silkcoin Telegram Bot Started"
+
+    )
+
+
+
+
+
+    app.run_polling()
+
+
+
+
+
+
+
+if __name__ == "__main__":
+
+
+    main()
