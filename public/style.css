@@ -1,10 +1,21 @@
+*{
+
+box-sizing:border-box;
+
+font-family:Arial,sans-serif;
+
+}
+
+
 body{
 
 margin:0;
 
-font-family:Arial;
+min-height:100vh;
 
-background:#09001f;
+background:
+
+linear-gradient(135deg,#050014,#27005c);
 
 color:white;
 
@@ -14,7 +25,9 @@ color:white;
 
 .app{
 
-max-width:420px;
+width:100%;
+
+max-width:430px;
 
 margin:auto;
 
@@ -26,15 +39,27 @@ padding:20px;
 
 #login{
 
-text-align:center;
-
 margin-top:80px;
 
-background:#ffffff10;
+text-align:center;
+
+background:rgba(255,255,255,.08);
 
 padding:30px;
 
-border-radius:20px;
+border-radius:25px;
+
+box-shadow:0 0 30px rgba(0,0,0,.4);
+
+}
+
+
+
+h1{
+
+font-size:32px;
+
+text-align:center;
 
 }
 
@@ -48,29 +73,135 @@ padding:15px;
 
 margin-top:15px;
 
-border:0;
+border:none;
 
-border-radius:15px;
+border-radius:18px;
 
-background:#8a2be2;
+background:
+
+linear-gradient(90deg,#8b2cff,#00c8ff);
 
 color:white;
 
-font-size:18px;
+font-size:17px;
+
+font-weight:bold;
+
+cursor:pointer;
 
 }
 
 
 
+button:active{
+
+transform:scale(.96);
+
+}
+
+
+
+
+
 .card,.wallet{
-
-background:#ffffff15;
-
-padding:20px;
 
 margin-top:20px;
 
-border-radius:20px;
+padding:20px;
+
+border-radius:22px;
+
+background:
+
+rgba(255,255,255,.10);
+
+backdrop-filter:blur(10px);
+
+box-shadow:
+
+0 0 20px rgba(0,0,0,.3);
+
+}
+
+
+
+
+
+input{
+
+width:100%;
+
+padding:14px;
+
+margin-top:12px;
+
+border-radius:12px;
+
+border:none;
+
+font-size:16px;
+
+}
+
+
+
+
+
+#wheel{
+
+width:240px;
+
+height:240px;
+
+margin:25px auto;
+
+border-radius:50%;
+
+overflow:hidden;
+
+display:flex;
+
+flex-wrap:wrap;
+
+border:5px solid white;
+
+transition:4s;
+
+transform:rotate(0deg);
+
+}
+
+
+
+#wheel div{
+
+width:50%;
+
+height:50%;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+font-size:25px;
+
+font-weight:bold;
+
+border:1px solid white;
+
+background:
+
+linear-gradient(135deg,#9b30ff,#0066ff);
+
+}
+
+
+
+
+
+.wheel-box{
 
 text-align:center;
 
@@ -78,10 +209,33 @@ text-align:center;
 
 
 
-#wheel{
+#spinMsg,
+#mineMsg,
+#sendMsg{
 
-font-size:80px;
+text-align:center;
 
-margin:20px;
+margin-top:15px;
+
+font-size:17px;
+
+}
+
+
+
+
+.hide{
+
+display:none;
+
+}
+
+
+
+.wallet h2{
+
+font-size:30px;
+
+color:#00ffcc;
 
 }
