@@ -37,7 +37,31 @@ spin_count INTEGER DEFAULT 0
 
 
 
+
+db.run(`
+
+CREATE TABLE IF NOT EXISTS transactions(
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+user_id INTEGER,
+
+type TEXT,
+
+amount REAL,
+
+created INTEGER
+
+)
+
+`);
+
+
+
+
+
 });
+
 
 
 
