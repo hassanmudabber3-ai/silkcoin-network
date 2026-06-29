@@ -1,23 +1,17 @@
 const sqlite3 = require("sqlite3").verbose();
 
 
-// ساخت دیتابیس
 const db = new sqlite3.Database(
     "./silkcoin.db",
     (err)=>{
 
         if(err){
 
-            console.log(
-                "Database error:",
-                err
-            );
+            console.log(err);
 
         }else{
 
-            console.log(
-                "Silkcoin Database Connected"
-            );
+            console.log("Silkcoin Database Connected");
 
         }
 
@@ -26,8 +20,6 @@ const db = new sqlite3.Database(
 
 
 
-
-// ساخت جدول کاربران
 
 db.serialize(()=>{
 
@@ -55,7 +47,6 @@ mining_end INTEGER DEFAULT 0
 
 
 });
-
 
 
 
