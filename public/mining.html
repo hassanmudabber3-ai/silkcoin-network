@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
 
 <head>
 
@@ -8,6 +9,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Silkcoin Mining</title>
+
 
 <link rel="stylesheet" href="style.css">
 
@@ -29,30 +31,34 @@
 <div class="card">
 
 
-<h2>
-Mining Session
-</h2>
+<h2 id="timer">
 
-
-<h1 id="timer">
 24:00:00
-</h1>
+
+</h2>
 
 
 
 <h3 id="status">
+
 Ready
+
 </h3>
 
 
 
-
 <h2>
+
 Balance:
+
 <span id="balance">
+
 0
+
 </span>
+
 SILK
+
 </h2>
 
 
@@ -65,6 +71,17 @@ SILK
 
 
 
+<br><br>
+
+
+
+<button onclick="claim()">
+
+🎁 Claim
+
+</button>
+
+
 </div>
 
 
@@ -74,35 +91,27 @@ SILK
 <div class="rate-card">
 
 
-<img src="https://cdn-icons-png.flaticon.com/512/2919/2919592.png"
-width="80">
-
-
-
 <h2>
-Network Mining Rate
-</h2>
 
+Network Rate
+
+</h2>
 
 
 <h1 id="rate">
 
+Loading...
+
 </h1>
-
-
-
-<p>
-
-Based on active users
-
-</p>
-
 
 
 <h3>
 
 👥 Users:
+
 <span id="users">
+
+0
 
 </span>
 
@@ -114,18 +123,9 @@ Based on active users
 
 
 
-<br>
-
-
-<button onclick="location.href='index.html'">
-
-🏠 Home
-
-</button>
-
-
-
 </div>
+
+
 
 
 
@@ -134,114 +134,21 @@ Based on active users
 <script>
 
 
+let user =
 
-/*
+JSON.parse(
 
-Network Users
-بعداً از دیتابیس گرفته می‌شود
+localStorage.getItem("user")
 
-*/
-
-
-let totalUsers = 10000;
+);
 
 
 
+if(!user){
 
-
-// تعیین نرخ استخراج
-
-function getMiningRate(users){
-
-
-
-if(users < 10000){
-
-
-return 2;
-
+location.href="login.html";
 
 }
-
-
-
-else if(users < 100000){
-
-
-return 1.2;
-
-
-}
-
-
-
-else if(users < 1000000){
-
-
-return 0.5;
-
-
-}
-
-
-
-else if(users < 5000000){
-
-
-return 0.1;
-
-
-}
-
-
-
-else{
-
-
-return 0.05;
-
-
-}
-
-
-}
-
-
-
-
-
-let miningRate =
-getMiningRate(totalUsers);
-
-
-
-
-
-document.getElementById("rate")
-.innerHTML =
-
-"⚡ "
-+
-miningRate
-+
-" SILK / Hour";
-
-
-
-document.getElementById("users")
-.innerHTML =
-totalUsers;
-
-
-
-
-
-const miningTime =
-24 * 60 * 60;
-
-
-
-let timer;
 
 
 
@@ -251,47 +158,39 @@ function startMining(){
 
 
 
-let end =
-localStorage.getItem("mineEnd");
+fetch("/api/startMining",{
+
+
+method:"POST",
+
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+id:user.id
+
+})
+
+
+})
 
 
 
-if(!end){
+.then(r=>r.json())
+
+.then(data=>{
 
 
-
-end =
-Date.now()
-+
-(miningTime * 1000);
+timer(data.end);
 
 
-
-localStorage.setItem(
-"mineEnd",
-end
-);
-
-
-
-localStorage.setItem(
-"mineStart",
-Date.now()
-);
-
-
-
-}
-
-
-
-document.getElementById("status")
-.innerHTML =
-"⛏ Mining Active";
-
-
-
-startTimer();
+});
 
 
 
@@ -302,51 +201,31 @@ startTimer();
 
 
 
-function startTimer(){
+function timer(end){
 
 
 
-clearInterval(timer);
+let t=setInterval(()=>{
 
 
+let s=
 
-timer =
-setInterval(function(){
-
-
-
-let end =
-localStorage.getItem("mineEnd");
-
-
-
-let remain =
 Math.floor(
-(end - Date.now()) /1000
+
+(end-Date.now())/1000
+
 );
 
 
 
+if(s<=0){
 
 
-if(remain <=0){
-
-
-
-clearInterval(timer);
-
+clearInterval(t);
 
 
 document.getElementById("timer")
-.innerHTML =
-"00:00:00";
-
-
-
-document.getElementById("status")
-.innerHTML =
-"Mining Completed 🎉";
-
+.innerHTML="Finished";
 
 
 return;
@@ -356,95 +235,18 @@ return;
 
 
 
+let h=Math.floor(s/3600);
 
-let h =
-Math.floor(remain/3600);
+let m=Math.floor((s%3600)/60);
 
-
-
-let m =
-Math.floor(
-(remain%3600)/60
-);
-
-
-
-let s =
-remain%60;
+let sec=s%60;
 
 
 
 document.getElementById("timer")
-.innerHTML =
+.innerHTML=
 
-String(h).padStart(2,"0")
-+
-":"
-+
-String(m).padStart(2,"0")
-+
-":"
-+
-String(s).padStart(2,"0");
-
-
-
-
-
-
-// محاسبه درآمد لحظه‌ای
-
-
-
-let start =
-localStorage.getItem("mineStart");
-
-
-
-let passed =
-(Date.now()-start)
-/
-3600000;
-
-
-
-let earned =
-passed * miningRate;
-
-
-
-
-
-let balance =
-Number(
-localStorage.getItem("balance")
-||
-0
-);
-
-
-
-balance =
-balance + earned;
-
-
-
-localStorage.setItem(
-
-"balance",
-
-balance.toFixed(6)
-
-);
-
-
-
-document.getElementById("balance")
-.innerHTML =
-
-balance.toFixed(6);
-
-
+h+":"+m+":"+sec;
 
 
 
@@ -458,43 +260,143 @@ balance.toFixed(6);
 
 
 
-window.onload=function(){
+
+function claim(){
 
 
 
-let balance =
-localStorage.getItem("balance")
-||
-0;
+fetch("/api/claim",{
 
+
+method:"POST",
+
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+id:user.id
+
+})
+
+
+})
+
+.then(r=>r.json())
+
+.then(data=>{
+
+
+alert(
+
+data.success ?
+
+"Reward Added "+data.reward+" SILK"
+
+:
+
+data.message
+
+);
+
+
+
+load();
+
+
+});
+
+
+}
+
+
+
+
+
+
+function load(){
+
+
+
+fetch("/api/user/"+user.id)
+
+.then(r=>r.json())
+
+.then(data=>{
 
 
 document.getElementById("balance")
-.innerHTML =
-balance;
+.innerHTML=data.balance;
+
+
+
+});
 
 
 
 
+fetch("/api/users")
 
-let end =
-localStorage.getItem("mineEnd");
+.then(r=>r.json())
 
-
-
-if(end && end > Date.now()){
+.then(data=>{
 
 
-startTimer();
+document.getElementById("users")
+.innerHTML=data.users;
 
+
+
+let rate;
+
+
+
+if(data.users<10000){
+
+rate=2;
+
+}
+
+else if(data.users<100000){
+
+rate=1.2;
+
+}
+
+else if(data.users<1000000){
+
+rate=0.5;
+
+}
+
+else{
+
+rate=0.1;
 
 }
 
 
 
+document.getElementById("rate")
+.innerHTML=
+
+rate+" SILK / Hour";
+
+
+
+});
+
+
+
 }
 
 
+load();
 
 
 
