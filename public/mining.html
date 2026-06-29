@@ -7,7 +7,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
 <title>
 Silkcoin Mining
 </title>
@@ -31,54 +30,21 @@ Silkcoin Mining
 
 
 <button onclick="location.href='index.html'">
-
 🏠
-
 </button>
 
 
 <h2>
-
 ⛏ Mining
-
 </h2>
 
 
 <button onclick="location.href='wallet.html'">
-
 💰
-
 </button>
 
 
 </div>
-
-
-
-
-
-<div class="coin-box">
-
-
-<img src="https://cdn-icons-png.flaticon.com/512/600/600923.png">
-
-
-<h1>
-
-<span id="balance">
-
-0
-
-</span>
-
-SILK
-
-</h1>
-
-
-</div>
-
-
 
 
 
@@ -95,16 +61,12 @@ SILK
 
 
 <h2 id="timer">
-
 24:00:00
-
 </h2>
 
 
 <p>
-
 Mining
-
 </p>
 
 
@@ -117,12 +79,12 @@ Mining
 
 
 
+
 <h2>
 
-Mined:
+🪙
 
 <span id="mined">
-
 0
 
 </span>
@@ -130,6 +92,7 @@ Mined:
 SILK
 
 </h2>
+
 
 
 
@@ -142,7 +105,8 @@ Ready
 
 
 
-<button onclick="startMining()">
+
+<button onclick="startMining()" id="startBtn">
 
 🚀 Start Mining
 
@@ -159,7 +123,7 @@ Ready
 
 
 
-<div class="rate">
+<div class="card">
 
 
 <h3>
@@ -176,18 +140,6 @@ Network Rate
 </h2>
 
 
-<p>
-
-Users:
-
-<span id="users">
-
-0
-
-</span>
-
-</p>
-
 
 </div>
 
@@ -201,37 +153,25 @@ Users:
 
 
 <button onclick="location.href='index.html'">
-
 🏠
-
 </button>
-
 
 
 <button>
-
 ⛏
-
 </button>
-
 
 
 <button onclick="location.href='spin.html'">
-
 🎡
-
 </button>
-
 
 
 <button onclick="location.href='wallet.html'">
-
 💰
-
 </button>
 
 
-
 </div>
 
 
@@ -239,6 +179,7 @@ Users:
 
 
 </div>
+
 
 
 
@@ -266,9 +207,9 @@ location.href="login.html";
 
 
 
+let timer;
 
 
-let interval;
 
 let rate=0;
 
@@ -278,7 +219,8 @@ let rate=0;
 
 
 
-function load(){
+
+function loadMining(){
 
 
 
@@ -290,25 +232,15 @@ fetch("/api/user/"+user.id)
 
 
 
-document.getElementById("balance")
-.innerHTML=
-
-Number(data.balance)
-.toFixed(4);
-
-
-
-
-
-if(data.mining_end >
-
-Date.now()){
+if(data.mining_end > Date.now()){
 
 
 document.getElementById("status")
-.innerHTML=
+.innerHTML="Mining Active";
 
-"Mining Active";
+
+document.getElementById("startBtn")
+.disabled=true;
 
 
 runTimer(
@@ -323,72 +255,17 @@ data.mining_start
 
 }
 
-
-
 else{
 
 
 document.getElementById("status")
-.innerHTML=
-
-"Ready";
+.innerHTML="Ready";
 
 
 }
 
 
-
 });
-
-
-
-
-
-fetch("/api/users")
-
-.then(r=>r.json())
-
-.then(data=>{
-
-
-
-let users=data.total;
-
-
-
-document.getElementById("users")
-.innerHTML=users;
-
-
-
-if(users<10000)
-
-rate=2;
-
-else if(users<100000)
-
-rate=1.2;
-
-else if(users<1000000)
-
-rate=.5;
-
-else
-
-rate=.1;
-
-
-
-
-document.getElementById("rate")
-.innerHTML=
-
-rate+" SILK/H";
-
-
-
-});
-
 
 
 
@@ -414,19 +291,13 @@ fetch("/api/user/"+user.id)
 
 
 
-// جلوگیری از ریست
+// اگر فعال است دوباره شروع نکن
 
 
 if(data.mining_end > Date.now()){
 
 
-runTimer(
-
-data.mining_end,
-
-data.mining_start
-
-);
+alert("Mining already active");
 
 
 return;
@@ -462,10 +333,17 @@ id:user.id
 
 })
 
-
 .then(r=>r.json())
 
 .then(data=>{
+
+
+document.getElementById("startBtn")
+.disabled=true;
+
+
+document.getElementById("status")
+.innerHTML="Mining Active";
 
 
 runTimer(
@@ -475,6 +353,7 @@ data.end,
 Date.now()
 
 );
+
 
 
 });
@@ -500,15 +379,15 @@ function runTimer(end,start){
 
 
 
-clearInterval(interval);
+clearInterval(timer);
 
 
 
-interval=setInterval(()=>{
+timer=setInterval(()=>{
 
 
 
-let sec=
+let seconds=
 
 Math.floor(
 
@@ -519,40 +398,42 @@ Math.floor(
 
 
 
-if(sec<=0){
+if(seconds<=0){
 
 
-clearInterval(interval);
+clearInterval(timer);
 
 
 document.getElementById("status")
-.innerHTML=
-
-"Finished";
+.innerHTML="Finished";
 
 
 return;
-
 
 }
 
 
 
 
+let h=
 
-let h=Math.floor(sec/3600);
+Math.floor(seconds/3600);
 
 
-let m=Math.floor(
 
-(sec%3600)/60
+let m=
+
+Math.floor(
+
+(seconds%3600)/60
 
 );
 
 
+
 let s=
 
-sec%60;
+seconds%60;
 
 
 
@@ -569,7 +450,9 @@ h+":"+m+":"+s;
 
 let hours=
 
-(Date.now()-start)/3600000;
+(Date.now()-start)
+
+/3600000;
 
 
 
@@ -586,7 +469,6 @@ mined.toFixed(5);
 
 
 
-
 },1000);
 
 
@@ -598,12 +480,70 @@ mined.toFixed(5);
 
 
 
+function loadRate(){
 
-load();
+
+
+fetch("/api/users")
+
+
+.then(r=>r.json())
+
+
+.then(data=>{
+
+
+
+let users=data.total;
+
+
+
+if(users<10000)
+
+rate=2;
+
+
+else if(users<100000)
+
+rate=1.2;
+
+
+else if(users<1000000)
+
+rate=.5;
+
+
+else
+
+rate=.1;
+
+
+
+
+document.getElementById("rate")
+.innerHTML=
+
+rate+" SILK/H";
+
+
+
+});
+
+
+
+}
+
+
+
+
+loadRate();
+
+loadMining();
 
 
 
 </script>
+
 
 
 </body>
