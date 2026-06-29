@@ -16,23 +16,15 @@ localStorage.getItem("device_id");
 
 if(!device_id){
 
+    device_id =
+    crypto.randomUUID();
 
-device_id =
-crypto.randomUUID();
-
-
-
-localStorage.setItem(
-
-"device_id",
-
-device_id
-
-);
-
+    localStorage.setItem(
+        "device_id",
+        device_id
+    );
 
 }
-
 
 
 
@@ -42,84 +34,67 @@ device_id
 function login(){
 
 
+    if(!tg.initDataUnsafe.user){
 
-if(!tg.initDataUnsafe.user){
+        document.getElementById("error")
+        .innerHTML =
+        "Open from Telegram";
 
+        return;
 
-document.getElementById("error")
-.innerHTML =
-"Open from Telegram";
-
-
-return;
-
-}
+    }
 
 
 
-
-
-user_id =
-tg.initDataUnsafe.user.id;
-
+    user_id =
+    tg.initDataUnsafe.user.id;
 
 
 
+    fetch(
 
-fetch(
+    "/api/login?id="+user_id+
+    "&device="+device_id
 
-"/api/login?id="+user_id+
-
-"&device="+device_id
-
-)
+    )
 
 
-
-.then(r=>r.json())
-
-
-.then(data=>{
+    .then(r=>r.json())
 
 
-
-if(data.error){
-
-
-document.getElementById("error")
-.innerHTML=data.error;
+    .then(data=>{
 
 
-return;
+        if(data.error){
 
 
-}
+            document.getElementById("error")
+            .innerHTML=data.error;
+
+
+            return;
+
+        }
 
 
 
-
-
-document.getElementById("login")
-.classList.add("hide");
-
-
-
-document.getElementById("dashboard")
-.classList.remove("hide");
+        document.getElementById("login")
+        .classList.add("hide");
 
 
 
-
-loadUser();
-
-
-
-});
+        document.getElementById("dashboard")
+        .classList.remove("hide");
 
 
+
+        loadUser();
+
+
+
+    });
 
 }
-
 
 
 
@@ -130,7 +105,6 @@ loadUser();
 
 
 function loadUser(){
-
 
 
 fetch(
@@ -148,14 +122,12 @@ fetch(
 
 
 document.getElementById("wallet")
-.innerHTML =
-
-data.wallet;
+.innerHTML=data.wallet;
 
 
 
 document.getElementById("balance")
-.innerHTML =
+.innerHTML=
 
 data.balance+" SCN";
 
@@ -194,12 +166,89 @@ fetch(
 
 
 document.getElementById("mineMsg")
-.innerHTML =
+.innerHTML=
 
 "⛏ "+data.message;
 
 
+
+startTimer();
+
+
+
 });
+
+
+}
+
+
+
+
+
+
+
+
+function startTimer(){
+
+
+
+let time = 24*60*60;
+
+
+
+let timer =
+
+setInterval(()=>{
+
+
+let h =
+Math.floor(time/3600);
+
+
+
+let m =
+Math.floor(
+(time%3600)/60
+);
+
+
+
+let s =
+time%60;
+
+
+
+document.getElementById("mineMsg")
+.innerHTML =
+
+"⛏ Mining: "
++h+"h "
++m+"m "
++s+"s";
+
+
+
+time--;
+
+
+
+if(time<0){
+
+
+clearInterval(timer);
+
+
+
+document.getElementById("mineMsg")
+.innerHTML=
+
+"✅ Claim Reward";
+
+
+}
+
+
+},1000);
 
 
 
@@ -218,15 +267,12 @@ function spin(){
 
 
 let wheel =
-
 document.querySelector(".wheel");
 
 
 
-wheel.style.animation=
-
+wheel.style.animation =
 "spin 1s linear";
-
 
 
 
@@ -247,15 +293,17 @@ fetch(
 document.getElementById("spinMsg")
 .innerHTML=
 
-"🎉 Won "+data.reward+" SCN";
+"🎉 Won "
++data.reward+
+" SCN";
 
 
 
 loadUser();
 
 
-});
 
+});
 
 
 }
