@@ -1,12 +1,11 @@
-const express = require("express");
+const express=require("express");
 
-const path = require("path");
+const path=require("path");
 
-const db = require("./database");
+const db=require("./database");
 
 
-const app = express();
-
+const app=express();
 
 
 app.use(express.json());
@@ -25,15 +24,22 @@ path.join(__dirname,"public")
 
 
 
+// REGISTER
 
-// Register
 
 app.post("/api/register",(req,res)=>{
 
 
-let username=req.body.username;
+let {
 
-let password=req.body.password;
+username,
+
+password,
+
+recovery
+
+}=req.body;
+
 
 
 
@@ -41,16 +47,20 @@ db.run(
 
 `
 
-INSERT INTO users(username,password)
+INSERT INTO users
 
-VALUES(?,?)
+(username,password,recovery)
+
+VALUES(?,?,?)
 
 `,
 
 [
 username,
-password
+password,
+recovery
 ],
+
 
 
 function(err){
@@ -58,13 +68,15 @@ function(err){
 
 if(err){
 
+
 return res.json({
 
 success:false,
 
-message:"User exists"
+message:"Username already exists"
 
 });
+
 
 }
 
@@ -72,9 +84,7 @@ message:"User exists"
 
 res.json({
 
-success:true,
-
-id:this.lastID
+success:true
 
 });
 
@@ -97,15 +107,21 @@ id:this.lastID
 
 
 
-// Login
+// LOGIN
 
 
 app.post("/api/login",(req,res)=>{
 
 
-let username=req.body.username;
+let {
 
-let password=req.body.password;
+username,
+
+password
+
+}=req.body;
+
+
 
 
 
@@ -119,28 +135,48 @@ FROM users
 
 WHERE username=?
 
-AND password=?
-
 `,
 
-[
-username,
-password
-],
+[username],
+
 
 
 (err,user)=>{
 
 
+
 if(!user){
+
 
 return res.json({
 
-success:false
+success:false,
+
+message:"User not found"
 
 });
 
+
 }
+
+
+
+
+if(user.password !== password){
+
+
+return res.json({
+
+success:false,
+
+message:"Wrong password"
+
+});
+
+
+}
+
+
 
 
 
@@ -156,50 +192,6 @@ user:user
 
 }
 
-);
-
-
-});
-
-
-
-
-
-
-
-
-// Spin information
-
-
-app.get("/api/spin/:id",(req,res)=>{
-
-
-db.get(
-
-`
-
-SELECT spin_count
-
-FROM users
-
-WHERE id=?
-
-`,
-
-[req.params.id],
-
-
-(err,row)=>{
-
-
-res.json({
-
-spins:row.spin_count
-
-});
-
-
-}
 
 
 );
@@ -216,144 +208,21 @@ spins:row.spin_count
 
 
 
-// Watch Ad
+// RECOVERY PASSWORD
 
 
-app.post("/api/spin/ad",(req,res)=>{
+app.post("/api/recover",(req,res)=>{
 
 
-let id=req.body.id;
+let {
 
+username,
 
+recovery,
 
-db.get(
+newPassword
 
-`
-
-SELECT spin_count
-
-FROM users
-
-WHERE id=?
-
-`,
-
-[id],
-
-
-(err,user)=>{
-
-
-if(user.spin_count>=5){
-
-
-return res.json({
-
-success:false,
-
-message:"Limit reached"
-
-});
-
-
-}
-
-
-
-
-res.json({
-
-success:true
-
-});
-
-
-});
-
-
-
-});
-
-
-
-
-
-
-
-
-// Spin reward
-
-
-app.post("/api/spin",(req,res)=>{
-
-
-let id=req.body.id;
-
-
-
-db.get(
-
-`
-
-SELECT *
-
-FROM users
-
-WHERE id=?
-
-`,
-
-[id],
-
-
-
-(err,user)=>{
-
-
-
-if(user.spin_count>=5){
-
-
-return res.json({
-
-success:false,
-
-message:"No spin"
-
-});
-
-
-}
-
-
-
-let rewards=[
-
-0.5,
-
-1,
-
-2,
-
-5,
-
-10
-
-];
-
-
-
-let reward=
-
-rewards[
-
-Math.floor(
-
-Math.random()*rewards.length
-
-)
-
-];
+}=req.body;
 
 
 
@@ -365,48 +234,68 @@ db.run(
 
 UPDATE users
 
-SET
+SET password=?
 
-balance = balance + ?,
+WHERE username=?
 
-spin_count = spin_count + 1
-
-WHERE id=?
+AND recovery=?
 
 `,
 
-[reward,id],
+[
+
+newPassword,
+
+username,
+
+recovery
+
+],
 
 
 
-()=>{
+function(err){
+
+
+
+if(this.changes===0){
+
+
+return res.json({
+
+success:false,
+
+message:"Recovery failed"
+
+});
+
+
+}
+
+
+
 
 
 res.json({
 
 success:true,
 
-reward:reward
+message:"Password changed"
 
 });
 
 
 
+
 }
+
+
 
 );
 
 
 
 });
-
-
-
-});
-
-
-
-
 
 
 
@@ -417,7 +306,7 @@ app.listen(3000,()=>{
 
 console.log(
 
-"Silkcoin Server Running"
+"Silkcoin Running"
 
 );
 
