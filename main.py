@@ -28,36 +28,28 @@ create()
 
 
 
-
-
-# ================= WEB =================
-
-
-
-BASE_DIR = os.path.dirname(
+BASE_DIR=os.path.dirname(
     os.path.abspath(__file__)
 )
 
 
 
-web = Flask(__name__)
+web=Flask(__name__)
 
 
 
 
+
+# ================= WEB =================
 
 
 @web.route("/")
 
 def home():
 
-
     return send_from_directory(
 
-        os.path.join(
-            BASE_DIR,
-            "web"
-        ),
+        os.path.join(BASE_DIR,"web"),
 
         "index.html"
 
@@ -67,18 +59,13 @@ def home():
 
 
 
-
 @web.route("/<path:file>")
 
 def files(file):
 
-
     return send_from_directory(
 
-        os.path.join(
-            BASE_DIR,
-            "web"
-        ),
+        os.path.join(BASE_DIR,"web"),
 
         file
 
@@ -90,9 +77,94 @@ def files(file):
 
 
 
+# ================= LOGIN =================
 
-# ================= API =================
 
+
+@web.route("/api/login")
+
+def login():
+
+
+    uid=request.args.get("id")
+
+    device=request.args.get("device")
+
+
+
+    if not uid or not device:
+
+        return jsonify({
+
+            "error":"Missing data"
+
+        })
+
+
+
+
+    user=get_user(
+
+        int(uid)
+
+    )
+
+
+
+    if user:
+
+
+        if user[2] != device:
+
+
+            return jsonify({
+
+                "error":
+
+                "Another device detected"
+
+            })
+
+
+
+        return jsonify({
+
+            "success":True
+
+        })
+
+
+
+
+
+
+    add_user(
+
+        int(uid),
+
+        "Silk User",
+
+        device
+
+    )
+
+
+
+    return jsonify({
+
+        "success":True
+
+    })
+
+
+
+
+
+
+
+
+
+# ================= USER =================
 
 
 
@@ -101,26 +173,14 @@ def files(file):
 def user():
 
 
-    tg_id = request.args.get("id")
+    uid=request.args.get("id")
 
 
 
-    if not tg_id:
+    data=get_user(
 
+        int(uid)
 
-        return jsonify({
-
-            "error":
-            "No user"
-
-        })
-
-
-
-
-
-    data = get_user(
-        int(tg_id)
     )
 
 
@@ -130,22 +190,19 @@ def user():
 
         return jsonify({
 
-            "wallet":
-            data[2],
+            "wallet":data[3],
 
+            "balance":data[4],
 
-            "balance":
-            data[3]
+            "spins":data[7]
 
         })
 
 
 
-
     return jsonify({
 
-        "error":
-        "Not found"
+        "error":"User not found"
 
     })
 
@@ -157,25 +214,24 @@ def user():
 
 
 
-@web.route("/api/mine")
-
-def mine():
-
-
-    user_id = request.args.get("id")
+# ================= MINING =================
 
 
 
-    if user_id:
+@web.route("/api/mine/start")
+
+def mine_start():
 
 
-        add_balance(
+    uid=request.args.get("id")
 
-            int(user_id),
 
-            5
 
-        )
+    start_mining(
+
+        int(uid)
+
+    )
 
 
 
@@ -183,7 +239,7 @@ def mine():
 
         "message":
 
-        "Mining +5 SCN"
+        "Mining started 24h"
 
     })
 
@@ -195,31 +251,33 @@ def mine():
 
 
 
-@web.route("/api/spin")
+@web.route("/api/mine/claim")
 
-def spin():
-
-
-    user_id = request.args.get("id")
+def mine_claim():
 
 
-    reward = random.randint(
-        1,
-        10
+    uid=request.args.get("id")
+
+
+
+    reward=claim_mining(
+
+        int(uid)
+
     )
 
 
 
-    if user_id:
+    if reward == -1:
 
 
-        add_balance(
+        return jsonify({
 
-            int(user_id),
+            "message":
 
-            reward
+            "Not finished"
 
-        )
+        })
 
 
 
@@ -240,10 +298,174 @@ def spin():
 
 
 
+
+
+# ================= SPIN =================
+
+
+
+@web.route("/api/spin")
+
+def spin():
+
+
+    uid=request.args.get("id")
+
+
+
+    data=get_user(
+
+        int(uid)
+
+    )
+
+
+
+    if data[7] <=0:
+
+
+        return jsonify({
+
+            "message":
+
+            "No spin"
+
+        })
+
+
+
+
+    prize=random.randint(
+
+        1,
+
+        10
+
+    )
+
+
+
+    con=connect()
+
+    cur=con.cursor()
+
+
+
+    cur.execute(
+
+    """
+
+    UPDATE users
+
+    SET balance=balance+?,
+
+    spins=spins-1
+
+    WHERE id=?
+
+    """,
+
+    (
+
+    prize,
+
+    int(uid)
+
+    )
+
+    )
+
+
+
+    con.commit()
+
+    con.close()
+
+
+
+    return jsonify({
+
+        "reward":
+
+        prize
+
+    })
+
+
+
+
+
+
+
+
+
+# ================= AD =================
+
+
+
+@web.route("/api/ad")
+
+def ad():
+
+
+    uid=request.args.get("id")
+
+
+
+    con=connect()
+
+    cur=con.cursor()
+
+
+
+    cur.execute(
+
+    """
+
+    UPDATE users
+
+    SET spins=spins+1
+
+    WHERE id=?
+
+    """,
+
+    (int(uid),)
+
+    )
+
+
+    con.commit()
+
+    con.close()
+
+
+
+    return jsonify({
+
+        "message":
+
+        "+1 Spin"
+
+    })
+
+
+
+
+
+
+
+
+
+
+
+# ================= SERVER =================
+
+
+
 def run_web():
 
-
-    port = int(
+    port=int(
 
         os.environ.get(
 
@@ -256,7 +478,6 @@ def run_web():
     )
 
 
-
     web.run(
 
         host="0.0.0.0",
@@ -264,8 +485,6 @@ def run_web():
         port=port
 
     )
-
-
 
 
 
@@ -286,70 +505,47 @@ threading.Thread(
 
 
 
+
 # ================= BOT =================
 
 
 
+async def start(update:Update,context):
 
-async def start(update:Update, context):
 
-
-    user = update.effective_user
-
+    user=update.effective_user
 
 
 
-    add_user(
+    keyboard=[
 
-        user.id,
+    [
 
-        user.first_name
+    InlineKeyboardButton(
 
-    )
+        "🚀 Open Silkcoin",
 
+        web_app=WebAppInfo(
 
-
-
-
-    keyboard = [
-
-        [
-
-        InlineKeyboardButton(
-
-            "🚀 Open Silkcoin",
-
-            web_app=WebAppInfo(
-
-                url=
-
-                "https://silkcoin-network.onrender.com"
-
-            )
+        url="https://silkcoin-network.onrender.com"
 
         )
 
-        ]
+    )
+
+    ]
 
     ]
 
 
 
-
-
     await update.message.reply_text(
 
-
-        "🚀 Welcome to Silkcoin Network",
-
+        "🚀 Silkcoin Secure",
 
         reply_markup=
 
-        InlineKeyboardMarkup(
-
-            keyboard
-
-        )
+        InlineKeyboardMarkup(keyboard)
 
     )
 
@@ -361,35 +557,29 @@ async def start(update:Update, context):
 
 
 
-app = Application.builder().token(TOKEN).build()
-
+app=Application.builder().token(TOKEN).build()
 
 
 
 app.add_handler(
 
-    CommandHandler(
+CommandHandler(
 
-        "start",
+"start",
 
-        start
-
-    )
+start
 
 )
 
-
-
+)
 
 
 
 print(
 
-    "🚀 Silkcoin Network Running"
+"🚀 Silkcoin Running"
 
 )
-
-
 
 
 
