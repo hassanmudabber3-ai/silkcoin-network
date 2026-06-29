@@ -1,6 +1,6 @@
 import os
 
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv("BOT_TOKEN")
 
 
 MINING_RATES = [
