@@ -5,16 +5,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>
-Silkcoin Network
-</title>
-
+<title>Silkcoin</title>
 
 <link rel="stylesheet" href="style.css">
 
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 
 </head>
 
@@ -22,47 +17,129 @@ Silkcoin Network
 <body>
 
 
-<div class="box">
+<div class="app">
 
 
-<h1>
-🚀 Silkcoin Network
-</h1>
+<h1>🚀 Silkcoin</h1>
 
 
-<div class="card">
+<div class="menu">
 
 
-<h2>
-Wallet
-</h2>
+<button onclick="show('wallet')">
+💰 Wallet
+</button>
 
 
-<p id="wallet">
-Loading...
-</p>
+<button onclick="show('mine')">
+⛏ Mining
+</button>
 
 
-<h2 id="balance">
-0 SCN
-</h2>
+<button onclick="show('spin')">
+🎡 Spin
+</button>
+
+
+<button onclick="show('friends')">
+👥 Friends
+</button>
 
 
 </div>
 
 
 
-<button onclick="mine()">
+
+
+<div id="wallet" class="page">
+
+<h2>Wallet</h2>
+
+<p id="address">
+Loading...
+</p>
+
+
+<h1 id="balance">
+0 SCN
+</h1>
+
+</div>
+
+
+
+
+
+
+
+<div id="mine" class="page hidden">
+
+
+<h2>Mining</h2>
+
+
+<p>
+Mine Silkcoin every day
+</p>
+
+
+<button onclick="startMining()">
+
 ⛏ Start Mining
+
 </button>
+
+
+<h3 id="mineMsg"></h3>
+
+
+</div>
+
+
+
+
+
+
+
+<div id="spin" class="page hidden">
+
+
+<h2>Lucky Wheel 🎡</h2>
 
 
 <button onclick="spin()">
-🎡 Lucky Spin
+
+Spin
+
 </button>
 
 
-<p id="msg"></p>
+<h3 id="spinMsg"></h3>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div id="friends" class="page hidden">
+
+
+<h2>Friends</h2>
+
+<p>
+Invite friends and earn SCN
+</p>
+
+
+</div>
+
+
 
 
 
