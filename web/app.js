@@ -5,14 +5,106 @@ tg.expand();
 
 
 
-let user_id = 1;
+let user_id = null;
 
 
 
-if(tg.initDataUnsafe.user){
+let device_id =
+localStorage.getItem("device_id");
 
-    user_id =
-    tg.initDataUnsafe.user.id;
+
+
+if(!device_id){
+
+    device_id =
+    crypto.randomUUID();
+
+
+    localStorage.setItem(
+        "device_id",
+        device_id
+    );
+
+}
+
+
+
+
+
+
+function login(){
+
+
+
+if(!tg.initDataUnsafe.user){
+
+
+document.getElementById("loginMsg")
+.innerHTML =
+"Open from Telegram";
+
+
+return;
+
+}
+
+
+
+
+user_id =
+tg.initDataUnsafe.user.id;
+
+
+
+
+
+fetch(
+"/api/login?id="+user_id+
+"&device="+device_id
+)
+
+
+
+.then(r=>r.json())
+
+
+
+.then(data=>{
+
+
+if(data.error){
+
+
+document.getElementById("loginMsg")
+.innerHTML=data.error;
+
+
+return;
+
+
+}
+
+
+
+
+
+document.getElementById("login")
+.classList.add("hidden");
+
+
+
+document.getElementById("panel")
+.classList.remove("hidden");
+
+
+
+loadUser();
+
+
+
+});
+
+
 
 }
 
@@ -22,32 +114,13 @@ if(tg.initDataUnsafe.user){
 
 
 
-function show(page){
+
+function loadUser(){
 
 
-    document.querySelectorAll(".page")
-    .forEach(p=>{
-
-        p.classList.add("hidden");
-
-    });
-
-
-
-    document.getElementById(page)
-    .classList.remove("hidden");
-
-
-}
-
-
-
-
-
-
-
-
-fetch("/api/user?id="+user_id)
+fetch(
+"/api/user?id="+user_id
+)
 
 
 .then(r=>r.json())
@@ -56,26 +129,20 @@ fetch("/api/user?id="+user_id)
 .then(data=>{
 
 
-    if(data.wallet){
+document.getElementById("wallet")
+.innerHTML=data.wallet;
 
 
-        document.getElementById("address")
-        .innerHTML =
-        "🆔 "+data.wallet;
+document.getElementById("balance")
+.innerHTML=
+data.balance+" SCN";
 
-
-
-        document.getElementById("balance")
-        .innerHTML =
-        data.balance+" SCN";
-
-
-    }
 
 
 });
 
 
+}
 
 
 
@@ -83,30 +150,34 @@ fetch("/api/user?id="+user_id)
 
 
 
-function startMining(){
+
+
+function startMine(){
+
+
+fetch(
+
+"/api/mine/start?id="+user_id
+
+)
 
 
 
-    fetch("/api/mine?id="+user_id)
+.then(r=>r.json())
 
 
-
-    .then(r=>r.json())
-
-
-    .then(data=>{
+.then(data=>{
 
 
-        document.getElementById("mineMsg")
-        .innerHTML =
-        "⛏ "+data.message;
+document.getElementById("msg")
+.innerHTML=data.message;
 
 
-    });
-
+});
 
 
 }
+
 
 
 
@@ -119,25 +190,30 @@ function startMining(){
 function spin(){
 
 
-    fetch("/api/spin?id="+user_id)
+
+fetch(
+
+"/api/spin?id="+user_id
+
+)
 
 
-    .then(r=>r.json())
+
+.then(r=>r.json())
 
 
-    .then(data=>{
+.then(data=>{
 
 
-        document.getElementById("spinMsg")
-        .innerHTML =
-
-        "🎉 You won "
-        +data.reward+
-        " SCN";
+document.getElementById("msg")
+.innerHTML=
+"🎉 "+data.reward+" SCN";
 
 
-    });
+loadUser();
 
+
+});
 
 
 }
