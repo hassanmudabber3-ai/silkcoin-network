@@ -4,68 +4,175 @@
 
 <head>
 
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta charset="UTF-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+Silkcoin Lucky Spin
+</title>
+
+
 
 <link rel="stylesheet" href="style.css">
 
+
+
+<style>
+
+
+#wheel{
+
+
+width:220px;
+
+height:220px;
+
+border-radius:50%;
+
+margin:auto;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:60px;
+
+transition:4s;
+
+
+background:
+
+conic-gradient(
+
+#ffd700,
+
+#ff6600,
+
+#00ccff,
+
+#9900ff,
+
+#00ff66,
+
+#ffd700
+
+);
+
+
+}
+
+
+
+button{
+
+
+padding:12px;
+
+margin:8px;
+
+}
+
+
+
+</style>
+
+
 </head>
+
 
 
 <body>
 
 
-<div class="app">
+
+<div class="container">
 
 
-<h1>🎡 Lucky Spin</h1>
+<h1>
+
+🎡 Lucky Spin
+
+</h1>
 
 
 
-<div class="wheel-area">
 
-
-<div class="pointer">
-▼
-</div>
-
+<div class="card">
 
 
 <div id="wheel">
 
-
-<div>1</div>
-<div>2</div>
-<div>3</div>
-<div>4</div>
-<div>5</div>
-<div>6</div>
-<div>7</div>
-<div>8</div>
-<div>9</div>
-<div>10</div>
-
+🎁
 
 </div>
 
 
 
-</div>
+
+<h2 id="result">
+
+Ready
+
+</h2>
+
+
+
+
+<h3>
+
+Spin:
+
+<span id="count">
+
+0
+
+</span>
+
+/
+
+5
+
+</h3>
+
+
+
+
+<button onclick="watchAd()">
+
+📺 Watch Ad
+
+</button>
 
 
 
 
 <button onclick="spin()">
 
-🎡 SPIN
+🎡 Spin Now
 
 </button>
 
 
 
-<h2 id="result">
 
-</h2>
+<br>
 
+
+<button onclick="location.href='index.html'">
+
+🏠 Home
+
+</button>
+
+
+
+</div>
 
 
 </div>
@@ -74,13 +181,256 @@
 
 
 
-<div id="confetti"></div>
+
+
+<script>
+
+
+
+let user =
+
+JSON.parse(
+
+localStorage.getItem("user")
+
+);
+
+
+
+if(!user){
+
+location.href="login.html";
+
+}
+
+
+
+
+let canSpin=false;
 
 
 
 
 
-<script src="app.js"></script>
+function watchAd(){
+
+
+
+fetch("/api/spin/ad",{
+
+
+method:"POST",
+
+
+headers:{
+
+
+"Content-Type":"application/json"
+
+
+},
+
+
+body:JSON.stringify({
+
+id:user.id
+
+})
+
+
+})
+
+
+.then(r=>r.json())
+
+.then(data=>{
+
+
+if(data.success){
+
+
+canSpin=true;
+
+
+alert(
+
+"Spin Activated"
+
+);
+
+
+}
+
+
+else{
+
+
+alert(data.message);
+
+}
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+function spin(){
+
+
+
+if(!canSpin){
+
+
+alert(
+
+"Watch Ad First"
+
+);
+
+
+return;
+
+}
+
+
+
+canSpin=false;
+
+
+
+let wheel=
+
+document.getElementById("wheel");
+
+
+
+let rotate=
+
+Math.floor(
+
+Math.random()*360
+
+)
+
++
+1440;
+
+
+
+wheel.style.transform=
+
+"rotate("+rotate+"deg)";
+
+
+
+
+
+
+
+setTimeout(()=>{
+
+
+
+fetch("/api/spin",{
+
+
+method:"POST",
+
+
+headers:{
+
+
+"Content-Type":"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+id:user.id
+
+})
+
+
+})
+
+
+
+.then(r=>r.json())
+
+
+.then(data=>{
+
+
+document.getElementById("result")
+.innerHTML=
+
+"🎉 Won "
++
+data.reward
++
+" SILK";
+
+
+load();
+
+
+});
+
+
+},4000);
+
+
+
+
+}
+
+
+
+
+
+
+function load(){
+
+
+
+fetch("/api/spin/"+user.id)
+
+
+.then(r=>r.json())
+
+
+.then(data=>{
+
+
+document.getElementById("count")
+.innerHTML=
+
+data.spins;
+
+
+
+});
+
+
+
+}
+
+
+
+load();
+
+
+
+</script>
+
 
 
 </body>
