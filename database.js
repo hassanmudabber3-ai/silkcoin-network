@@ -11,13 +11,12 @@ const db = new sqlite3.Database(
 
         }else{
 
-            console.log("Silkcoin Database Connected");
+            console.log("Database Connected");
 
         }
 
     }
 );
-
 
 
 
@@ -38,7 +37,9 @@ balance REAL DEFAULT 0,
 
 mining_start INTEGER DEFAULT 0,
 
-mining_end INTEGER DEFAULT 0
+mining_end INTEGER DEFAULT 0,
+
+spin_count INTEGER DEFAULT 0
 
 )
 
@@ -47,7 +48,6 @@ mining_end INTEGER DEFAULT 0
 
 
 });
-
 
 
 
