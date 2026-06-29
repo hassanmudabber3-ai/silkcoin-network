@@ -50,9 +50,8 @@ def create():
 
 
 
-
-
 def add_user(user_id, name):
+
 
     con = connect()
 
@@ -97,9 +96,8 @@ def add_user(user_id, name):
 
 
 
-
-
 def get_user(user_id):
+
 
     con = connect()
 
@@ -119,3 +117,34 @@ def get_user(user_id):
 
 
     return data
+
+
+
+
+
+
+def add_balance(user_id, amount):
+
+
+    con = connect()
+
+    cur = con.cursor()
+
+
+
+    cur.execute(
+        """
+        UPDATE users
+        SET balance = balance + ?
+        WHERE id=?
+        """,
+        (
+            amount,
+            user_id
+        )
+    )
+
+
+    con.commit()
+
+    con.close()
