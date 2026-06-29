@@ -14,12 +14,11 @@ margin:0;
 
 background:
 
-linear-gradient(135deg,#050014,#30006b);
+linear-gradient(135deg,#050015,#37006b);
 
 color:white;
 
 }
-
 
 
 
@@ -31,105 +30,71 @@ margin:auto;
 
 padding:20px;
 
-}
-
-
-
-.hide{
-
-display:none;
-
-}
-
-
-
-#login{
-
-margin-top:80px;
-
-text-align:center;
-
-background:#ffffff15;
-
-padding:30px;
-
-border-radius:25px;
-
-}
-
-
-
-h1{
-
 text-align:center;
 
 }
-
 
 
 
 button{
 
+
 width:100%;
 
-padding:15px;
-
-margin-top:15px;
-
-border:0;
-
-border-radius:18px;
-
-background:
-
-linear-gradient(90deg,#8b2cff,#00c8ff);
-
-color:white;
-
-font-size:17px;
-
-font-weight:bold;
-
-}
-
-
-
-
-.card,
-.wallet{
-
+padding:16px;
 
 margin-top:20px;
 
-padding:20px;
-
-border-radius:22px;
-
-background:#ffffff12;
-
-text-align:center;
-
-
-}
-
-
-
-
-input{
-
-
-width:100%;
-
-padding:14px;
-
-margin-top:10px;
-
-border-radius:12px;
-
 border:0;
 
+border-radius:20px;
+
+background:
+
+linear-gradient(90deg,#ff00cc,#3333ff);
+
+color:white;
+
+font-size:18px;
+
+font-weight:bold;
+
+
 }
 
+
+
+
+
+.wheel-area{
+
+
+position:relative;
+
+margin-top:40px;
+
+
+}
+
+
+
+.pointer{
+
+
+font-size:40px;
+
+position:absolute;
+
+top:-35px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+z-index:10;
+
+
+}
 
 
 
@@ -137,46 +102,67 @@ border:0;
 #wheel{
 
 
-width:240px;
+width:300px;
 
-height:240px;
+height:300px;
 
-margin:20px auto;
+margin:auto;
 
 border-radius:50%;
 
 overflow:hidden;
 
-display:flex;
 
-flex-wrap:wrap;
+display:grid;
 
-transition:4s;
+grid-template-columns:repeat(5,1fr);
+
+grid-template-rows:repeat(2,1fr);
+
+
+
+border:8px solid white;
+
+
+transition:
+
+transform 5s cubic-bezier(.17,.67,.12,.99);
 
 
 }
-
 
 
 
 #wheel div{
 
 
-width:50%;
-
-height:50%;
-
 display:flex;
-
-align-items:center;
 
 justify-content:center;
 
-background:#8b2cff;
+align-items:center;
+
+
+font-size:20px;
+
+font-weight:bold;
+
+
+background:
+
+linear-gradient(
+
+135deg,
+
+#8e2de2,
+
+#4a00e0
+
+);
+
+
 
 border:1px solid white;
-
-font-size:25px;
 
 
 }
@@ -184,13 +170,65 @@ font-size:25px;
 
 
 
-#spinMsg,
-#mineMsg,
-#sendMsg{
+
+#result{
 
 
-margin-top:15px;
+margin-top:30px;
 
-font-size:17px;
+font-size:28px;
+
+color:#00ffcc;
+
+
+}
+
+
+
+
+.confetti{
+
+
+position:fixed;
+
+width:12px;
+
+height:12px;
+
+top:-20px;
+
+animation:fall 3s linear;
+
+
+}
+
+
+
+@keyframes fall{
+
+
+0%{
+
+transform:
+
+translateY(0)
+
+rotate(0deg);
+
+}
+
+
+100%{
+
+
+transform:
+
+translateY(100vh)
+
+rotate(720deg);
+
+
+}
+
 
 }
