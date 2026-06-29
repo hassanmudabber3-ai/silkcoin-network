@@ -1,6 +1,10 @@
-let balance = Number(localStorage.getItem("balance") || 0);
+let balance =
 
-let miningReward = 10;
+Number(
+
+localStorage.getItem("balance") || 0
+
+);
 
 
 
@@ -8,186 +12,21 @@ let miningReward = 10;
 
 function save(){
 
+
 localStorage.setItem(
+
 "balance",
+
 balance
-);
 
-}
-
-
-
-
-
-function showBalance(){
-
-let b=document.getElementById("balance");
-
-if(b){
-
-b.innerHTML=balance+" SCN";
-
-}
-
-}
-
-
-
-
-
-
-// =================
-// MINING
-// =================
-
-
-function startMining(){
-
-
-let start =
-localStorage.getItem("mineStart");
-
-
-if(!start){
-
-
-localStorage.setItem(
-"mineStart",
-Date.now()
-);
-
-
-localStorage.removeItem(
-"rewardAdded"
 );
 
 
 }
 
 
-document.getElementById("mineMsg")
-.innerHTML =
-"⛏ Mining Started";
 
 
-}
-
-
-
-
-function miningTimer(){
-
-
-let timer =
-document.getElementById("timer");
-
-
-if(!timer)return;
-
-
-
-setInterval(()=>{
-
-
-let start =
-Number(localStorage.getItem("mineStart"));
-
-
-
-if(!start){
-
-return;
-
-}
-
-
-
-let remain =
-86400000-(Date.now()-start);
-
-
-
-if(remain<=0){
-
-
-
-timer.innerHTML="Finished";
-
-
-if(
-!localStorage.getItem("rewardAdded")
-){
-
-
-balance+=miningReward;
-
-
-save();
-
-
-localStorage.setItem(
-"rewardAdded",
-"yes"
-);
-
-
-
-}
-
-
-
-document.getElementById("earned")
-.innerHTML=
-
-"Earned "+miningReward+" SCN";
-
-
-
-return;
-
-
-}
-
-
-
-
-
-let h =
-Math.floor(remain/3600000);
-
-
-
-let m =
-Math.floor(remain%3600000/60000);
-
-
-
-let s =
-Math.floor(remain%60000/1000);
-
-
-
-timer.innerHTML=
-
-h+":"+m+":"+s;
-
-
-
-},1000);
-
-
-
-}
-
-
-
-
-
-
-
-// =================
-// SPIN
-// =================
 
 
 function spin(){
@@ -195,20 +34,29 @@ function spin(){
 
 
 let wheel =
+
 document.getElementById("wheel");
 
 
-let deg =
-Math.floor(Math.random()*3600)+720;
+
+let result =
+
+document.getElementById("result");
 
 
 
-if(wheel){
 
-wheel.style.transform=
-"rotate("+deg+"deg)";
 
-}
+let rotate =
+
+Math.floor(Math.random()*5000)+3000;
+
+
+
+wheel.style.transform =
+
+"rotate("+rotate+"deg)";
+
 
 
 
@@ -216,35 +64,49 @@ wheel.style.transform=
 setTimeout(()=>{
 
 
+
 let rewards=[
+
 1,2,3,4,5,
+
 6,7,8,9,10
+
 ];
 
 
 
 let win =
+
 rewards[
+
 Math.floor(Math.random()*10)
+
 ];
 
 
 
-balance+=win;
+
+balance += win;
+
 
 
 save();
 
 
 
-document.getElementById("result")
-.innerHTML=
 
-"🎉 +"+win+" SCN";
+result.innerHTML =
+
+"🎉 YOU WON "+win+" SCN";
 
 
 
-},4000);
+confetti();
+
+
+
+},5000);
+
 
 
 
@@ -256,88 +118,64 @@ document.getElementById("result")
 
 
 
-// =================
-// WALLET
-// =================
-
-
-function sendCoin(){
+function confetti(){
 
 
 
-let amount=
-
-Number(
-document.getElementById("amount").value
-);
+for(let i=0;i<100;i++){
 
 
 
-let receiver=
-
-document.getElementById("receiver").value;
+let c=document.createElement("div");
 
 
 
-let fee=0.0002;
+c.className="confetti";
 
 
 
-if(amount<=0){
+c.style.left =
 
-return;
-
-}
+Math.random()*100+"vw";
 
 
 
+c.style.background =
 
-if(amount+fee > balance){
+"rgb("+
 
+Math.random()*255+
 
-alert("Not enough balance");
+","+
 
+Math.random()*255+
 
-return;
+","+
 
-}
+Math.random()*255+
 
-
-
-balance -= amount+fee;
-
-
-save();
+")";
 
 
 
-document.getElementById("sendMsg")
-.innerHTML=
 
-"Sent to "+receiver+
-
-"<br>Fee: 0.0002 SCN";
+document.body.appendChild(c);
 
 
 
-showBalance();
+
+setTimeout(()=>{
+
+
+c.remove();
+
+
+},3000);
 
 
 
 }
 
-
-
-
-
-
-
-window.onload=function(){
-
-
-showBalance();
-
-miningTimer();
 
 
 }
