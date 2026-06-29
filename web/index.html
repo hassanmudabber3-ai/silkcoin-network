@@ -5,11 +5,16 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Silkcoin Login</title>
+<title>
+Silkcoin
+</title>
+
 
 <link rel="stylesheet" href="style.css">
 
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 
 </head>
 
@@ -20,18 +25,18 @@
 <div class="app">
 
 
+
 <div id="login">
 
 
 <h1>
-🚀 Silkcoin
+🚀 SILKCOIN
 </h1>
 
 
 <p>
 Secure Mining Network
 </p>
-
 
 
 <button onclick="login()">
@@ -41,7 +46,7 @@ Secure Mining Network
 </button>
 
 
-<p id="loginMsg"></p>
+<p id="error"></p>
 
 
 </div>
@@ -51,7 +56,10 @@ Secure Mining Network
 
 
 
-<div id="panel" class="hidden">
+
+
+<div id="dashboard" class="hide">
+
 
 
 <h1>
@@ -59,12 +67,15 @@ Secure Mining Network
 </h1>
 
 
-<div class="card">
 
 
-<h2>
+
+<div class="wallet">
+
+
+<h3>
 Wallet
-</h2>
+</h3>
 
 
 <p id="wallet">
@@ -72,11 +83,9 @@ Wallet
 </p>
 
 
-
-<h1 id="balance">
+<h2 id="balance">
 0 SCN
-</h1>
-
+</h2>
 
 
 </div>
@@ -85,21 +94,108 @@ Wallet
 
 
 
-<button onclick="startMine()">
-⛏ Start Mining
+
+
+
+
+<div class="card">
+
+
+<h2>
+⛏ Mining
+</h2>
+
+
+<p>
+24 Hour Mining
+</p>
+
+
+
+<button onclick="startMining()">
+
+START MINING
+
 </button>
+
+
+<p id="mineMsg"></p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h2>
+🎡 Lucky Spin
+</h2>
+
+
+
+<div class="wheel">
+
+🎁
+
+</div>
+
 
 
 <button onclick="spin()">
-🎡 Spin
+
+SPIN
+
 </button>
 
 
-<p id="msg"></p>
+<p id="spinMsg"></p>
+
 
 
 </div>
 
+
+
+
+
+
+
+
+
+<div class="menu">
+
+
+<button>
+🏠 Home
+</button>
+
+
+<button>
+💰 Wallet
+</button>
+
+
+<button>
+👥 Friends
+</button>
+
+
+</div>
+
+
+
+
+
+</div>
 
 
 
@@ -111,5 +207,6 @@ Wallet
 
 
 </body>
+
 
 </html>
