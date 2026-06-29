@@ -113,4 +113,13 @@ def run_bot():
 
 
 
-if __name__ == "__
+if __name__ == "__main__":
+
+
+    threading.Thread(
+        target=run_server
+    ).start()
+
+
+
+    run_bot()
