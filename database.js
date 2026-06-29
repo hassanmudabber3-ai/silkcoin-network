@@ -2,20 +2,7 @@ const sqlite3 = require("sqlite3").verbose();
 
 
 const db = new sqlite3.Database(
-    "./silkcoin.db",
-    (err)=>{
-
-        if(err){
-
-            console.log(err);
-
-        }else{
-
-            console.log("Database Connected");
-
-        }
-
-    }
+"./silkcoin.db"
 );
 
 
@@ -33,6 +20,8 @@ username TEXT UNIQUE,
 
 password TEXT,
 
+recovery TEXT,
+
 balance REAL DEFAULT 0,
 
 mining_start INTEGER DEFAULT 0,
@@ -47,8 +36,9 @@ spin_count INTEGER DEFAULT 0
 
 
 
+
 });
 
 
 
-module.exports = db;
+module.exports=db;
