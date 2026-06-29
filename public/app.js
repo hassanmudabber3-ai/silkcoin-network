@@ -1,6 +1,6 @@
-// ===============================
-// Silkcoin Network app.js
-// ===============================
+// =================================
+// Silkcoin Network - app.js
+// =================================
 
 
 let balance = 0;
@@ -8,24 +8,23 @@ let balance = 0;
 let miningTimer = null;
 
 
-// ===============================
+
+// =================================
 // LOGIN
-// ===============================
+// =================================
 
 
 function login(){
 
 
-let userId =
-
-localStorage.getItem("userID");
+let userID = localStorage.getItem("userID");
 
 
 
-if(!userId){
+if(!userID){
 
 
-userId =
+userID =
 
 "USER" +
 
@@ -37,42 +36,57 @@ localStorage.setItem(
 
 "userID",
 
-userId
+userID
 
 );
 
 
+
 }
+
+
+
+
+let wallet =
+
+localStorage.getItem("walletID");
+
+
+
+if(!wallet){
+
+
+
+wallet =
+
+"SILK" + userID;
+
+
+
+localStorage.setItem(
+
+"walletID",
+
+wallet
+
+);
+
+
+
+}
+
 
 
 
 document.getElementById("wallet").innerHTML =
 
-"ID: " + userId;
+wallet;
 
 
 
-createWallet(userId);
+document.getElementById("myID").innerHTML =
 
-
-
-showDashboard();
-
-
-
-}
-
-
-
-
-
-
-// ===============================
-// SHOW APP
-// ===============================
-
-
-function showDashboard(){
+wallet;
 
 
 
@@ -89,6 +103,7 @@ document.getElementById("dashboard")
 loadData();
 
 
+
 startTimerCheck();
 
 
@@ -101,60 +116,9 @@ startTimerCheck();
 
 
 
-
-// ===============================
-// WALLET ID
-// ===============================
-
-
-function createWallet(id){
-
-
-
-let wallet =
-
-localStorage.getItem("walletID");
-
-
-
-if(!wallet){
-
-
-wallet =
-
-"SILK" + id;
-
-
-
-localStorage.setItem(
-
-"walletID",
-
-wallet
-
-);
-
-
-}
-
-
-
-document.getElementById("myID")
-.innerHTML = wallet;
-
-
-
-}
-
-
-
-
-
-
-
-// ===============================
-// SAVE LOAD
-// ===============================
+// =================================
+// LOAD DATA
+// =================================
 
 
 function loadData(){
@@ -177,20 +141,19 @@ JSON.parse(data);
 
 
 
-balance =
-
-save.balance || 0;
+balance = save.balance || 0;
 
 
 
 }
+
 
 
 
 document.getElementById("balance")
 .innerHTML =
 
-balance+" SCN";
+balance + " SCN";
 
 
 
@@ -202,7 +165,13 @@ balance+" SCN";
 
 
 
+// =================================
+// SAVE DATA
+// =================================
+
+
 function saveData(){
+
 
 
 localStorage.setItem(
@@ -211,13 +180,14 @@ localStorage.setItem(
 
 JSON.stringify({
 
-balance:balance
+balance: balance
 
 })
 
 );
 
 
+
 }
 
 
@@ -226,37 +196,37 @@ balance:balance
 
 
 
-
-
-// ===============================
-// 24H MINING
-// ===============================
+// =================================
+// MINING 24H
+// =================================
 
 
 function startMining(){
 
 
 
-let active =
+let mining =
 
 localStorage.getItem("mining");
 
 
 
-if(active=="true"){
+if(mining === "true"){
 
 
 
 document.getElementById("mineMsg")
 .innerHTML =
 
-"⛏ Mining Active";
+"⛏ Mining already running";
+
 
 
 return;
 
 
 }
+
 
 
 
@@ -284,7 +254,7 @@ Date.now()
 document.getElementById("mineMsg")
 .innerHTML =
 
-"⛏ Mining Started 24H";
+"⛏ Mining started";
 
 
 
@@ -303,11 +273,11 @@ function startTimerCheck(){
 
 
 
-if(miningTimer)
+if(miningTimer){
 
 clearInterval(miningTimer);
 
-
+}
 
 
 
@@ -315,13 +285,13 @@ miningTimer = setInterval(()=>{
 
 
 
-let active =
+let mining =
 
 localStorage.getItem("mining");
 
 
 
-if(active!="true")
+if(mining !== "true")
 
 return;
 
@@ -339,11 +309,9 @@ localStorage.getItem("startTime")
 
 
 
-let time =
+let remain =
 
-(24*60*60*1000)
-
--
+86400000 -
 
 (Date.now()-start);
 
@@ -351,7 +319,7 @@ let time =
 
 
 
-if(time<=0){
+if(remain <= 0){
 
 
 
@@ -383,29 +351,45 @@ balance+" SCN";
 document.getElementById("mineMsg")
 .innerHTML =
 
-"✅ Mining +100 SCN";
+"✅ Mining finished +100 SCN";
 
 
 
-}else{
+return;
+
+
+}
+
 
 
 
 let h =
 
-Math.floor(time/3600000);
+Math.floor(remain / 3600000);
 
 
 
 let m =
 
-Math.floor((time%3600000)/60000);
+Math.floor(
+
+(remain % 3600000)
+
+/60000
+
+);
 
 
 
 let s =
 
-Math.floor((time%60000)/1000);
+Math.floor(
+
+(remain % 60000)
+
+/1000
+
+);
 
 
 
@@ -422,10 +406,6 @@ document.getElementById("mineMsg")
 
 
 
-}
-
-
-
 },1000);
 
 
@@ -439,10 +419,9 @@ document.getElementById("mineMsg")
 
 
 
-
-// ===============================
-// SPIN
-// ===============================
+// =================================
+// LUCKY SPIN
+// =================================
 
 
 function spin(){
@@ -455,11 +434,11 @@ document.getElementById("wheel");
 
 
 
-let btn = event.target;
+let button = event.target;
 
 
 
-btn.disabled=true;
+button.disabled = true;
 
 
 
@@ -478,7 +457,22 @@ wheel.style.transform =
 
 
 
-let rewards=[1,5,10,20,50,100];
+
+let rewards = [
+
+1,
+
+5,
+
+10,
+
+20,
+
+50,
+
+100
+
+];
 
 
 
@@ -520,11 +514,15 @@ balance+" SCN";
 document.getElementById("spinMsg")
 .innerHTML =
 
-"🎉 +"+reward+" SCN";
+"🎉 You won "
+
++reward+
+
+" SCN";
 
 
 
-btn.disabled=false;
+button.disabled = false;
 
 
 
@@ -542,9 +540,9 @@ btn.disabled=false;
 
 
 
-// ===============================
+// =================================
 // SEND COIN
-// ===============================
+// =================================
 
 
 function sendCoin(){
@@ -565,13 +563,32 @@ let fee = 0.0002;
 
 
 
-if(amount<=0){
+if(amount <= 0){
+
 
 
 document.getElementById("sendMsg")
 .innerHTML =
 
-"Wrong amount";
+"Invalid amount";
+
+
+
+return;
+
+}
+
+
+
+if(balance < amount + fee){
+
+
+
+document.getElementById("sendMsg")
+.innerHTML =
+
+"Not enough SCN";
+
 
 
 return;
@@ -580,26 +597,12 @@ return;
 }
 
 
-
-if(balance < amount+fee){
-
-
-document.getElementById("sendMsg")
-.innerHTML =
-
-"Not enough balance";
-
-
-return;
-
-
-}
 
 
 
 balance -=
 
-amount+fee;
+(amount + fee);
 
 
 
@@ -617,10 +620,75 @@ balance+" SCN";
 document.getElementById("sendMsg")
 .innerHTML =
 
-"✅ Sent "+amount+
+"✅ Sent "
 
-" SCN<br>Fee: "+fee;
++amount+
+
+" SCN"
+
++
+
+"<br>Network fee: "
+
++fee+
+
+" SCN";
 
 
 
-  }
+}
+
+
+
+
+
+
+
+// =================================
+// REFERRAL
+// =================================
+
+
+function loadReferral(){
+
+
+
+let wallet =
+
+localStorage.getItem("walletID");
+
+
+
+if(document.getElementById("refLink")){
+
+
+
+document.getElementById("refLink")
+.innerHTML =
+
+"https://t.me/SilkcoinBot?start="
+
++
+
+wallet;
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+setTimeout(()=>{
+
+
+loadReferral();
+
+
+},1000);
