@@ -1,6 +1,7 @@
 let balance = 0;
 
-let spinChance = 0;
+let chances = 0;
+
 
 
 
@@ -16,7 +17,8 @@ document.getElementById("dashboard")
 
 
 
-let wallet = localStorage.getItem("wallet");
+let wallet =
+localStorage.getItem("wallet");
 
 
 
@@ -38,27 +40,17 @@ wallet
 
 
 document.getElementById("wallet")
-.innerHTML = wallet;
+.innerHTML=wallet;
 
 
 
 balance =
-
-Number(
-
-localStorage.getItem("balance") || 0
-
-);
+Number(localStorage.getItem("balance") || 0);
 
 
 
-spinChance =
-
-Number(
-
-localStorage.getItem("spinChance") || 0
-
-);
+chances =
+Number(localStorage.getItem("chances") || 0);
 
 
 
@@ -66,6 +58,8 @@ update();
 
 
 }
+
+
 
 
 
@@ -82,12 +76,7 @@ balance+" SCN";
 
 document.getElementById("spinMsg")
 .innerHTML =
-
-"🎡 Chances: "
-
-+spinChance+
-
-"/5";
+"Chances: "+chances+"/5";
 
 
 }
@@ -96,51 +85,37 @@ document.getElementById("spinMsg")
 
 
 
-// دیدن تبلیغ و گرفتن شانس
 
 
 function watchAd(){
 
 
-if(spinChance >=5){
+if(chances>=5){
 
-
-alert("Maximum 5 spins reached");
+alert("Maximum 5 spins");
 
 return;
-
 
 }
 
 
 
-alert(
-"📺 Watching Advertisement..."
-);
-
+alert("📺 Watching Ad...");
 
 
 setTimeout(()=>{
 
 
-spinChance++;
+chances++;
 
 
 localStorage.setItem(
-"spinChance",
-spinChance
+"chances",
+chances
 );
-
 
 
 update();
-
-
-
-alert(
-"🎉 You received 1 Spin Chance"
-);
-
 
 
 },2000);
@@ -154,56 +129,34 @@ alert(
 
 
 
+
 function spin(){
 
 
-if(spinChance<=0){
+if(chances<=0){
 
-
-alert(
-"First watch advertisement"
-);
-
+alert("Watch ad first");
 
 return;
-
 
 }
 
 
 
-spinChance--;
-
-
-
-localStorage.setItem(
-"spinChance",
-spinChance
-);
-
-
-
+chances--;
 
 
 let wheel =
 document.getElementById("wheel");
 
 
-
-let rotate =
-
-Math.floor(
-
-Math.random()*3600
-
-)+720;
+let deg =
+Math.floor(Math.random()*3000)+720;
 
 
 
 wheel.style.transform =
-
-"rotate("+rotate+"deg)";
-
+"rotate("+deg+"deg)";
 
 
 
@@ -212,26 +165,17 @@ wheel.style.transform =
 setTimeout(()=>{
 
 
-
 let rewards=[1,5,10,20,50,100];
 
 
-
 let win =
-
 rewards[
-
-Math.floor(
-
-Math.random()*rewards.length
-
-)
-
+Math.floor(Math.random()*rewards.length)
 ];
 
 
 
-balance += win;
+balance+=win;
 
 
 
@@ -242,18 +186,19 @@ balance
 
 
 
-document.getElementById("spinMsg")
-.innerHTML =
-
-"🎉 You won "
-
-+win+
-
-" SCN";
+localStorage.setItem(
+"chances",
+chances
+);
 
 
 
 update();
+
+
+alert(
+"🎉 You won "+win+" SCN"
+);
 
 
 
@@ -269,67 +214,40 @@ update();
 
 
 
+
+
 function startMining(){
 
 
 
-let start =
-
-localStorage.getItem(
-"mineStart"
-);
+let active =
+localStorage.getItem("mining");
 
 
 
-if(start){
-
-
-let now = Date.now();
-
-
-let passed = now - Number(start);
-
-
-
-let hours =
-
-passed /
-
-(1000*60*60);
-
-
-
-if(hours <24){
+if(active){
 
 
 document.getElementById("mineMsg")
 .innerHTML=
-
 "⛏ Mining Active";
 
+
 return;
-
-
-}
-
 
 }
 
 
 
 localStorage.setItem(
-
-"mineStart",
-
+"mining",
 Date.now()
-
 );
 
 
 
 document.getElementById("mineMsg")
 .innerHTML=
-
 "⛏ Mining Started 24H";
 
 
@@ -341,31 +259,25 @@ document.getElementById("mineMsg")
 
 
 
+
 function sendCoin(){
 
 
 
-let receiver =
-
-document.getElementById("receiver").value;
-
-
-
 let amount =
-
 Number(
-
 document.getElementById("amount").value
-
 );
 
 
 
-let fee = 0.0002;
+let fee=0.0002;
 
 
 
-if(amount <=0){
+if(amount+fee > balance){
+
+alert("Not enough SCN");
 
 return;
 
@@ -373,13 +285,23 @@ return;
 
 
 
-if(amount + fee > balance){
+balance -= amount+fee;
 
 
-alert("Not enough balance");
+
+localStorage.setItem(
+"balance",
+balance
+);
 
 
-return;
+
+document.getElementById("sendMsg")
+.innerHTML=
+"Sent. Fee: 0.0002 SCN";
+
+
+update();
 
 
 }
