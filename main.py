@@ -1,11 +1,9 @@
 import os
 import threading
-import asyncio
 
 from flask import Flask
 
 from telegram import (
-    Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     WebAppInfo
@@ -13,15 +11,14 @@ from telegram import (
 
 from telegram.ext import (
     Application,
-    CommandHandler,
-    ContextTypes
+    CommandHandler
 )
 
 
 
-# =====================
-# Render Environment
-# =====================
+# ======================
+# SETTINGS
+# ======================
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
@@ -32,9 +29,9 @@ WEB_APP_URL = os.environ.get(
 
 
 
-# =====================
-# Flask Server
-# =====================
+# ======================
+# WEB SERVER (RENDER)
+# ======================
 
 server = Flask(__name__)
 
@@ -47,7 +44,8 @@ def home():
 
 
 
-def run_server():
+def run_web():
+
 
     port = int(
         os.environ.get(
@@ -56,20 +54,26 @@ def run_server():
         )
     )
 
+
     server.run(
+
         host="0.0.0.0",
+
         port=port
+
     )
 
 
 
 
 
-# =====================
-# Telegram Bot
-# =====================
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# ======================
+# TELEGRAM BOT
+# ======================
+
+
+async def start(update, context):
 
 
     keyboard = [
@@ -93,12 +97,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
 
+
     await update.message.reply_text(
 
         "💎 Silkcoin Network\n\n"
         "Welcome 🚀\n\n"
         "Start mining SILK now.\n\n"
-        "Click below:",
+        "Click below to open:",
 
         reply_markup=InlineKeyboardMarkup(
             keyboard
@@ -111,8 +116,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
-
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def help_command(update, context):
 
 
     await update.message.reply_text(
@@ -127,8 +131,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
-
-async def run_bot():
+def run_bot():
 
 
     application = Application.builder().token(
@@ -142,8 +145,11 @@ async def run_bot():
     application.add_handler(
 
         CommandHandler(
+
             "start",
+
             start
+
         )
 
     )
@@ -153,8 +159,11 @@ async def run_bot():
     application.add_handler(
 
         CommandHandler(
+
             "help",
+
             help_command
+
         )
 
     )
@@ -162,43 +171,43 @@ async def run_bot():
 
 
     print(
+
         "🪙 Silkcoin Telegram Bot Started"
+
     )
 
 
 
-    await application.initialize()
-
-    await application.start()
-
-    await application.updater.start_polling()
-
-
-
-    await asyncio.Event().wait()
+    application.run_polling()
 
 
 
 
 
 
-# =====================
-# Start
-# =====================
+# ======================
+# START
+# ======================
 
 if __name__ == "__main__":
 
 
     threading.Thread(
 
-        target=run_server
+        target=run_web,
+
+        daemon=True
 
     ).start()
 
 
 
-    asyncio.run(
+    print(
 
-        run_bot()
+        "🌐 Web Server Started"
 
     )
+
+
+
+    run_bot()
