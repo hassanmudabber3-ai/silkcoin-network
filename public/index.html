@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
@@ -7,25 +7,80 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Silkcoin Network</title>
+<title>
+Silkcoin Network
+</title>
+
 
 <link rel="stylesheet" href="style.css">
 
-</head>
 
+</head>
 
 
 <body>
 
 
-
-<div class="container">
-
+<div class="app">
 
 
-<h1>
-🪙 Silkcoin Network
+
+<div class="topbar">
+
+
+<h2>
+🪙 Silkcoin
+</h2>
+
+
+<button onclick="changeLang()">
+
+🌐
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="coin-box">
+
+
+<img src="https://cdn-icons-png.flaticon.com/512/600/600923.png">
+
+
+<h1 id="balance">
+
+0
+
 </h1>
+
+
+<p>
+
+SILK Balance
+
+</p>
+
+
+
+<h3 id="welcome">
+
+Welcome
+
+</h3>
+
+
+
+</div>
+
+
+
 
 
 
@@ -33,50 +88,19 @@
 <div class="card">
 
 
+<button class="main-btn"
 
-<h2 id="welcome">
+onclick="location.href='mining.html'">
 
-Welcome
-
-</h2>
-
-
-
-<h3>
-
-Balance:
-
-</h3>
-
-
-<h1>
-
-<span id="balance">
-
-0
-
-</span>
-
-SILK
-
-</h1>
-
-
-
-
-<button onclick="location.href='mining.html'">
-
-⛏ Mining
+⛏ Start Mining
 
 </button>
 
 
 
-<br><br>
+<button class="main-btn"
 
-
-
-<button onclick="location.href='spin.html'">
+onclick="location.href='spin.html'">
 
 🎡 Lucky Spin
 
@@ -84,11 +108,9 @@ SILK
 
 
 
-<br><br>
+<button class="main-btn"
 
-
-
-<button onclick="location.href='wallet.html'">
+onclick="location.href='wallet.html'">
 
 💰 Wallet
 
@@ -96,13 +118,95 @@ SILK
 
 
 
-<br><br>
+</div>
 
 
 
-<button onclick="logout()">
 
-🚪 Logout
+
+
+
+
+<div class="card">
+
+
+<h3>
+
+Network
+
+</h3>
+
+
+<p>
+
+👥 Users:
+
+<span id="users">
+
+0
+
+</span>
+
+</p>
+
+
+
+<p>
+
+⚡ Mining Rate:
+
+<span id="rate">
+
+0
+
+</span>
+
+SILK/H
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="bottom-nav">
+
+
+
+<button onclick="location.href='index.html'">
+
+🏠
+
+</button>
+
+
+
+<button onclick="location.href='mining.html'">
+
+⛏
+
+</button>
+
+
+
+<button onclick="location.href='spin.html'">
+
+🎡
+
+</button>
+
+
+
+<button onclick="location.href='wallet.html'">
+
+💰
 
 </button>
 
@@ -113,6 +217,7 @@ SILK
 
 
 
+
 </div>
 
 
@@ -120,8 +225,11 @@ SILK
 
 
 
-<script>
 
+
+
+
+<script>
 
 
 
@@ -137,8 +245,6 @@ localStorage.getItem("user")
 
 
 
-// اگر وارد نشده
-
 if(!user){
 
 
@@ -147,59 +253,93 @@ location.href="login.html";
 
 }
 
-else{
+
+
 
 
 document.getElementById("welcome")
-.innerHTML =
+.innerHTML=
 
-
-"Welcome "
+"Hello "
 +
-user.username
-+
-" 👋";
-
-
-
-
-loadUser();
-
-
-
-}
+user.username;
 
 
 
 
 
 
-function loadUser(){
+function load(){
 
 
 
-fetch(
-
-"/api/user/"
-+
-user.id
-
-)
+fetch("/api/user/"+user.id)
 
 
+.then(r=>r.json())
 
-.then(res=>res.json())
 
+.then(data=>{
+
+
+document.getElementById("balance")
+.innerHTML=
+
+Number(data.balance)
+.toFixed(4);
+
+
+
+});
+
+
+
+
+
+
+fetch("/api/users")
+
+
+.then(r=>r.json())
 
 
 .then(data=>{
 
 
 
-document.getElementById("balance")
-.innerHTML =
+let rate;
 
-data.balance;
+
+
+if(data.users < 10000)
+
+rate=2;
+
+
+else if(data.users <100000)
+
+rate=1.2;
+
+
+else if(data.users <1000000)
+
+rate=0.5;
+
+
+else
+
+rate=0.1;
+
+
+
+
+document.getElementById("users")
+.innerHTML=data.users;
+
+
+
+document.getElementById("rate")
+.innerHTML=rate;
 
 
 
@@ -215,14 +355,31 @@ data.balance;
 
 
 
-function logout(){
+function changeLang(){
 
 
 
-localStorage.removeItem("user");
+let title =
+
+document.querySelector("h2");
 
 
-location.href="login.html";
+
+if(title.innerHTML.includes("Silkcoin")){
+
+
+title.innerHTML="سیلک کوین";
+
+
+}
+
+else{
+
+
+title.innerHTML="🪙 Silkcoin";
+
+
+}
 
 
 
@@ -232,9 +389,12 @@ location.href="login.html";
 
 
 
+
+load();
+
+
+
 </script>
-
-
 
 
 
