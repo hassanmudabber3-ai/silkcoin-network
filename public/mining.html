@@ -7,13 +7,17 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
 <title>
 Silkcoin Mining
 </title>
 
+
 <link rel="stylesheet" href="style.css">
 
+
 </head>
+
 
 
 <body>
@@ -22,21 +26,28 @@ Silkcoin Mining
 <div class="app">
 
 
+
 <div class="topbar">
 
 
-<button onclick="history.back()">
-⬅
+<button onclick="location.href='index.html'">
+
+🏠
+
 </button>
 
 
 <h2>
+
 ⛏ Mining
+
 </h2>
 
 
-<button onclick="location.href='index.html'">
-🏠
+<button onclick="location.href='wallet.html'">
+
+💰
+
 </button>
 
 
@@ -63,11 +74,6 @@ Silkcoin Mining
 SILK
 
 </h1>
-
-
-<p>
-Total Balance
-</p>
 
 
 </div>
@@ -129,16 +135,14 @@ SILK
 
 <p id="status">
 
-Ready to mine
+Ready
 
 </p>
 
 
 
 
-<button class="main-btn"
-
-onclick="startMining()">
+<button onclick="startMining()">
 
 🚀 Start Mining
 
@@ -154,24 +158,27 @@ onclick="startMining()">
 
 
 
+
 <div class="rate">
 
 
 <h3>
+
 Network Rate
+
 </h3>
 
 
 <h2 id="rate">
 
-Loading...
+0 SILK/H
 
 </h2>
 
 
 <p>
 
-👥
+Users:
 
 <span id="users">
 
@@ -179,10 +186,7 @@ Loading...
 
 </span>
 
-Users
-
 </p>
-
 
 
 </div>
@@ -227,13 +231,14 @@ Users
 </button>
 
 
-</div>
-
-
-
 
 </div>
 
+
+
+
+
+</div>
 
 
 
@@ -244,9 +249,8 @@ Users
 <script>
 
 
-let user =
 
-JSON.parse(
+let user = JSON.parse(
 
 localStorage.getItem("user")
 
@@ -254,15 +258,21 @@ localStorage.getItem("user")
 
 
 
-let timerID;
+if(!user){
+
+location.href="login.html";
+
+}
 
 
 
-let startTime;
 
 
+let interval;
 
-let miningRate=0;
+let rate=0;
+
+
 
 
 
@@ -274,11 +284,10 @@ function load(){
 
 fetch("/api/user/"+user.id)
 
-
 .then(r=>r.json())
 
-
 .then(data=>{
+
 
 
 document.getElementById("balance")
@@ -289,20 +298,47 @@ Number(data.balance)
 
 
 
-if(data.mining_end > Date.now()){
+
+
+if(data.mining_end >
+
+Date.now()){
+
+
+document.getElementById("status")
+.innerHTML=
+
+"Mining Active";
 
 
 runTimer(
+
 data.mining_end,
+
 data.mining_start
+
 );
+
 
 
 }
 
 
-});
 
+else{
+
+
+document.getElementById("status")
+.innerHTML=
+
+"Ready";
+
+
+}
+
+
+
+});
 
 
 
@@ -310,50 +346,44 @@ data.mining_start
 
 fetch("/api/users")
 
-
 .then(r=>r.json())
-
 
 .then(data=>{
 
 
-let rate;
+
+let users=data.total;
 
 
 
-if(data.users < 10000)
+document.getElementById("users")
+.innerHTML=users;
+
+
+
+if(users<10000)
 
 rate=2;
 
-
-else if(data.users < 100000)
+else if(users<100000)
 
 rate=1.2;
 
+else if(users<1000000)
 
-else if(data.users < 1000000)
-
-rate=0.5;
-
+rate=.5;
 
 else
 
-rate=0.1;
+rate=.1;
 
-
-
-miningRate=rate;
 
 
 
 document.getElementById("rate")
 .innerHTML=
 
-rate+" SILK / H";
-
-
-document.getElementById("users")
-.innerHTML=data.users;
+rate+" SILK/H";
 
 
 
@@ -361,7 +391,10 @@ document.getElementById("users")
 
 
 
+
 }
+
+
 
 
 
@@ -370,6 +403,39 @@ document.getElementById("users")
 
 
 function startMining(){
+
+
+
+fetch("/api/user/"+user.id)
+
+.then(r=>r.json())
+
+.then(data=>{
+
+
+
+// جلوگیری از ریست
+
+
+if(data.mining_end > Date.now()){
+
+
+runTimer(
+
+data.mining_end,
+
+data.mining_start
+
+);
+
+
+return;
+
+
+}
+
+
+
 
 
 
@@ -399,7 +465,6 @@ id:user.id
 
 .then(r=>r.json())
 
-
 .then(data=>{
 
 
@@ -415,7 +480,14 @@ Date.now()
 });
 
 
+
+
+});
+
+
+
 }
+
 
 
 
@@ -427,19 +499,16 @@ Date.now()
 function runTimer(end,start){
 
 
-clearInterval(timerID);
+
+clearInterval(interval);
 
 
 
-startTime=start;
+interval=setInterval(()=>{
 
 
 
-timerID=setInterval(()=>{
-
-
-
-let remain=
+let sec=
 
 Math.floor(
 
@@ -449,17 +518,17 @@ Math.floor(
 
 
 
-if(remain<=0){
+
+if(sec<=0){
 
 
-clearInterval(timerID);
-
+clearInterval(interval);
 
 
 document.getElementById("status")
 .innerHTML=
 
-"Mining Finished";
+"Finished";
 
 
 return;
@@ -471,25 +540,20 @@ return;
 
 
 
-let h=
-
-Math.floor(remain/3600);
+let h=Math.floor(sec/3600);
 
 
+let m=Math.floor(
 
-let m=
-
-Math.floor(
-
-(remain%3600)/60
+(sec%3600)/60
 
 );
 
 
-
 let s=
 
-remain%60;
+sec%60;
+
 
 
 
@@ -503,17 +567,15 @@ h+":"+m+":"+s;
 
 
 
+let hours=
 
-let passed=
-
-(Date.now()-startTime)
-/3600000;
+(Date.now()-start)/3600000;
 
 
 
 let mined=
 
-passed * miningRate;
+hours*rate;
 
 
 
@@ -521,6 +583,7 @@ document.getElementById("mined")
 .innerHTML=
 
 mined.toFixed(5);
+
 
 
 
@@ -533,12 +596,14 @@ mined.toFixed(5);
 
 
 
+
+
+
 load();
 
 
 
 </script>
-
 
 
 </body>
