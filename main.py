@@ -1,7 +1,10 @@
 import os
 import threading
 
-from flask import Flask
+from flask import (
+    Flask,
+    send_from_directory
+)
 
 from telegram import (
     InlineKeyboardButton,
@@ -16,10 +19,6 @@ from telegram.ext import (
 
 
 
-# ======================
-# SETTINGS
-# ======================
-
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 WEB_APP_URL = os.environ.get(
@@ -29,23 +28,39 @@ WEB_APP_URL = os.environ.get(
 
 
 
-# ======================
-# WEB SERVER (RENDER)
-# ======================
+# =====================
+# FLASK WEBSITE
+# =====================
 
-server = Flask(__name__)
+server = Flask(
+    __name__,
+    static_folder="public"
+)
+
 
 
 @server.route("/")
-def home():
+def index():
 
-    return "Silkcoin Bot Running"
+    return send_from_directory(
+        "public",
+        "index.html"
+    )
+
+
+
+@server.route("/<path:file>")
+def files(file):
+
+    return send_from_directory(
+        "public",
+        file
+    )
 
 
 
 
 def run_web():
-
 
     port = int(
         os.environ.get(
@@ -67,10 +82,9 @@ def run_web():
 
 
 
-
-# ======================
+# =====================
 # TELEGRAM BOT
-# ======================
+# =====================
 
 
 async def start(update, context):
@@ -82,7 +96,7 @@ async def start(update, context):
 
             InlineKeyboardButton(
 
-                text="🚀 Open Silkcoin Network Coin",
+                "🚀 Open Silkcoin Network Coin",
 
                 web_app=WebAppInfo(
 
@@ -102,8 +116,7 @@ async def start(update, context):
 
         "💎 Silkcoin Network\n\n"
         "Welcome 🚀\n\n"
-        "Start mining SILK now.\n\n"
-        "Click below to open:",
+        "Open your account:",
 
         reply_markup=InlineKeyboardMarkup(
             keyboard
@@ -115,26 +128,10 @@ async def start(update, context):
 
 
 
-
-async def help_command(update, context):
-
-
-    await update.message.reply_text(
-
-        "💎 Silkcoin Help\n\n"
-        "/start - Open Silkcoin"
-
-    )
-
-
-
-
-
-
 def run_bot():
 
 
-    application = Application.builder().token(
+    bot = Application.builder().token(
 
         BOT_TOKEN
 
@@ -142,28 +139,11 @@ def run_bot():
 
 
 
-    application.add_handler(
+    bot.add_handler(
 
         CommandHandler(
-
             "start",
-
             start
-
-        )
-
-    )
-
-
-
-    application.add_handler(
-
-        CommandHandler(
-
-            "help",
-
-            help_command
-
         )
 
     )
@@ -171,23 +151,21 @@ def run_bot():
 
 
     print(
-
         "🪙 Silkcoin Telegram Bot Started"
-
     )
 
 
 
-    application.run_polling()
+    bot.run_polling()
 
 
 
 
 
 
-# ======================
+# =====================
 # START
-# ======================
+# =====================
 
 if __name__ == "__main__":
 
@@ -199,14 +177,6 @@ if __name__ == "__main__":
         daemon=True
 
     ).start()
-
-
-
-    print(
-
-        "🌐 Web Server Started"
-
-    )
 
 
 
