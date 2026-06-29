@@ -1,55 +1,82 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Silkcoin</title>
+<title>Silkcoin Network</title>
 
 <link rel="stylesheet" href="style.css">
 
 </head>
 
-
 <body>
 
 
-<div class="app">
+<div class="container">
 
 
-<h1>💎 SILKCOIN</h1>
+<h1>
+🪙 Silkcoin Network
+</h1>
 
-<p class="center">
-Secure Mining Network
+
+<div class="card">
+
+<h2 id="welcome">
+Welcome
+</h2>
+
+
+<p>
+Your balance:
 </p>
 
 
-<a href="mining.html">
-<button>
-⛏ Mining
+<h1 id="balance">
+0 SILK
+</h1>
+
+
+<button onclick="startMining()">
+⛏ Start Mining
 </button>
-</a>
 
 
-
-<a href="spin.html">
-<button>
+<button onclick="location.href='spin.html'">
 🎡 Lucky Spin
 </button>
-</a>
 
 
-
-<a href="wallet.html">
-<button>
+<button onclick="location.href='wallet.html'">
 💰 Wallet
 </button>
-</a>
+
+
+</div>
+
+
+
+<div class="language">
+
+<button onclick="lang('en')">
+English
+</button>
+
+
+<button onclick="lang('fa')">
+فارسی
+</button>
+
+
+</div>
 
 
 
 </div>
+
+
+<script src="app.js"></script>
 
 
 </body>
