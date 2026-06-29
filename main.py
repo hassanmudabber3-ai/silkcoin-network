@@ -2,11 +2,20 @@ import os
 import threading
 import random
 
+
 from flask import Flask, send_from_directory, jsonify, request
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    WebAppInfo
+)
+
 
 from telegram.ext import *
+
 
 from config import TOKEN
 
@@ -14,14 +23,15 @@ from database import *
 
 
 
+
 create()
+
+
 
 
 
 # ================= WEB =================
 
-
-web = Flask(__name__)
 
 
 BASE_DIR = os.path.dirname(
@@ -30,24 +40,52 @@ BASE_DIR = os.path.dirname(
 
 
 
+web = Flask(__name__)
+
+
+
+
+
+
 @web.route("/")
+
 def home():
 
+
     return send_from_directory(
-        os.path.join(BASE_DIR,"web"),
+
+        os.path.join(
+            BASE_DIR,
+            "web"
+        ),
+
         "index.html"
+
     )
+
+
 
 
 
 
 @web.route("/<path:file>")
+
 def files(file):
 
+
     return send_from_directory(
-        os.path.join(BASE_DIR,"web"),
+
+        os.path.join(
+            BASE_DIR,
+            "web"
+        ),
+
         file
+
     )
+
+
+
 
 
 
@@ -57,18 +95,28 @@ def files(file):
 
 
 
+
 @web.route("/api/user")
+
 def user():
 
 
     tg_id = request.args.get("id")
 
 
+
     if not tg_id:
 
+
         return jsonify({
-            "error":"No id"
+
+            "error":
+            "No user"
+
         })
+
+
+
 
 
     data = get_user(
@@ -82,22 +130,26 @@ def user():
 
         return jsonify({
 
-            "wallet": data[2],
+            "wallet":
+            data[2],
 
-            "balance": data[3],
 
-            "mining": data[4],
-
-            "spins": data[5]
+            "balance":
+            data[3]
 
         })
 
 
+
+
     return jsonify({
 
-        "error":"User not found"
+        "error":
+        "Not found"
 
     })
+
+
 
 
 
@@ -106,15 +158,37 @@ def user():
 
 
 @web.route("/api/mine")
+
 def mine():
+
+
+    user_id = request.args.get("id")
+
+
+
+    if user_id:
+
+
+        add_balance(
+
+            int(user_id),
+
+            5
+
+        )
+
 
 
     return jsonify({
 
         "message":
-        "Mining started"
+
+        "Mining +5 SCN"
 
     })
+
+
+
 
 
 
@@ -122,15 +196,43 @@ def mine():
 
 
 @web.route("/api/spin")
+
 def spin():
+
+
+    user_id = request.args.get("id")
+
+
+    reward = random.randint(
+        1,
+        10
+    )
+
+
+
+    if user_id:
+
+
+        add_balance(
+
+            int(user_id),
+
+            reward
+
+        )
+
+
 
 
     return jsonify({
 
         "reward":
-        random.randint(1,10)
+
+        reward
 
     })
+
+
 
 
 
@@ -140,12 +242,19 @@ def spin():
 
 def run_web():
 
+
     port = int(
+
         os.environ.get(
+
             "PORT",
+
             5000
+
         )
+
     )
+
 
 
     web.run(
@@ -155,6 +264,8 @@ def run_web():
         port=port
 
     )
+
+
 
 
 
@@ -174,7 +285,9 @@ threading.Thread(
 
 
 
+
 # ================= BOT =================
+
 
 
 
@@ -182,6 +295,8 @@ async def start(update:Update, context):
 
 
     user = update.effective_user
+
+
 
 
     add_user(
@@ -194,7 +309,9 @@ async def start(update:Update, context):
 
 
 
-    keyboard=[
+
+
+    keyboard = [
 
         [
 
@@ -204,8 +321,9 @@ async def start(update:Update, context):
 
             web_app=WebAppInfo(
 
-            url=
-            "https://silkcoin-network.onrender.com"
+                url=
+
+                "https://silkcoin-network.onrender.com"
 
             )
 
@@ -217,12 +335,21 @@ async def start(update:Update, context):
 
 
 
+
+
     await update.message.reply_text(
+
 
         "🚀 Welcome to Silkcoin Network",
 
+
         reply_markup=
-        InlineKeyboardMarkup(keyboard)
+
+        InlineKeyboardMarkup(
+
+            keyboard
+
+        )
 
     )
 
@@ -231,7 +358,11 @@ async def start(update:Update, context):
 
 
 
+
+
+
 app = Application.builder().token(TOKEN).build()
+
 
 
 
@@ -249,9 +380,16 @@ app.add_handler(
 
 
 
+
+
+
 print(
+
     "🚀 Silkcoin Network Running"
+
 )
+
+
 
 
 
