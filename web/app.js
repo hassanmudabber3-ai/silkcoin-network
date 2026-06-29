@@ -1,18 +1,15 @@
 // ============================
 // Silkcoin Network App.js
+// 24H Mining System
 // ============================
 
 
 let balance = 0;
-let mining = false;
-let miningTimer = null;
+let miningInterval = null;
 
 
 
-// ============================
 // Telegram Login
-// ============================
-
 
 function login(){
 
@@ -20,24 +17,18 @@ function login(){
 if(window.Telegram && Telegram.WebApp){
 
 
-let user = Telegram.WebApp.initDataUnsafe.user;
+let user =
+Telegram.WebApp.initDataUnsafe.user;
 
 
 if(user){
 
 
 document.getElementById("wallet").innerHTML =
-"TG ID: " + user.id;
+"TG ID: "+user.id;
 
 
 showDashboard();
-
-
-}else{
-
-
-document.getElementById("error").innerHTML =
-"Telegram user not found";
 
 
 }
@@ -59,7 +50,6 @@ document.getElementById("error").innerHTML =
 
 
 
-
 function showDashboard(){
 
 
@@ -74,6 +64,9 @@ document.getElementById("dashboard")
 loadData();
 
 
+startTimerCheck();
+
+
 }
 
 
@@ -82,32 +75,28 @@ loadData();
 
 
 
-// ============================
-// Load Wallet Data
-// ============================
+// Load data
 
 
 function loadData(){
 
 
-let save =
+let data =
 localStorage.getItem("silkcoin");
 
 
+if(data){
 
-if(save){
 
-
-let data =
-JSON.parse(save);
+let save =
+JSON.parse(data);
 
 
 balance =
-data.balance || 0;
+save.balance || 0;
 
 
 }
-
 
 
 document.getElementById("balance")
@@ -123,20 +112,23 @@ balance+" SCN";
 
 
 
-
-// ============================
-// Save Data
-// ============================
+// Save
 
 
-function save(){
+function saveData(){
 
 
 localStorage.setItem(
 "silkcoin",
 JSON.stringify({
 
-balance:balance
+balance:balance,
+
+startTime:
+localStorage.getItem("startTime"),
+
+mining:
+localStorage.getItem("mining")
 
 })
 
@@ -151,23 +143,24 @@ balance:balance
 
 
 
-
-
 // ============================
-// Mining System
+// START 24H MINING
 // ============================
 
 
 function startMining(){
 
 
+let active =
+localStorage.getItem("mining");
 
-if(mining){
+
+if(active=="true"){
 
 
 document.getElementById("mineMsg")
 .innerHTML =
-"⛏ Mining is running";
+"⛏ Mining already running";
 
 
 return;
@@ -177,56 +170,110 @@ return;
 
 
 
-mining=true;
+
+let now =
+Date.now();
 
 
 
-let button =
-event.target;
+localStorage.setItem(
+"startTime",
+now
+);
 
 
 
-button.disabled=true;
+localStorage.setItem(
+"mining",
+"true"
+);
 
 
 
-let seconds=10;
+document.getElementById("mineMsg")
+.innerHTML =
+"⛏ Mining Started 24H";
+
+
+startTimerCheck();
+
+
+}
 
 
 
-let msg =
-document.getElementById("mineMsg");
 
 
 
 
 
-miningTimer =
-setInterval(function(){
+
+// ============================
+// CHECK TIMER
+// ============================
+
+
+function startTimerCheck(){
+
+
+if(miningInterval){
+
+clearInterval(miningInterval);
+
+}
 
 
 
-msg.innerHTML =
-"⛏ Mining... "
-+seconds+
-"s";
+miningInterval =
+setInterval(()=>{
+
+
+let mining =
+localStorage.getItem("mining");
+
+
+if(mining!="true"){
+
+return;
+
+}
 
 
 
-seconds--;
+let start =
+Number(
+localStorage.getItem("startTime")
+);
 
 
 
-if(seconds < 0){
+let now =
+Date.now();
 
 
 
-clearInterval(miningTimer);
+let total =
+24*60*60*1000;
+
+
+
+let remain =
+total - (now-start);
+
+
+
+
+
+if(remain<=0){
+
+
+
+clearInterval(miningInterval);
 
 
 
 let reward =
-Math.floor(Math.random()*20)+1;
+100;
 
 
 
@@ -234,7 +281,14 @@ balance += reward;
 
 
 
-save();
+localStorage.setItem(
+"mining",
+"false"
+);
+
+
+
+saveData();
 
 
 
@@ -244,18 +298,40 @@ balance+" SCN";
 
 
 
-msg.innerHTML =
-"✅ Complete +"
-+reward+
-" SCN";
+document.getElementById("mineMsg")
+.innerHTML =
+"✅ Mining Complete +100 SCN";
+
+
+}else{
 
 
 
-button.disabled=false;
+let hours =
+Math.floor(remain/3600000);
+
+
+let minutes =
+Math.floor(
+(remain%3600000)/60000
+);
 
 
 
-mining=false;
+let seconds =
+Math.floor(
+(remain%60000)/1000
+);
+
+
+
+document.getElementById("mineMsg")
+.innerHTML =
+
+"⛏ Mining "+
+hours+"h "
++minutes+"m "
++seconds+"s";
 
 
 
@@ -264,7 +340,6 @@ mining=false;
 
 
 },1000);
-
 
 
 }
@@ -285,56 +360,21 @@ mining=false;
 function spin(){
 
 
-
-let wheel =
-document.getElementById("wheel");
-
-
-
-wheel.style.transform =
-"rotate("
-+
-(1000 + Math.random()*2000)
-+
-"deg)";
-
-
-
-
-
 let rewards=[
-
-1,
-5,
-10,
-20,
-50,
-100
-
+1,5,10,20,50,100
 ];
-
-
-
-
-setTimeout(function(){
-
 
 
 let reward =
 rewards[
-Math.floor(
-Math.random()*rewards.length
-)
-
+Math.floor(Math.random()*rewards.length)
 ];
-
 
 
 balance += reward;
 
 
-
-save();
+saveData();
 
 
 
@@ -343,17 +383,9 @@ document.getElementById("balance")
 balance+" SCN";
 
 
-
 document.getElementById("spinMsg")
 .innerHTML =
-"🎉 Won "
-+reward+
-" SCN";
-
-
-
-},4000);
-
+"🎉 Won "+reward+" SCN";
 
 
 }
