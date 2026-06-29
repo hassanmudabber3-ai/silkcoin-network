@@ -1,62 +1,416 @@
+<!DOCTYPE html>
 <html>
+
 
 <head>
 
+
+<meta charset="UTF-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+Silkcoin Wallet
+</title>
+
+
+
 <link rel="stylesheet" href="style.css">
 
+
+
 </head>
+
+
 
 
 <body>
 
 
+
 <div class="app">
 
 
-<h1>💰 Wallet</h1>
 
 
-<h2 id="balance">
-0 SCN
+
+
+<div class="topbar">
+
+
+
+<button onclick="history.back()">
+
+⬅
+
+</button>
+
+
+
+<h2>
+
+💰 Wallet
+
 </h2>
 
 
-<input id="to" placeholder="Receiver ID">
 
+<button onclick="location.href='index.html'">
 
-<input id="amount" placeholder="Amount">
-
-
-
-<button onclick="send()">
-
-SEND
+🏠
 
 </button>
 
-
-
-<p id="msg"></p>
-
-
-
-<a href="index.html">
-
-<button>
-
-Home
-
-</button>
-
-</a>
 
 
 </div>
 
 
-<script src="app.js"></script>
+
+
+
+
+
+
+
+<div class="coin-box">
+
+
+<img src="https://cdn-icons-png.flaticon.com/512/600/600923.png">
+
+
+
+<h1 id="balance">
+
+0
+
+</h1>
+
+
+
+<p>
+
+Total SILK
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="card">
+
+
+
+<h3>
+
+Wallet Address
+
+</h3>
+
+
+
+<input id="address"
+
+readonly>
+
+
+
+<button onclick="copyAddress()">
+
+📋 Copy
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+
+Statistics
+
+</h3>
+
+
+
+<p>
+
+⛏ Mining Earned:
+
+<span id="mine">
+
+0
+
+</span>
+
+SILK
+
+</p>
+
+
+
+
+
+<p>
+
+🎡 Spin Rewards:
+
+<span id="spin">
+
+0
+
+</span>
+
+SILK
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="card">
+
+
+
+<h3>
+
+Security
+
+</h3>
+
+
+<button onclick="location.href='login.html'">
+
+🔐 Change Account
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="bottom-nav">
+
+
+<button onclick="location.href='index.html'">
+
+🏠
+
+</button>
+
+
+
+<button onclick="location.href='mining.html'">
+
+⛏
+
+</button>
+
+
+
+<button onclick="location.href='spin.html'">
+
+🎡
+
+</button>
+
+
+
+<button>
+
+💰
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<script>
+
+
+
+
+let user =
+
+JSON.parse(
+
+localStorage.getItem("user")
+
+);
+
+
+
+if(!user){
+
+
+location.href="login.html";
+
+
+}
+
+
+
+
+
+
+
+function load(){
+
+
+
+fetch("/api/user/"+user.id)
+
+
+.then(r=>r.json())
+
+
+.then(data=>{
+
+
+document.getElementById("balance")
+.innerHTML=
+
+Number(data.balance)
+.toFixed(4);
+
+
+
+});
+
+
+
+
+
+// ساخت آدرس آزمایشی کیف پول
+
+
+let address =
+
+"SILK"
++
+user.id
++
+"X"
++
+Math.random()
+.toString(36)
+.substring(2,10);
+
+
+
+document.getElementById("address")
+.value=
+
+address;
+
+
+
+}
+
+
+
+
+
+
+
+
+function copyAddress(){
+
+
+
+let a=
+
+document.getElementById("address");
+
+
+
+a.select();
+
+
+navigator.clipboard.writeText(
+a.value
+);
+
+
+
+alert(
+
+"Copied"
+
+);
+
+
+
+}
+
+
+
+
+
+
+load();
+
+
+
+</script>
+
+
+
 
 
 </body>
+
 
 </html>
