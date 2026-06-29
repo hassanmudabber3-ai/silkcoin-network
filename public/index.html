@@ -1,12 +1,158 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Silkcoin</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
 <body>
 
-<h1>TEST SILKCOIN UPDATE</h1>
 
-<button onclick="alert('OK')">
-CLICK
+<div class="app">
+
+
+<div id="login">
+
+
+<h1>💎 SILKCOIN</h1>
+
+<p>
+Secure Mining Network
+</p>
+
+
+<button onclick="login()">
+
+🔐 Connect Telegram
+
 </button>
 
+
+<p id="error"></p>
+
+
+</div>
+
+
+
+
+
+<div id="dashboard" style="display:none;">
+
+
+<h1>
+💎 Silkcoin
+</h1>
+
+
+
+<div class="wallet">
+
+
+<h3>
+Wallet
+</h3>
+
+
+<p id="wallet">
+-
+</p>
+
+
+<h2 id="balance">
+0 SCN
+</h2>
+
+
+</div>
+
+
+
+
+
+<div class="card">
+
+
+<h2>
+⛏ Mining 24H
+</h2>
+
+
+<p id="mineMsg">
+
+Ready
+
+</p>
+
+
+
+<button onclick="startMining()">
+
+START MINING
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h2>
+🎡 Lucky Spin
+</h2>
+
+
+<div id="wheel">
+
+🎡
+
+</div>
+
+
+
+<button onclick="spin()">
+
+SPIN
+
+</button>
+
+
+<p id="spinMsg"></p>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<script src="app.js"></script>
+
+
 </body>
+
 </html>
