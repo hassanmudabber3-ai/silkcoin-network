@@ -2,7 +2,7 @@
 
 box-sizing:border-box;
 
-font-family:Arial;
+font-family:Arial,sans-serif;
 
 }
 
@@ -14,9 +14,19 @@ margin:0;
 
 background:
 
-linear-gradient(135deg,#050015,#37006b);
+linear-gradient(
+
+160deg,
+
+#12002b,
+
+#001f3f
+
+);
 
 color:white;
+
+min-height:100vh;
 
 }
 
@@ -24,13 +34,27 @@ color:white;
 
 .app{
 
-max-width:430px;
+width:100%;
+
+max-width:480px;
 
 margin:auto;
 
+min-height:100vh;
+
 padding:20px;
 
-text-align:center;
+}
+
+
+
+.topbar{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
 
 }
 
@@ -38,197 +62,184 @@ text-align:center;
 
 button{
 
+border:none;
 
-width:100%;
+border-radius:25px;
 
-padding:16px;
+padding:12px 25px;
+
+background:#ffd700;
+
+color:#222;
+
+font-size:16px;
+
+cursor:pointer;
+
+margin:8px;
+
+}
+
+
+
+.card,
+
+.mine-card,
+
+.rate,
+
+.coin-box{
+
+background:
+
+rgba(255,255,255,0.12);
+
+backdrop-filter:blur(10px);
+
+border-radius:25px;
+
+padding:25px;
 
 margin-top:20px;
 
-border:0;
-
-border-radius:20px;
-
-background:
-
-linear-gradient(90deg,#ff00cc,#3333ff);
-
-color:white;
-
-font-size:18px;
-
-font-weight:bold;
-
+text-align:center;
 
 }
 
 
 
+.coin-box img{
 
-
-.wheel-area{
-
-
-position:relative;
-
-margin-top:40px;
-
+width:90px;
 
 }
 
 
 
-.pointer{
+.main-btn{
 
-
-font-size:40px;
-
-position:absolute;
-
-top:-35px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-z-index:10;
-
-
-}
-
-
-
-
-#wheel{
-
-
-width:300px;
-
-height:300px;
-
-margin:auto;
-
-border-radius:50%;
-
-overflow:hidden;
-
-
-display:grid;
-
-grid-template-columns:repeat(5,1fr);
-
-grid-template-rows:repeat(2,1fr);
-
-
-
-border:8px solid white;
-
-
-transition:
-
-transform 5s cubic-bezier(.17,.67,.12,.99);
-
-
-}
-
-
-
-#wheel div{
-
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
+width:90%;
 
 font-size:20px;
 
-font-weight:bold;
+}
 
+
+
+#timer{
+
+font-size:45px;
+
+color:#ffd700;
+
+}
+
+
+
+
+
+/* Analog Mining Circle */
+
+
+.analog{
+
+width:230px;
+
+height:230px;
+
+border-radius:50%;
+
+margin:auto;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
 
 background:
 
-linear-gradient(
+conic-gradient(
 
-135deg,
+#ffd700 0deg,
 
-#8e2de2,
-
-#4a00e0
+#222 0deg
 
 );
 
 
+}
 
-border:1px solid white;
 
+
+.analog-inner{
+
+width:180px;
+
+height:180px;
+
+border-radius:50%;
+
+background:#111;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+flex-direction:column;
 
 }
 
 
 
-
-
-#result{
-
-
-margin-top:30px;
-
-font-size:28px;
-
-color:#00ffcc;
-
-
-}
-
-
-
-
-.confetti{
-
+.bottom-nav{
 
 position:fixed;
 
-width:12px;
+bottom:0;
 
-height:12px;
+left:0;
 
-top:-20px;
+right:0;
 
-animation:fall 3s linear;
+height:70px;
 
+background:#111;
+
+display:flex;
+
+justify-content:space-around;
+
+align-items:center;
+
+}
+
+
+
+input{
+
+width:90%;
+
+padding:15px;
+
+border-radius:20px;
+
+border:none;
+
+margin:8px;
+
+font-size:16px;
 
 }
 
 
 
-@keyframes fall{
+.message{
 
+color:#ff8080;
 
-0%{
-
-transform:
-
-translateY(0)
-
-rotate(0deg);
-
-}
-
-
-100%{
-
-
-transform:
-
-translateY(100vh)
-
-rotate(720deg);
-
-
-}
-
+margin:10px;
 
 }
