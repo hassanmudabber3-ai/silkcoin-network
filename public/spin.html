@@ -7,10 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-Silkcoin Lucky Spin
-</title>
-
+<title>Silkcoin Lucky Spin</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -18,57 +15,162 @@ Silkcoin Lucky Spin
 <style>
 
 
-#wheel{
+body{
 
-width:270px;
+background:#05091c;
 
-height:270px;
+color:white;
 
-border-radius:50%;
+font-family:Arial;
 
-margin:25px auto;
+overflow-y:auto;
+
+}
+
+
+
+.app{
+
+padding-bottom:90px;
+
+}
+
+
+
+.topbar{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:15px;
+
+background:#10183d;
+
+}
+
+
+
+button{
+
+border:0;
+
+border-radius:18px;
+
+padding:14px 22px;
+
+background:#d9a441;
+
+color:#111;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+
+
+
+
+.card{
+
+margin:20px;
+
+padding:25px;
+
+border-radius:25px;
+
+background:linear-gradient(
+
+145deg,
+
+#182452,
+
+#080d25
+
+);
+
+box-shadow:0 0 25px #000;
+
+text-align:center;
+
+}
+
+
+
+
+
+
+#wheelBox{
 
 position:relative;
 
-transition:5s cubic-bezier(.17,.67,.12,.99);
+width:300px;
+
+height:300px;
+
+margin:30px auto;
+
+}
+
+
+
+#wheel{
+
+
+width:300px;
+
+height:300px;
+
+border-radius:50%;
+
+border:8px solid #ffd45c;
 
 
 background:
 
 conic-gradient(
 
-#ff5252 0deg 36deg,
+#ffd45c 0deg 36deg,
 
-#ff9800 36deg 72deg,
+#9b59b6 36deg 72deg,
 
-#ffd700 72deg 108deg,
+#3498db 72deg 108deg,
 
-#4caf50 108deg 144deg,
+#2ecc71 108deg 144deg,
 
-#00bcd4 144deg 180deg,
+#e67e22 144deg 180deg,
 
-#2196f3 180deg 216deg,
+#e74c3c 180deg 216deg,
 
-#9c27b0 216deg 252deg,
+#1abc9c 216deg 252deg,
 
-#e91e63 252deg 288deg,
+#34495e 252deg 288deg,
 
-#795548 288deg 324deg,
+#f1c40f 288deg 324deg,
 
-#607d8b 324deg 360deg
+#8e44ad 324deg 360deg
 
 );
 
 
+
+transition:5s cubic-bezier(.17,.67,.12,.99);
+
 box-shadow:
 
-0 0 30px #ffd700;
+0 0 40px #d9a441;
+
 
 }
 
 
 
-.number{
+.label{
+
 
 position:absolute;
 
@@ -76,34 +178,69 @@ width:100%;
 
 height:100%;
 
+top:0;
+
+left:0;
+
 display:flex;
 
 justify-content:center;
 
 align-items:center;
 
-font-size:24px;
+font-size:22px;
 
 font-weight:bold;
 
-color:white;
 
 }
-
 
 
 
 
 .pointer{
 
-text-align:center;
-
 font-size:40px;
 
-color:#ffd700;
+color:#ffd45c;
 
 }
 
+
+
+
+
+.bottom-nav{
+
+position:fixed;
+
+bottom:0;
+
+left:0;
+
+right:0;
+
+background:#10183d;
+
+display:flex;
+
+justify-content:space-around;
+
+padding:12px;
+
+}
+
+
+
+.bottom-nav button{
+
+background:none;
+
+font-size:25px;
+
+padding:5px;
+
+}
 
 
 </style>
@@ -113,7 +250,9 @@ color:#ffd700;
 
 
 
+
 <body>
+
 
 
 <div class="app">
@@ -146,7 +285,6 @@ color:#ffd700;
 </button>
 
 
-
 </div>
 
 
@@ -167,8 +305,21 @@ color:#ffd700;
 
 
 
+<div id="wheelBox">
+
 
 <div id="wheel">
+
+
+<div class="label">
+
+0.5
+
+</div>
+
+
+</div>
+
 
 </div>
 
@@ -176,9 +327,17 @@ color:#ffd700;
 
 
 
-<h2 id="result">
+<h2>
 
-Ready
+Prize:
+
+<span id="result">
+
+-
+
+</span>
+
+SILK
 
 </h2>
 
@@ -188,7 +347,7 @@ Ready
 
 <h3>
 
-Chance:
+Remaining:
 
 <span id="chance">
 
@@ -204,7 +363,6 @@ Chance:
 
 
 
-
 <button onclick="watchAd()">
 
 📺 Watch Advertisement
@@ -212,14 +370,16 @@ Chance:
 </button>
 
 
+<br><br>
 
 
 
-<button onclick="spin()" id="spinBtn">
+<button onclick="spin()">
 
-🎡 Spin
+🎡 Spin Now
 
 </button>
+
 
 
 
@@ -249,7 +409,6 @@ Chance:
 </button>
 
 
-
 <button onclick="location.href='mining.html'">
 
 ⛏
@@ -257,13 +416,11 @@ Chance:
 </button>
 
 
-
 <button>
 
 🎡
 
 </button>
-
 
 
 <button onclick="location.href='wallet.html'">
@@ -279,10 +436,7 @@ Chance:
 
 
 
-
 </div>
-
-
 
 
 
@@ -294,7 +448,9 @@ Chance:
 
 
 
-let user = JSON.parse(
+let user =
+
+JSON.parse(
 
 localStorage.getItem("user")
 
@@ -311,8 +467,7 @@ location.href="login.html";
 
 
 
-
-let canSpin=false;
+let unlocked=false;
 
 
 let rotation=0;
@@ -322,36 +477,77 @@ let rotation=0;
 
 
 
-let wheel=document.getElementById("wheel");
+function load(){
+
+
+
+fetch(
+
+"/api/wallet/"+user.id
+
+)
+
+
+.then(r=>r.json())
+
+
+.then(data=>{
+
+
+
+let left=
+
+5-data.spin_count;
+
+
+document.getElementById("chance")
+
+.innerHTML=left;
+
+
+
+});
+
+
+
+}
 
 
 
 
-// ساخت اعداد 1 تا 10
 
-
-for(let i=1;i<=10;i++){
-
-
-
-let item=document.createElement("div");
-
-
-item.className="number";
-
-
-item.innerHTML=i;
+function watchAd(){
 
 
 
+document.getElementById("msg")
 
-item.style.transform=
+.innerHTML=
 
-"rotate("+(i*36-18)+"deg) translateY(-110px)";
+"📺 Watching ad...";
 
 
 
-wheel.appendChild(item);
+// شبیه سازی تبلیغ
+
+
+setTimeout(()=>{
+
+
+
+unlocked=true;
+
+
+
+document.getElementById("msg")
+
+.innerHTML=
+
+"✅ Spin unlocked";
+
+
+
+},5000);
 
 
 
@@ -364,5 +560,188 @@ wheel.appendChild(item);
 
 
 
+function spin(){
 
-function
+
+
+if(!unlocked){
+
+
+
+alert(
+
+"Watch advertisement first"
+
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+unlocked=false;
+
+
+
+
+
+
+let reward=
+
+(
+
+Math.floor(
+
+Math.random()*10
+
+)+1
+
+)
+
+*0.5;
+
+
+
+
+
+let index=
+
+Math.floor(reward/0.5);
+
+
+
+
+
+rotation +=
+
+1440 +
+
+(360-index*36);
+
+
+
+document.getElementById("wheel")
+
+.style.transform=
+
+"rotate("+rotation+"deg)";
+
+
+
+
+
+
+
+setTimeout(()=>{
+
+
+
+fetch(
+
+"/api/spin",
+
+{
+
+
+method:"POST",
+
+
+headers:{
+
+"Content-Type":
+
+"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+id:user.id
+
+})
+
+}
+
+
+
+)
+
+
+
+.then(r=>r.json())
+
+
+.then(data=>{
+
+
+if(data.success){
+
+
+
+document.getElementById("result")
+
+.innerHTML=
+
+data.reward;
+
+
+
+document.getElementById("msg")
+
+.innerHTML=
+
+"🎉 Added to Wallet";
+
+
+
+load();
+
+
+}
+
+else{
+
+
+document.getElementById("msg")
+
+.innerHTML=data.message;
+
+
+}
+
+
+
+});
+
+
+
+},5000);
+
+
+
+
+
+}
+
+
+
+
+load();
+
+
+
+</script>
+
+
+
+
+</body>
+
+
+</html>
