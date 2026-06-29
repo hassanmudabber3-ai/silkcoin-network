@@ -4,6 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Silkcoin Mining</title>
@@ -29,12 +30,12 @@
 
 
 <h2>
-Mining Status
+Mining Session
 </h2>
 
 
 <h1 id="timer">
-30:00
+24:00:00
 </h1>
 
 
@@ -45,116 +46,306 @@ Ready
 
 
 
+
+<h2>
+Balance:
+<span id="balance">
+0
+</span>
+SILK
+</h2>
+
+
+
 <button onclick="startMining()">
+
 🚀 Start Mining
+
 </button>
 
 
-<br><br>
+
+</div>
+
+
+
+
+
+<div class="rate-card">
+
+
+<img src="https://cdn-icons-png.flaticon.com/512/2919/2919592.png"
+width="80">
+
+
+
+<h2>
+Network Mining Rate
+</h2>
+
+
+
+<h1 id="rate">
+
+</h1>
+
+
+
+<p>
+
+Based on active users
+
+</p>
+
+
+
+<h3>
+
+👥 Users:
+<span id="users">
+
+</span>
+
+</h3>
+
+
+</div>
+
+
+
+
+<br>
 
 
 <button onclick="location.href='index.html'">
+
 🏠 Home
+
 </button>
 
 
+
 </div>
 
 
-</div>
 
 
 
 <script>
 
 
-let miningTime = 30 * 60;
+
+/*
+
+Network Users
+بعداً از دیتابیس گرفته می‌شود
+
+*/
+
+
+let totalUsers = 10000;
+
+
+
+
+
+// تعیین نرخ استخراج
+
+function getMiningRate(users){
+
+
+
+if(users < 10000){
+
+
+return 2;
+
+
+}
+
+
+
+else if(users < 100000){
+
+
+return 1.2;
+
+
+}
+
+
+
+else if(users < 1000000){
+
+
+return 0.5;
+
+
+}
+
+
+
+else if(users < 5000000){
+
+
+return 0.1;
+
+
+}
+
+
+
+else{
+
+
+return 0.05;
+
+
+}
+
+
+}
+
+
+
+
+
+let miningRate =
+getMiningRate(totalUsers);
+
+
+
+
+
+document.getElementById("rate")
+.innerHTML =
+
+"⚡ "
++
+miningRate
++
+" SILK / Hour";
+
+
+
+document.getElementById("users")
+.innerHTML =
+totalUsers;
+
+
+
+
+
+const miningTime =
+24 * 60 * 60;
+
 
 
 let timer;
 
 
+
+
+
 function startMining(){
 
 
-let saved =
-localStorage.getItem("miningEnd");
 
-
-if(saved){
-
-let remaining =
-Math.floor((saved - Date.now()) / 1000);
-
-
-if(remaining > 0){
-
-miningTime = remaining;
-
-}
-
-}
+let end =
+localStorage.getItem("mineEnd");
 
 
 
-if(timer)
-clearInterval(timer);
+if(!end){
+
+
+
+end =
+Date.now()
++
+(miningTime * 1000);
 
 
 
 localStorage.setItem(
-"miningEnd",
-Date.now() + miningTime * 1000
+"mineEnd",
+end
 );
 
 
 
-document.getElementById("status").innerHTML =
-"Mining started...";
+localStorage.setItem(
+"mineStart",
+Date.now()
+);
+
+
+
+}
+
+
+
+document.getElementById("status")
+.innerHTML =
+"⛏ Mining Active";
+
+
+
+startTimer();
+
+
+
+}
+
+
+
+
+
+
+function startTimer(){
+
+
+
+clearInterval(timer);
 
 
 
 timer =
-setInterval(()=>{
+setInterval(function(){
+
 
 
 let end =
-localStorage.getItem("miningEnd");
-
-
-let remaining =
-Math.floor((end - Date.now()) / 1000);
+localStorage.getItem("mineEnd");
 
 
 
-if(remaining <= 0){
+let remain =
+Math.floor(
+(end - Date.now()) /1000
+);
+
+
+
+
+
+if(remain <=0){
+
 
 
 clearInterval(timer);
 
 
-document.getElementById("timer").innerHTML =
-"00:00";
 
-
-document.getElementById("status").innerHTML =
-"Mining completed 🎉";
-
-
-
-let balance =
-Number(localStorage.getItem("balance") || 0);
+document.getElementById("timer")
+.innerHTML =
+"00:00:00";
 
 
 
-balance += 1;
-
-
-
-localStorage.setItem(
-"balance",
-balance
-);
+document.getElementById("status")
+.innerHTML =
+"Mining Completed 🎉";
 
 
 
@@ -164,23 +355,96 @@ return;
 
 
 
-let min =
-Math.floor(remaining / 60);
+
+
+let h =
+Math.floor(remain/3600);
 
 
 
-let sec =
-remaining % 60;
+let m =
+Math.floor(
+(remain%3600)/60
+);
 
 
 
-document.getElementById("timer").innerHTML =
+let s =
+remain%60;
 
-String(min).padStart(2,"0")
+
+
+document.getElementById("timer")
+.innerHTML =
+
+String(h).padStart(2,"0")
 +
 ":"
 +
-String(sec).padStart(2,"0");
+String(m).padStart(2,"0")
++
+":"
++
+String(s).padStart(2,"0");
+
+
+
+
+
+
+// محاسبه درآمد لحظه‌ای
+
+
+
+let start =
+localStorage.getItem("mineStart");
+
+
+
+let passed =
+(Date.now()-start)
+/
+3600000;
+
+
+
+let earned =
+passed * miningRate;
+
+
+
+
+
+let balance =
+Number(
+localStorage.getItem("balance")
+||
+0
+);
+
+
+
+balance =
+balance + earned;
+
+
+
+localStorage.setItem(
+
+"balance",
+
+balance.toFixed(6)
+
+);
+
+
+
+document.getElementById("balance")
+.innerHTML =
+
+balance.toFixed(6);
+
+
 
 
 
@@ -193,30 +457,35 @@ String(sec).padStart(2,"0");
 
 
 
+
 window.onload=function(){
 
 
+
+let balance =
+localStorage.getItem("balance")
+||
+0;
+
+
+
+document.getElementById("balance")
+.innerHTML =
+balance;
+
+
+
+
+
 let end =
-localStorage.getItem("miningEnd");
+localStorage.getItem("mineEnd");
 
 
 
-if(end){
+if(end && end > Date.now()){
 
 
-let remaining =
-Math.floor(
-(end - Date.now()) / 1000
-);
-
-
-
-if(remaining > 0){
-
-
-miningTime = remaining;
-
-startMining();
+startTimer();
 
 
 }
@@ -226,7 +495,6 @@ startMining();
 }
 
 
-}
 
 
 
@@ -234,6 +502,5 @@ startMining();
 
 
 </body>
-
 
 </html>
