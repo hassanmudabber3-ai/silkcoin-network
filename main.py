@@ -1,5 +1,6 @@
 import os
 import threading
+import asyncio
 
 from flask import Flask
 
@@ -24,47 +25,35 @@ WEB_APP_URL = "https://silkcoin-network.onrender.com"
 
 
 
+# ------------------
+# Render Web Server
+# ------------------
 
-# ==================
-# RENDER SERVER
-# ==================
-
-app_web = Flask(__name__)
+web = Flask(__name__)
 
 
-@app_web.route("/")
+@web.route("/")
 def home():
-
     return "Silkcoin Bot Running"
-
 
 
 
 def run_web():
 
-    port = int(
-        os.environ.get(
-            "PORT",
-            10000
-        )
-    )
+    port = int(os.environ.get("PORT",10000))
 
-    app_web.run(
-
+    web.run(
         host="0.0.0.0",
-
         port=port
-
     )
 
 
 
 
 
-# ==================
-# TELEGRAM BOT
-# ==================
-
+# ------------------
+# Telegram
+# ------------------
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
@@ -90,16 +79,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
 
-
     await update.message.reply_text(
 
         "💎 Silkcoin Network\n\n"
         "Welcome 🚀\n\n"
-        "Click below to open Silkcoin:",
+        "Open Silkcoin Network Coin:",
 
-        reply_markup=InlineKeyboardMarkup(
-            keyboard
-        )
+        reply_markup=InlineKeyboardMarkup(keyboard)
 
     )
 
@@ -107,10 +93,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
-def run_bot():
+async def bot_main():
 
 
-    bot = Application.builder().token(
+    application = Application.builder().token(
 
         BOT_TOKEN
 
@@ -118,44 +104,49 @@ def run_bot():
 
 
 
-    bot.add_handler(
+    application.add_handler(
 
         CommandHandler(
-
             "start",
-
             start
-
         )
 
     )
 
 
-
-    print(
-        "🪙 Silkcoin Telegram Bot Started"
-    )
-
-
-    bot.run_polling()
+    print("🪙 Telegram Connected")
 
 
 
+    await application.initialize()
+
+    await application.start()
+
+    await application.updater.start_polling()
 
 
-# ==================
-# START
-# ==================
+
+    while True:
+
+        await asyncio.sleep(60)
+
+
+
+
+
+# ------------------
+# RUN
+# ------------------
 
 if __name__ == "__main__":
 
 
     threading.Thread(
-
         target=run_web
-
     ).start()
 
 
 
-    run_bot()
+    asyncio.run(
+        bot_main()
+    )
