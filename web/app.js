@@ -16,16 +16,23 @@ localStorage.getItem("device_id");
 
 if(!device_id){
 
-    device_id =
-    crypto.randomUUID();
+
+device_id =
+crypto.randomUUID();
 
 
-    localStorage.setItem(
-        "device_id",
-        device_id
-    );
+
+localStorage.setItem(
+
+"device_id",
+
+device_id
+
+);
+
 
 }
+
 
 
 
@@ -39,7 +46,7 @@ function login(){
 if(!tg.initDataUnsafe.user){
 
 
-document.getElementById("loginMsg")
+document.getElementById("error")
 .innerHTML =
 "Open from Telegram";
 
@@ -47,6 +54,7 @@ document.getElementById("loginMsg")
 return;
 
 }
+
 
 
 
@@ -59,8 +67,11 @@ tg.initDataUnsafe.user.id;
 
 
 fetch(
+
 "/api/login?id="+user_id+
+
 "&device="+device_id
+
 )
 
 
@@ -68,14 +79,14 @@ fetch(
 .then(r=>r.json())
 
 
-
 .then(data=>{
+
 
 
 if(data.error){
 
 
-document.getElementById("loginMsg")
+document.getElementById("error")
 .innerHTML=data.error;
 
 
@@ -89,12 +100,13 @@ return;
 
 
 document.getElementById("login")
-.classList.add("hidden");
+.classList.add("hide");
 
 
 
-document.getElementById("panel")
-.classList.remove("hidden");
+document.getElementById("dashboard")
+.classList.remove("hide");
+
 
 
 
@@ -115,12 +127,18 @@ loadUser();
 
 
 
+
+
 function loadUser(){
 
 
+
 fetch(
+
 "/api/user?id="+user_id
+
 )
+
 
 
 .then(r=>r.json())
@@ -130,16 +148,21 @@ fetch(
 
 
 document.getElementById("wallet")
-.innerHTML=data.wallet;
+.innerHTML =
+
+data.wallet;
+
 
 
 document.getElementById("balance")
-.innerHTML=
+.innerHTML =
+
 data.balance+" SCN";
 
 
 
 });
+
 
 
 }
@@ -152,7 +175,8 @@ data.balance+" SCN";
 
 
 
-function startMine(){
+function startMining(){
+
 
 
 fetch(
@@ -169,11 +193,14 @@ fetch(
 .then(data=>{
 
 
-document.getElementById("msg")
-.innerHTML=data.message;
+document.getElementById("mineMsg")
+.innerHTML =
+
+"⛏ "+data.message;
 
 
 });
+
 
 
 }
@@ -186,8 +213,20 @@ document.getElementById("msg")
 
 
 
-
 function spin(){
+
+
+
+let wheel =
+
+document.querySelector(".wheel");
+
+
+
+wheel.style.animation=
+
+"spin 1s linear";
+
 
 
 
@@ -205,15 +244,18 @@ fetch(
 .then(data=>{
 
 
-document.getElementById("msg")
+document.getElementById("spinMsg")
 .innerHTML=
-"🎉 "+data.reward+" SCN";
+
+"🎉 Won "+data.reward+" SCN";
+
 
 
 loadUser();
 
 
 });
+
 
 
 }
