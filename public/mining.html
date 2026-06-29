@@ -1,608 +1,189 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Silkcoin Mining</title>
 
 <link rel="stylesheet" href="style.css">
 
-
-<style>
-
-body{
-
-background:#070b22;
-
-color:white;
-
-font-family:Arial;
-
-overflow-y:auto;
-
-}
-
-
-
-.app{
-
-min-height:100vh;
-
-padding-bottom:80px;
-
-}
-
-
-
-.topbar{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:15px;
-
-background:#10183d;
-
-}
-
-
-
-button{
-
-border:none;
-
-padding:14px 22px;
-
-border-radius:15px;
-
-background:#ffd700;
-
-font-weight:bold;
-
-cursor:pointer;
-
-}
-
-
-
-.card{
-
-margin:20px;
-
-padding:25px;
-
-border-radius:25px;
-
-background:
-
-linear-gradient(
-
-145deg,
-
-#18255c,
-
-#0b102d
-
-);
-
-box-shadow:
-
-0 0 25px #000;
-
-text-align:center;
-
-}
-
-
-
-
-
-.miner{
-
-width:220px;
-
-height:220px;
-
-margin:auto;
-
-border-radius:50%;
-
-border:12px solid #ffd700;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:28px;
-
-font-weight:bold;
-
-box-shadow:
-
-0 0 35px #ffd700;
-
-}
-
-
-
-.coin{
-
-font-size:40px;
-
-color:#ffd700;
-
-}
-
-
-
-
-
-.bottom-nav{
-
-position:fixed;
-
-bottom:0;
-
-left:0;
-
-right:0;
-
-display:flex;
-
-justify-content:space-around;
-
-background:#10183d;
-
-padding:12px;
-
-}
-
-
-
-.bottom-nav button{
-
-background:none;
-
-font-size:25px;
-
-padding:5px;
-
-}
-
-
-
-</style>
-
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 </head>
 
-
 <body>
-
 
 <div class="app">
 
-
-
-<div class="topbar">
-
-
-<button onclick="location.href='index.html'">
-
-🏠
-
-</button>
-
-
-<h2>
-
-⛏ Mining
-
-</h2>
-
-
-<button onclick="location.href='wallet.html'">
-
-💰
-
-</button>
-
-
-</div>
-
-
-
-
-
-
+<h1>⛏️ Silkcoin Mining</h1>
 
 <div class="card">
 
-
-<div class="miner">
-
-
-<span id="timer">
-
-24:00:00
-
-</span>
-
-
-</div>
-
-
-
-<br>
-
+<h2 id="title">Mining Status</h2>
 
 <div class="coin">
-
-🪙
-
-<span id="coins">
-
-0
-
-</span>
-
-SILK
-
+💎
 </div>
 
-
-<p>
-
-Estimated mined coins
-
-</p>
-
-
-
-<button onclick="startMining()" id="start">
-
-🚀 Start Mining
-
-</button>
-
-
-<p id="msg"></p>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="card">
-
-
-<h3>
-
-Mining Rate
-
+<h3 id="balance">
+0 SILK
 </h3>
 
 
 <p>
+Next mining:
+</p>
 
-2 SILK / Hour
+<h2 id="timer">
+24:00:00
+</h2>
 
+
+<p id="reward">
+Estimated reward: 0 SILK
 </p>
 
 
+<button id="mineBtn">
+START MINING
+</button>
+
+
 </div>
 
 
-
-
-
-
-
-<div class="bottom-nav">
-
+<div class="menu">
 
 <button onclick="location.href='index.html'">
-
-🏠
-
+🏠 Home
 </button>
-
-
-<button>
-
-⛏
-
-</button>
-
 
 <button onclick="location.href='spin.html'">
-
-🎡
-
+🎡 Lucky Spin
 </button>
-
 
 <button onclick="location.href='wallet.html'">
-
-💰
-
+💰 Wallet
 </button>
 
-
 </div>
 
 
-
-
-
-
 </div>
-
-
-
-
-
-
 
 
 
 <script>
 
+let miningTime = 24 * 60 * 60;
 
-let user =
 
-JSON.parse(
+let timer = localStorage.getItem("mineTimer");
 
-localStorage.getItem("user")
 
+if(timer){
+
+miningTime = parseInt(timer);
+
+}
+
+
+let reward = (Math.random()*5+1).toFixed(2);
+
+
+
+function update(){
+
+let h=Math.floor(miningTime/3600);
+
+let m=Math.floor((miningTime%3600)/60);
+
+let s=miningTime%60;
+
+
+document.getElementById("timer").innerHTML =
+`${h}:${m}:${s}`;
+
+
+document.getElementById("reward").innerHTML =
+"Estimated reward: "+reward+" SILK";
+
+
+localStorage.setItem(
+"mineTimer",
+miningTime
 );
 
 
 
-if(!user){
+if(miningTime>0){
 
-location.href="login.html";
+miningTime--;
+
+}
+else{
+
+document.getElementById("mineBtn").disabled=false;
+
+}
 
 }
 
 
 
+setInterval(update,1000);
 
 
-let endTime=0;
 
+document.getElementById("mineBtn")
+.onclick=function(){
 
-let timer;
 
+if(miningTime<=0){
 
 
+let old =
+Number(localStorage.getItem("silkBalance")||0);
 
-function loadMining(){
 
+old += Number(reward);
 
 
-fetch(
-
-"/api/mining/"+user.id
-
-)
-
-
-.then(r=>r.json())
-
-
-.then(data=>{
-
-
-
-endTime=
-
-Date.now()+data.remain;
-
-
-
-document.getElementById("coins")
-
-.innerHTML=
-
-data.mined;
-
-
-
-startTimer();
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-function startMining(){
-
-
-
-fetch(
-
-"/api/mining/start",
-
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json"
-
-},
-
-
-body:JSON.stringify({
-
-id:user.id
-
-})
-
-}
-
-)
-
-
-
-.then(r=>r.json())
-
-
-.then(data=>{
-
-
-
-endTime=data.end;
-
-
-document.getElementById("msg")
-
-.innerHTML=
-
-"Mining Started 🚀";
-
-
-startTimer();
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-function startTimer(){
-
-
-
-clearInterval(timer);
-
-
-
-timer=setInterval(()=>{
-
-
-
-let distance=
-
-endTime-Date.now();
-
-
-
-if(distance<=0){
-
-
-
-document.getElementById("timer")
-
-.innerHTML=
-
-"Finished";
-
-
-clearInterval(timer);
-
-
-return;
-
-
-}
-
-
-
-
-
-let h=Math.floor(
-
-distance/(1000*60*60)
-
+localStorage.setItem(
+"silkBalance",
+old
 );
 
 
+reward=(Math.random()*5+1).toFixed(2);
 
-let m=Math.floor(
 
-(distance%(1000*60*60))
+miningTime=86400;
 
-/
 
-(1000*60)
-
+alert(
+"Mining completed +" +
+reward +
+" SILK"
 );
 
 
+}
 
-let s=Math.floor(
 
-(distance%(1000*60))
+else{
 
-/
 
-1000
-
+alert(
+"Mining is running. Wait for countdown."
 );
-
-
-
-document.getElementById("timer")
-
-.innerHTML=
-
-h+":"+
-
-String(m).padStart(2,"0")
-
-+":"+
-
-String(s).padStart(2,"0");
-
-
-
-
-},1000);
-
 
 
 }
 
 
 
-
-
-loadMining();
+};
 
 
 
@@ -610,5 +191,4 @@ loadMining();
 
 
 </body>
-
 </html>
