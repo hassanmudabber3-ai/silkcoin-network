@@ -18,31 +18,31 @@ from telegram.ext import (
 
 
 
-# ======================
+# ==========================
 # SETTINGS
-# ======================
+# ==========================
 
-BOT_TOKEN = "PUT_YOUR_BOT_TOKEN_HERE"
+BOT_TOKEN = "YOUR_BOT_TOKEN"
 
-WEB_APP_URL = "https://YOUR-SILKCOIN-WEBSITE.com"
+WEB_APP_URL = "https://YOUR-SILKCOIN-WEBAPP.com"
 
 
 
-# ======================
-# FLASK FOR RENDER PORT
-# ======================
+# ==========================
+# RENDER PORT SERVER
+# ==========================
 
 server = Flask(__name__)
 
 
 @server.route("/")
-def home():
+def index():
 
-    return "🪙 Silkcoin Bot Running"
+    return "🪙 Silkcoin Network Running"
 
 
 
-def run_server():
+def start_server():
 
     port = int(
         os.environ.get(
@@ -50,6 +50,7 @@ def run_server():
             10000
         )
     )
+
 
     server.run(
 
@@ -63,20 +64,17 @@ def run_server():
 
 
 
-# ======================
-# TELEGRAM START
-# ======================
+# ==========================
+# START COMMAND
+# ==========================
 
 async def start(
-
     update: Update,
-
     context: ContextTypes.DEFAULT_TYPE
-
 ):
 
 
-    name = update.effective_user.first_name
+    user = update.effective_user
 
 
 
@@ -102,60 +100,24 @@ async def start(
 
 
 
-    reply = InlineKeyboardMarkup(
+    button = InlineKeyboardMarkup(
+
         keyboard
+
     )
 
 
 
+
     await update.message.reply_text(
+
 
 f"""
 💎 Silkcoin Network
 
-Welcome {name} 🚀
 
+Welcome {user.first_name} 🚀
 
-⛏ Mining every 24 hours
-
-🎡 Lucky Spin
-
-💰 Wallet
-
-
-Open Silkcoin Network Coin:
-
-""",
-
-        reply_markup=reply
-
-    )
-
-
-
-
-
-
-# ======================
-# HELP
-# ======================
-
-async def help_command(
-
-    update: Update,
-
-    context: ContextTypes.DEFAULT_TYPE
-
-):
-
-
-    await update.message.reply_text(
-
-"""
-💎 Silkcoin Help
-
-
-/start - Open Silkcoin
 
 ⛏ Mining
 
@@ -163,6 +125,47 @@ async def help_command(
 
 💰 Wallet
 
+
+Open Silkcoin Network Coin below:
+
+""",
+
+        reply_markup=button
+
+    )
+
+
+
+
+
+
+
+# ==========================
+# HELP
+# ==========================
+
+async def help_command(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+
+    await update.message.reply_text(
+
+"""
+💎 Silkcoin Network
+
+
+Commands:
+
+/start
+Open Silkcoin App
+
+
+/help
+Help
+
+
 """
 
     )
@@ -172,11 +175,11 @@ async def help_command(
 
 
 
-# ======================
-# BOT START
-# ======================
+# ==========================
+# BOT RUN
+# ==========================
 
-def main():
+def start_bot():
 
 
     app = Application.builder().token(
@@ -220,25 +223,27 @@ def main():
     )
 
 
+
     app.run_polling()
 
 
 
 
 
-# ======================
-# RUN BOTH
-# ======================
+
+# ==========================
+# MAIN
+# ==========================
 
 if __name__ == "__main__":
 
 
     threading.Thread(
 
-        target=run_server
+        target=start_server
 
     ).start()
 
 
 
-    main()
+    start_bot()
