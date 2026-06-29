@@ -16,34 +16,26 @@ Silkcoin Wallet
 </title>
 
 
-
 <link rel="stylesheet" href="style.css">
-
 
 
 </head>
 
 
 
-
 <body>
-
 
 
 <div class="app">
 
 
 
-
-
-
 <div class="topbar">
 
 
+<button onclick="location.href='index.html'">
 
-<button onclick="history.back()">
-
-⬅
+🏠
 
 </button>
 
@@ -57,17 +49,14 @@ Silkcoin Wallet
 
 
 
-<button onclick="location.href='index.html'">
+<button onclick="location.href='spin.html'">
 
-🏠
+🎡
 
 </button>
 
 
-
 </div>
-
-
 
 
 
@@ -81,18 +70,22 @@ Silkcoin Wallet
 <img src="https://cdn-icons-png.flaticon.com/512/600/600923.png">
 
 
+<h1>
 
-<h1 id="balance">
+<span id="balance">
 
 0
+
+</span>
+
+SILK
 
 </h1>
 
 
-
 <p>
 
-Total SILK
+Total Balance
 
 </p>
 
@@ -107,8 +100,37 @@ Total SILK
 
 
 
+
 <div class="card">
 
+
+<h3>
+
+📜 Transaction History
+
+</h3>
+
+
+
+<div id="history">
+
+Loading...
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="card">
 
 
 <h3>
@@ -119,9 +141,7 @@ Wallet Address
 
 
 
-<input id="address"
-
-readonly>
+<input id="address" readonly>
 
 
 
@@ -134,90 +154,6 @@ readonly>
 
 
 </div>
-
-
-
-
-
-
-
-
-<div class="card">
-
-
-<h3>
-
-Statistics
-
-</h3>
-
-
-
-<p>
-
-⛏ Mining Earned:
-
-<span id="mine">
-
-0
-
-</span>
-
-SILK
-
-</p>
-
-
-
-
-
-<p>
-
-🎡 Spin Rewards:
-
-<span id="spin">
-
-0
-
-</span>
-
-SILK
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="card">
-
-
-
-<h3>
-
-Security
-
-</h3>
-
-
-<button onclick="location.href='login.html'">
-
-🔐 Change Account
-
-</button>
-
-
-</div>
-
-
 
 
 
@@ -276,9 +212,7 @@ Security
 
 
 
-
 <script>
-
 
 
 
@@ -294,9 +228,7 @@ localStorage.getItem("user")
 
 if(!user){
 
-
 location.href="login.html";
-
 
 }
 
@@ -305,16 +237,17 @@ location.href="login.html";
 
 
 
+function loadWallet(){
 
-function load(){
 
+
+// موجودی
 
 
 fetch("/api/user/"+user.id)
 
 
 .then(r=>r.json())
-
 
 .then(data=>{
 
@@ -333,27 +266,138 @@ Number(data.balance)
 
 
 
-// ساخت آدرس آزمایشی کیف پول
 
 
-let address =
 
-"SILK"
+
+// تاریخچه
+
+
+fetch("/api/history/"+user.id)
+
+
+.then(r=>r.json())
+
+.then(data=>{
+
+
+let html="";
+
+
+
+
+if(data.length===0){
+
+
+html="No transactions yet";
+
+
+}
+
+else{
+
+
+
+data.forEach(tx=>{
+
+
+
+let date=
+
+new Date(tx.created)
+.toLocaleString();
+
+
+
+
+
+let icon="";
+
+
+
+if(tx.type==="LUCKY_SPIN"){
+
+icon="🎡";
+
+}
+
+else if(tx.type==="MINING"){
+
+icon="⛏";
+
+}
+
+else{
+
+icon="🪙";
+
+}
+
+
+
+
+
+
+html += `
+
+<div class="card">
+
+${icon}
+
+<b>${tx.type}</b>
+
+<br>
+
 +
-user.id
-+
-"X"
-+
-Math.random()
-.toString(36)
-.substring(2,10);
 
+${tx.amount}
+
+SILK
+
+<br>
+
+<small>
+
+${date}
+
+</small>
+
+</div>
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+document.getElementById("history")
+.innerHTML=html;
+
+
+
+});
+
+
+
+
+
+// آدرس نمونه
 
 
 document.getElementById("address")
 .value=
 
-address;
+"SILK-"+user.id+"-"+
+
+Math.random()
+.toString(36)
+.substring(2,10);
 
 
 
@@ -365,22 +409,24 @@ address;
 
 
 
-
 function copyAddress(){
 
 
 
-let a=
+let input=
 
 document.getElementById("address");
 
 
 
-a.select();
+input.select();
+
 
 
 navigator.clipboard.writeText(
-a.value
+
+input.value
+
 );
 
 
@@ -399,8 +445,7 @@ alert(
 
 
 
-
-load();
+loadWallet();
 
 
 
@@ -408,9 +453,6 @@ load();
 
 
 
-
-
 </body>
-
 
 </html>
