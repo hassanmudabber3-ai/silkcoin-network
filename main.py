@@ -1,10 +1,10 @@
 import os
-import threading
+import asyncio
 
 from flask import Flask
+from threading import Thread
 
 from telegram import (
-    Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     WebAppInfo
@@ -12,8 +12,7 @@ from telegram import (
 
 from telegram.ext import (
     Application,
-    CommandHandler,
-    ContextTypes
+    CommandHandler
 )
 
 
@@ -24,17 +23,21 @@ WEB_APP_URL = "https://silkcoin-network.onrender.com"
 
 
 
-# برای Render
+# =====================
+# RENDER SERVER
+# =====================
+
 server = Flask(__name__)
 
 
 @server.route("/")
 def home():
+
     return "Silkcoin Bot Running"
 
 
 
-def run_server():
+def run_web():
 
     port = int(os.environ.get("PORT",10000))
 
@@ -47,7 +50,12 @@ def run_server():
 
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# =====================
+# TELEGRAM
+# =====================
+
+
+async def start(update, context):
 
 
     keyboard = [
@@ -56,7 +64,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             InlineKeyboardButton(
 
-                text="🚀 Open Silkcoin Network Coin",
+                "🚀 Open Silkcoin Network Coin",
 
                 web_app=WebAppInfo(
 
@@ -71,11 +79,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
 
+
     await update.message.reply_text(
 
         "💎 Silkcoin Network\n\n"
         "Welcome 🚀\n\n"
-        "Click Open to enter Silkcoin:",
+        "Open Silkcoin:",
 
         reply_markup=InlineKeyboardMarkup(keyboard)
 
@@ -85,11 +94,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 
-def run_bot():
+
+async def run_bot():
 
 
     app = Application.builder().token(
+
         BOT_TOKEN
+
     ).build()
 
 
@@ -97,17 +109,31 @@ def run_bot():
     app.add_handler(
 
         CommandHandler(
+
             "start",
+
             start
+
         )
 
     )
 
 
-    print("🪙 Silkcoin Bot Started")
+
+    print("🪙 Telegram Bot Started")
 
 
-    app.run_polling()
+
+    await app.initialize()
+
+    await app.start()
+
+    await app.updater.start_polling()
+
+
+
+    await asyncio.Event().wait()
+
 
 
 
@@ -116,9 +142,11 @@ def run_bot():
 if __name__ == "__main__":
 
 
-    threading.Thread(
-        target=run_server
+    Thread(
+        target=run_web
     ).start()
 
 
-    run_bot()
+    asyncio.run(
+        run_bot()
+    )
