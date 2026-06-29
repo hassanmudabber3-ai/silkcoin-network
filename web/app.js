@@ -1,98 +1,78 @@
-const tg = window.Telegram.WebApp;
+// ============================
+// Silkcoin Network App.js
+// ============================
 
 
-tg.expand();
-
-
-
-let user_id = null;
-
-
-
-let device_id =
-localStorage.getItem("device_id");
+let balance = 0;
+let mining = false;
+let miningTimer = null;
 
 
 
-if(!device_id){
-
-    device_id =
-    crypto.randomUUID();
-
-    localStorage.setItem(
-        "device_id",
-        device_id
-    );
-
-}
-
-
-
-
+// ============================
+// Telegram Login
+// ============================
 
 
 function login(){
 
 
-    if(!tg.initDataUnsafe.user){
-
-        document.getElementById("error")
-        .innerHTML =
-        "Open from Telegram";
-
-        return;
-
-    }
+if(window.Telegram && Telegram.WebApp){
 
 
-
-    user_id =
-    tg.initDataUnsafe.user.id;
+let user = Telegram.WebApp.initDataUnsafe.user;
 
 
-
-    fetch(
-
-    "/api/login?id="+user_id+
-    "&device="+device_id
-
-    )
+if(user){
 
 
-    .then(r=>r.json())
+document.getElementById("wallet").innerHTML =
+"TG ID: " + user.id;
 
 
-    .then(data=>{
+showDashboard();
 
 
-        if(data.error){
+}else{
 
 
-            document.getElementById("error")
-            .innerHTML=data.error;
+document.getElementById("error").innerHTML =
+"Telegram user not found";
 
 
-            return;
+}
 
-        }
+
+}else{
+
+
+document.getElementById("error").innerHTML =
+"Open inside Telegram";
+
+
+}
+
+
+}
 
 
 
-        document.getElementById("login")
-        .classList.add("hide");
 
 
 
-        document.getElementById("dashboard")
-        .classList.remove("hide");
+function showDashboard(){
 
 
+document.getElementById("login")
+.classList.add("hide");
 
-        loadUser();
+
+document.getElementById("dashboard")
+.classList.remove("hide");
 
 
+loadData();
 
-    });
 
 }
 
@@ -102,39 +82,37 @@ function login(){
 
 
 
+// ============================
+// Load Wallet Data
+// ============================
 
 
-function loadUser(){
+function loadData(){
 
 
-fetch(
-
-"/api/user?id="+user_id
-
-)
+let save =
+localStorage.getItem("silkcoin");
 
 
 
-.then(r=>r.json())
+if(save){
 
 
-.then(data=>{
+let data =
+JSON.parse(save);
 
 
-document.getElementById("wallet")
-.innerHTML=data.wallet;
+balance =
+data.balance || 0;
+
+
+}
 
 
 
 document.getElementById("balance")
-.innerHTML=
-
-data.balance+" SCN";
-
-
-
-});
-
+.innerHTML =
+balance+" SCN";
 
 
 }
@@ -145,107 +123,144 @@ data.balance+" SCN";
 
 
 
+
+// ============================
+// Save Data
+// ============================
+
+
+function save(){
+
+
+localStorage.setItem(
+"silkcoin",
+JSON.stringify({
+
+balance:balance
+
+})
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+// ============================
+// Mining System
+// ============================
 
 
 function startMining(){
 
 
 
-fetch(
-
-"/api/mine/start?id="+user_id
-
-)
-
-
-
-.then(r=>r.json())
-
-
-.then(data=>{
-
-
-document.getElementById("mineMsg")
-.innerHTML=
-
-"⛏ "+data.message;
-
-
-
-startTimer();
-
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-
-function startTimer(){
-
-
-
-let time = 24*60*60;
-
-
-
-let timer =
-
-setInterval(()=>{
-
-
-let h =
-Math.floor(time/3600);
-
-
-
-let m =
-Math.floor(
-(time%3600)/60
-);
-
-
-
-let s =
-time%60;
-
+if(mining){
 
 
 document.getElementById("mineMsg")
 .innerHTML =
-
-"⛏ Mining: "
-+h+"h "
-+m+"m "
-+s+"s";
+"⛏ Mining is running";
 
 
-
-time--;
-
-
-
-if(time<0){
-
-
-clearInterval(timer);
-
-
-
-document.getElementById("mineMsg")
-.innerHTML=
-
-"✅ Claim Reward";
+return;
 
 
 }
+
+
+
+mining=true;
+
+
+
+let button =
+event.target;
+
+
+
+button.disabled=true;
+
+
+
+let seconds=10;
+
+
+
+let msg =
+document.getElementById("mineMsg");
+
+
+
+
+
+miningTimer =
+setInterval(function(){
+
+
+
+msg.innerHTML =
+"⛏ Mining... "
++seconds+
+"s";
+
+
+
+seconds--;
+
+
+
+if(seconds < 0){
+
+
+
+clearInterval(miningTimer);
+
+
+
+let reward =
+Math.floor(Math.random()*20)+1;
+
+
+
+balance += reward;
+
+
+
+save();
+
+
+
+document.getElementById("balance")
+.innerHTML =
+balance+" SCN";
+
+
+
+msg.innerHTML =
+"✅ Complete +"
++reward+
+" SCN";
+
+
+
+button.disabled=false;
+
+
+
+mining=false;
+
+
+
+}
+
 
 
 },1000);
@@ -262,48 +277,83 @@ document.getElementById("mineMsg")
 
 
 
+// ============================
+// Lucky Spin
+// ============================
+
+
 function spin(){
 
 
 
 let wheel =
-document.querySelector(".wheel");
+document.getElementById("wheel");
 
 
 
-wheel.style.animation =
-"spin 1s linear";
+wheel.style.transform =
+"rotate("
++
+(1000 + Math.random()*2000)
++
+"deg)";
 
 
 
-fetch(
 
-"/api/spin?id="+user_id
 
+let rewards=[
+
+1,
+5,
+10,
+20,
+50,
+100
+
+];
+
+
+
+
+setTimeout(function(){
+
+
+
+let reward =
+rewards[
+Math.floor(
+Math.random()*rewards.length
 )
 
+];
 
 
-.then(r=>r.json())
+
+balance += reward;
 
 
-.then(data=>{
+
+save();
+
+
+
+document.getElementById("balance")
+.innerHTML =
+balance+" SCN";
+
 
 
 document.getElementById("spinMsg")
-.innerHTML=
-
+.innerHTML =
 "🎉 Won "
-+data.reward+
++reward+
 " SCN";
 
 
 
-loadUser();
+},4000);
 
-
-
-});
 
 
 }
