@@ -1,8 +1,15 @@
 *{
-
 box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
 
-font-family:Arial,sans-serif;
+
+html,body{
+
+margin:0;
+padding:0;
+
+min-height:100%;
 
 }
 
@@ -10,23 +17,21 @@ font-family:Arial,sans-serif;
 
 body{
 
-margin:0;
-
 background:
 
 linear-gradient(
 
 160deg,
 
-#12002b,
+#09001a,
 
-#001f3f
+#002b36
 
 );
 
 color:white;
 
-min-height:100vh;
+overflow-y:auto;
 
 }
 
@@ -44,7 +49,10 @@ min-height:100vh;
 
 padding:20px;
 
+padding-bottom:100px;
+
 }
+
 
 
 
@@ -56,27 +64,7 @@ justify-content:space-between;
 
 align-items:center;
 
-}
-
-
-
-button{
-
-border:none;
-
-border-radius:25px;
-
-padding:12px 25px;
-
-background:#ffd700;
-
-color:#222;
-
-font-size:16px;
-
-cursor:pointer;
-
-margin:8px;
+margin-bottom:20px;
 
 }
 
@@ -84,23 +72,37 @@ margin:8px;
 
 .card,
 
+.coin-box,
+
 .mine-card,
 
-.rate,
-
-.coin-box{
+.rate{
 
 background:
 
 rgba(255,255,255,0.12);
 
-backdrop-filter:blur(10px);
 
 border-radius:25px;
 
-padding:25px;
+padding:20px;
 
-margin-top:20px;
+margin:15px 0;
+
+
+box-shadow:
+
+0 8px 25px rgba(0,0,0,.3);
+
+
+backdrop-filter:blur(15px);
+
+}
+
+
+
+
+.coin-box{
 
 text-align:center;
 
@@ -116,19 +118,8 @@ width:90px;
 
 
 
-.main-btn{
 
-width:90%;
-
-font-size:20px;
-
-}
-
-
-
-#timer{
-
-font-size:45px;
+h1{
 
 color:#ffd700;
 
@@ -136,9 +127,141 @@ color:#ffd700;
 
 
 
+button{
 
 
-/* Analog Mining Circle */
+background:
+
+linear-gradient(
+
+45deg,
+
+#ffd700,
+
+#ff9800
+
+);
+
+
+border:0;
+
+
+border-radius:30px;
+
+
+padding:14px 25px;
+
+
+font-size:16px;
+
+
+margin:8px;
+
+
+cursor:pointer;
+
+
+}
+
+
+
+button:hover{
+
+transform:scale(1.05);
+
+}
+
+
+
+
+input{
+
+
+width:100%;
+
+
+padding:15px;
+
+
+border-radius:25px;
+
+
+border:0;
+
+
+margin:10px 0;
+
+
+font-size:16px;
+
+}
+
+
+
+
+.message{
+
+
+color:#ff7777;
+
+
+}
+
+
+
+.bottom-nav{
+
+
+position:fixed;
+
+
+bottom:0;
+
+
+left:0;
+
+
+right:0;
+
+
+height:75px;
+
+
+background:#111;
+
+
+display:flex;
+
+
+justify-content:space-around;
+
+
+align-items:center;
+
+
+z-index:99;
+
+
+}
+
+
+
+.bottom-nav button{
+
+
+background:none;
+
+
+color:white;
+
+
+font-size:25px;
+
+
+padding:5px;
+
+}
+
 
 
 .analog{
@@ -151,21 +274,27 @@ border-radius:50%;
 
 margin:auto;
 
-display:flex;
-
-align-items:center;
-
-justify-content:center;
 
 background:
 
 conic-gradient(
 
-#ffd700 0deg,
+#ffd700,
 
-#222 0deg
+#ff9800,
+
+#9c27b0,
+
+#00e5ff
 
 );
+
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
 
 
 }
@@ -174,72 +303,52 @@ conic-gradient(
 
 .analog-inner{
 
+
 width:180px;
+
 
 height:180px;
 
+
 border-radius:50%;
+
 
 background:#111;
 
+
 display:flex;
 
-align-items:center;
 
 justify-content:center;
 
-flex-direction:column;
-
-}
-
-
-
-.bottom-nav{
-
-position:fixed;
-
-bottom:0;
-
-left:0;
-
-right:0;
-
-height:70px;
-
-background:#111;
-
-display:flex;
-
-justify-content:space-around;
 
 align-items:center;
 
+
+flex-direction:column;
+
+
 }
 
 
 
-input{
 
-width:90%;
 
-padding:15px;
+
+::-webkit-scrollbar{
+
+width:8px;
+
+}
+
+
+
+::-webkit-scrollbar-thumb{
+
+
+background:#ffd700;
+
 
 border-radius:20px;
-
-border:none;
-
-margin:8px;
-
-font-size:16px;
-
-}
-
-
-
-.message{
-
-color:#ff8080;
-
-margin:10px;
 
 }
