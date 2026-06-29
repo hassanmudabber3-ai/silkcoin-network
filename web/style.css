@@ -2,11 +2,24 @@ body{
 
     margin:0;
 
-    background:#101827;
+    background:
+    linear-gradient(
+    160deg,
+    #111827,
+    #312e81
+    );
 
     color:white;
 
     font-family:Arial;
+
+}
+
+
+
+.app{
+
+    padding:20px;
 
     text-align:center;
 
@@ -14,23 +27,21 @@ body{
 
 
 
-.box{
+h1{
 
-    padding:20px;
+    font-size:35px;
 
 }
 
 
 
-.card{
+.menu{
 
-    background:#1f2937;
+    display:grid;
 
-    border-radius:15px;
+    grid-template-columns:1fr 1fr;
 
-    padding:20px;
-
-    margin:20px;
+    gap:12px;
 
 }
 
@@ -38,20 +49,70 @@ body{
 
 button{
 
-    width:90%;
 
-    padding:15px;
+    padding:18px;
 
-    margin:10px;
+    border:none;
 
-    border:0;
+    border-radius:20px;
 
-    border-radius:12px;
 
     background:#7c3aed;
 
+
     color:white;
 
+
     font-size:18px;
+
+
+    box-shadow:0 5px 15px #0005;
+
+
+}
+
+
+
+button:active{
+
+    transform:scale(.95);
+
+}
+
+
+
+
+.page{
+
+
+    margin-top:25px;
+
+
+    background:#1f2937;
+
+
+    padding:25px;
+
+
+    border-radius:25px;
+
+
+}
+
+
+
+.hidden{
+
+    display:none;
+
+}
+
+
+
+#balance{
+
+    font-size:40px;
+
+    color:#facc15;
 
 }
