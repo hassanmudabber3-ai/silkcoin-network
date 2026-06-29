@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Silkcoin Network</title>
@@ -10,10 +13,14 @@
 
 </head>
 
+
+
 <body>
 
 
+
 <div class="container">
+
 
 
 <h1>
@@ -21,62 +28,214 @@
 </h1>
 
 
+
+
 <div class="card">
 
+
+
 <h2 id="welcome">
+
 Welcome
+
 </h2>
 
 
-<p>
-Your balance:
-</p>
+
+<h3>
+
+Balance:
+
+</h3>
 
 
-<h1 id="balance">
-0 SILK
+<h1>
+
+<span id="balance">
+
+0
+
+</span>
+
+SILK
+
 </h1>
 
 
-<button onclick="startMining()">
-⛏ Start Mining
+
+
+<button onclick="location.href='mining.html'">
+
+⛏ Mining
+
 </button>
+
+
+
+<br><br>
+
 
 
 <button onclick="location.href='spin.html'">
+
 🎡 Lucky Spin
+
 </button>
+
+
+
+<br><br>
+
 
 
 <button onclick="location.href='wallet.html'">
+
 💰 Wallet
+
 </button>
+
+
+
+<br><br>
+
+
+
+<button onclick="logout()">
+
+🚪 Logout
+
+</button>
+
 
 
 </div>
 
 
 
-<div class="language">
-
-<button onclick="lang('en')">
-English
-</button>
-
-
-<button onclick="lang('fa')">
-فارسی
-</button>
-
 
 </div>
 
 
 
-</div>
 
 
-<script src="app.js"></script>
+
+<script>
+
+
+
+
+let user =
+
+JSON.parse(
+
+localStorage.getItem("user")
+
+);
+
+
+
+
+
+// اگر وارد نشده
+
+if(!user){
+
+
+location.href="login.html";
+
+
+}
+
+else{
+
+
+document.getElementById("welcome")
+.innerHTML =
+
+
+"Welcome "
++
+user.username
++
+" 👋";
+
+
+
+
+loadUser();
+
+
+
+}
+
+
+
+
+
+
+function loadUser(){
+
+
+
+fetch(
+
+"/api/user/"
++
+user.id
+
+)
+
+
+
+.then(res=>res.json())
+
+
+
+.then(data=>{
+
+
+
+document.getElementById("balance")
+.innerHTML =
+
+data.balance;
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+function logout(){
+
+
+
+localStorage.removeItem("user");
+
+
+location.href="login.html";
+
+
+
+}
+
+
+
+
+
+</script>
+
+
+
 
 
 </body>
