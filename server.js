@@ -1,11 +1,11 @@
-const express=require("express");
+const express = require("express");
 
-const path=require("path");
+const path = require("path");
 
-const db=require("./database");
+const db = require("./database");
 
 
-const app=express();
+const app = express();
 
 
 app.use(express.json());
@@ -26,7 +26,6 @@ path.join(__dirname,"public")
 
 // REGISTER
 
-
 app.post("/api/register",(req,res)=>{
 
 
@@ -39,7 +38,6 @@ password,
 recovery
 
 }=req.body;
-
 
 
 
@@ -56,9 +54,13 @@ VALUES(?,?,?)
 `,
 
 [
+
 username,
+
 password,
+
 recovery
+
 ],
 
 
@@ -66,17 +68,16 @@ recovery
 function(err){
 
 
-if(err){
 
+if(err){
 
 return res.json({
 
 success:false,
 
-message:"Username already exists"
+message:"Username exists"
 
 });
-
 
 }
 
@@ -89,16 +90,14 @@ success:true
 });
 
 
-
 }
-
 
 
 );
 
 
-
 });
+
 
 
 
@@ -120,7 +119,6 @@ username,
 password
 
 }=req.body;
-
 
 
 
@@ -147,7 +145,6 @@ WHERE username=?
 
 if(!user){
 
-
 return res.json({
 
 success:false,
@@ -156,13 +153,12 @@ message:"User not found"
 
 });
 
-
 }
 
 
 
 
-if(user.password !== password){
+if(user.password!==password){
 
 
 return res.json({
@@ -190,6 +186,170 @@ user:user
 
 
 
+
+}
+
+
+);
+
+
+
+});
+
+
+
+
+
+
+
+
+// USER INFO
+
+
+app.get("/api/user/:id",(req,res)=>{
+
+
+db.get(
+
+`
+
+SELECT *
+
+FROM users
+
+WHERE id=?
+
+`,
+
+[req.params.id],
+
+
+
+(err,row)=>{
+
+
+res.json(row);
+
+
+}
+
+
+
+);
+
+
+
+});
+
+
+
+
+
+
+
+
+// COUNT USERS
+
+
+app.get("/api/users",(req,res)=>{
+
+
+db.get(
+
+`
+
+SELECT COUNT(*) total
+
+FROM users
+
+`,
+
+
+(err,row)=>{
+
+
+res.json(row);
+
+
+}
+
+
+);
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+// START MINING
+
+
+app.post("/api/startMining",(req,res)=>{
+
+
+let id=req.body.id;
+
+
+
+let end =
+
+Date.now()
+
++
+
+86400000;
+
+
+
+
+db.run(
+
+`
+
+UPDATE users
+
+SET
+
+mining_start=?,
+
+mining_end=?
+
+WHERE id=?
+
+`,
+
+[
+
+Date.now(),
+
+end,
+
+id
+
+],
+
+
+
+()=>{
+
+
+res.json({
+
+success:true,
+
+end:end
+
+});
+
+
 }
 
 
@@ -208,7 +368,338 @@ user:user
 
 
 
-// RECOVERY PASSWORD
+
+
+// SPIN INFO
+
+
+app.get("/api/spin/:id",(req,res)=>{
+
+
+db.get(
+
+`
+
+SELECT spin_count
+
+FROM users
+
+WHERE id=?
+
+`,
+
+[req.params.id],
+
+
+
+(err,row)=>{
+
+
+res.json(row);
+
+
+}
+
+
+);
+
+
+});
+
+
+
+
+
+
+
+
+// WATCH AD
+
+
+app.post("/api/spin/ad",(req,res)=>{
+
+
+let id=req.body.id;
+
+
+
+db.get(
+
+`
+
+SELECT spin_count
+
+FROM users
+
+WHERE id=?
+
+`,
+
+[id],
+
+
+
+(err,user)=>{
+
+
+if(user.spin_count>=5){
+
+
+return res.json({
+
+success:false,
+
+message:"Limit 5 spins"
+
+});
+
+
+}
+
+
+
+res.json({
+
+success:true
+
+});
+
+
+
+});
+
+
+
+});
+
+
+
+
+
+
+
+
+
+// DO SPIN
+
+
+app.post("/api/spin",(req,res)=>{
+
+
+let id=req.body.id;
+
+
+
+db.get(
+
+`
+
+SELECT spin_count
+
+FROM users
+
+WHERE id=?
+
+`,
+
+[id],
+
+
+
+(err,user)=>{
+
+
+
+if(user.spin_count>=5){
+
+
+return res.json({
+
+success:false
+
+});
+
+
+}
+
+
+
+
+
+let rewards=[
+
+0.5,
+
+1,
+
+2,
+
+5,
+
+10
+
+];
+
+
+
+let reward=
+
+rewards[
+
+Math.floor(
+
+Math.random()*rewards.length
+
+)
+
+];
+
+
+
+
+
+db.serialize(()=>{
+
+
+db.run(
+
+`
+
+UPDATE users
+
+SET
+
+balance=balance+?,
+
+spin_count=spin_count+1
+
+WHERE id=?
+
+`,
+
+[
+
+reward,
+
+id
+
+]
+
+);
+
+
+
+
+
+
+db.run(
+
+`
+
+INSERT INTO transactions
+
+(user_id,type,amount,created)
+
+VALUES(?,?,?,?)
+
+`,
+
+[
+
+id,
+
+"LUCKY_SPIN",
+
+reward,
+
+Date.now()
+
+]
+
+);
+
+
+
+});
+
+
+
+
+
+
+
+res.json({
+
+success:true,
+
+reward:reward
+
+});
+
+
+
+
+
+});
+
+
+});
+
+
+
+
+
+
+
+
+
+// HISTORY
+
+
+app.get("/api/history/:id",(req,res)=>{
+
+
+db.all(
+
+`
+
+SELECT *
+
+FROM transactions
+
+WHERE user_id=?
+
+ORDER BY id DESC
+
+`,
+
+[req.params.id],
+
+
+
+(err,rows)=>{
+
+
+res.json(rows);
+
+
+}
+
+
+);
+
+
+});
+
+
+
+
+
+
+
+
+
+// RECOVERY
 
 
 app.post("/api/recover",(req,res)=>{
@@ -223,8 +714,6 @@ recovery,
 newPassword
 
 }=req.body;
-
-
 
 
 
@@ -254,8 +743,7 @@ recovery
 
 
 
-function(err){
-
+function(){
 
 
 if(this.changes===0){
@@ -265,13 +753,12 @@ return res.json({
 
 success:false,
 
-message:"Recovery failed"
+message:"Failed"
 
 });
 
 
 }
-
 
 
 
@@ -283,8 +770,6 @@ success:true,
 message:"Password changed"
 
 });
-
-
 
 
 }
@@ -301,12 +786,16 @@ message:"Password changed"
 
 
 
+
+
+
+
 app.listen(3000,()=>{
 
 
 console.log(
 
-"Silkcoin Running"
+"Silkcoin Server Running"
 
 );
 
