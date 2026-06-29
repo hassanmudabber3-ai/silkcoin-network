@@ -1,41 +1,59 @@
 const express = require("express");
-
 const path = require("path");
+const bodyParser = require("body-parser");
 
 const db = require("./database");
-
 
 const app = express();
 
 
-app.use(express.json());
+app.use(bodyParser.json());
+
+app.use(express.static(
+    path.join(__dirname,"public")
+));
 
 
-app.use(
 
-express.static(
 
-path.join(__dirname,"public")
+
+// =======================
+// HOME
+// =======================
+
+
+app.get("/",(req,res)=>{
+
+res.sendFile(
+
+path.join(
+__dirname,
+"public",
+"login.html"
 
 )
 
 );
 
+});
 
 
 
+
+
+
+
+// =======================
 // REGISTER
+// =======================
+
 
 app.post("/api/register",(req,res)=>{
 
 
 let {
-
-username,
-
-password,
-
-recovery
+telegram_id,
+password
 
 }=req.body;
 
@@ -47,53 +65,55 @@ db.run(
 
 INSERT INTO users
 
-(username,password,recovery)
+(
+telegram_id,
+password
+)
 
-VALUES(?,?,?)
+VALUES (?,?)
 
 `,
 
 [
-
-username,
-
-password,
-
-recovery
-
+telegram_id,
+password
 ],
-
 
 
 function(err){
 
 
-
 if(err){
+
 
 return res.json({
 
 success:false,
 
-message:"Username exists"
+message:"User exists"
 
 });
 
+
 }
+
 
 
 
 res.json({
 
-success:true
+success:true,
+
+id:this.lastID
 
 });
+
 
 
 }
 
-
 );
+
 
 
 });
@@ -104,18 +124,16 @@ success:true
 
 
 
-
-
+// =======================
 // LOGIN
+// =======================
 
 
 app.post("/api/login",(req,res)=>{
 
 
 let {
-
-username,
-
+telegram_id,
 password
 
 }=req.body;
@@ -131,11 +149,16 @@ SELECT *
 
 FROM users
 
-WHERE username=?
+WHERE telegram_id=?
+
+AND password=?
 
 `,
 
-[username],
+[
+telegram_id,
+password
+],
 
 
 
@@ -144,21 +167,6 @@ WHERE username=?
 
 
 if(!user){
-
-return res.json({
-
-success:false,
-
-message:"User not found"
-
-});
-
-}
-
-
-
-
-if(user.password!==password){
 
 
 return res.json({
@@ -171,8 +179,6 @@ message:"Wrong password"
 
 
 }
-
-
 
 
 
@@ -189,7 +195,6 @@ user:user
 
 }
 
-
 );
 
 
@@ -202,110 +207,26 @@ user:user
 
 
 
-
-// USER INFO
-
-
-app.get("/api/user/:id",(req,res)=>{
+// =======================
+// MINING START 24 HOURS
+// =======================
 
 
-db.get(
-
-`
-
-SELECT *
-
-FROM users
-
-WHERE id=?
-
-`,
-
-[req.params.id],
-
-
-
-(err,row)=>{
-
-
-res.json(row);
-
-
-}
-
-
-
-);
-
-
-
-});
-
-
-
-
-
-
-
-
-// COUNT USERS
-
-
-app.get("/api/users",(req,res)=>{
-
-
-db.get(
-
-`
-
-SELECT COUNT(*) total
-
-FROM users
-
-`,
-
-
-(err,row)=>{
-
-
-res.json(row);
-
-
-}
-
-
-);
-
-
-
-});
-
-
-
-
-
-
-
-
-
-
-// START MINING
-
-
-app.post("/api/startMining",(req,res)=>{
+app.post("/api/mining/start",(req,res)=>{
 
 
 let id=req.body.id;
 
 
+let now=Date.now();
 
-let end =
 
-Date.now()
+let end=
 
-+
+now +
 
-86400000;
+(24*60*60*1000);
+
 
 
 
@@ -328,17 +249,16 @@ WHERE id=?
 
 [
 
-Date.now(),
+now,
 
 end,
 
 id
 
-],
+]
 
+);
 
-
-()=>{
 
 
 res.json({
@@ -350,13 +270,6 @@ end:end
 });
 
 
-}
-
-
-
-);
-
-
 
 });
 
@@ -367,20 +280,19 @@ end:end
 
 
 
+// =======================
+// MINING STATUS
+// =======================
 
 
-
-// SPIN INFO
-
-
-app.get("/api/spin/:id",(req,res)=>{
+app.get("/api/mining/:id",(req,res)=>{
 
 
 db.get(
 
 `
 
-SELECT spin_count
+SELECT *
 
 FROM users
 
@@ -391,14 +303,52 @@ WHERE id=?
 [req.params.id],
 
 
+(err,user)=>{
 
-(err,row)=>{
 
 
-res.json(row);
+let remain=
+
+user.mining_end -
+
+Date.now();
+
+
+
+
+if(remain<0)
+
+remain=0;
+
+
+
+
+let mined=
+
+remain>0 ?
+
+((24*60*60*1000-remain)
+
+/(60*60*1000))*2
+
+:0;
+
+
+
+
+
+res.json({
+
+remain:remain,
+
+mined:mined.toFixed(4)
+
+});
+
 
 
 }
+
 
 
 );
@@ -413,74 +363,9 @@ res.json(row);
 
 
 
-// WATCH AD
-
-
-app.post("/api/spin/ad",(req,res)=>{
-
-
-let id=req.body.id;
-
-
-
-db.get(
-
-`
-
-SELECT spin_count
-
-FROM users
-
-WHERE id=?
-
-`,
-
-[id],
-
-
-
-(err,user)=>{
-
-
-if(user.spin_count>=5){
-
-
-return res.json({
-
-success:false,
-
-message:"Limit 5 spins"
-
-});
-
-
-}
-
-
-
-res.json({
-
-success:true
-
-});
-
-
-
-});
-
-
-
-});
-
-
-
-
-
-
-
-
-
-// DO SPIN
+// =======================
+// LUCKY SPIN
+// =======================
 
 
 app.post("/api/spin",(req,res)=>{
@@ -490,11 +375,12 @@ let id=req.body.id;
 
 
 
+
 db.get(
 
 `
 
-SELECT spin_count
+SELECT *
 
 FROM users
 
@@ -503,8 +389,6 @@ WHERE id=?
 `,
 
 [id],
-
-
 
 (err,user)=>{
 
@@ -515,7 +399,9 @@ if(user.spin_count>=5){
 
 return res.json({
 
-success:false
+success:false,
+
+message:"No spins left"
 
 });
 
@@ -526,39 +412,15 @@ success:false
 
 
 
-let rewards=[
-
-0.5,
-
-1,
-
-2,
-
-5,
-
-10
-
-];
-
-
-
 let reward=
 
-rewards[
+(Number(
+(Math.floor(Math.random()*10)+1)
 
-Math.floor(
-
-Math.random()*rewards.length
-
-)
-
-];
+)*0.5);
 
 
 
-
-
-db.serialize(()=>{
 
 
 db.run(
@@ -578,15 +440,12 @@ WHERE id=?
 `,
 
 [
-
 reward,
-
 id
 
 ]
 
 );
-
 
 
 
@@ -598,7 +457,17 @@ db.run(
 
 INSERT INTO transactions
 
-(user_id,type,amount,created)
+(
+
+telegram_id,
+
+type,
+
+amount,
+
+created
+
+)
 
 VALUES(?,?,?,?)
 
@@ -606,7 +475,7 @@ VALUES(?,?,?,?)
 
 [
 
-id,
+user.telegram_id,
 
 "LUCKY_SPIN",
 
@@ -617,12 +486,6 @@ Date.now()
 ]
 
 );
-
-
-
-});
-
-
 
 
 
@@ -638,11 +501,62 @@ reward:reward
 
 
 
+});
+
 
 
 });
 
 
+
+
+
+
+
+
+
+// =======================
+// WALLET
+// =======================
+
+
+app.get(
+
+"/api/wallet/:id",
+
+(req,res)=>{
+
+
+
+db.get(
+
+`
+
+SELECT *
+
+FROM users
+
+WHERE id=?
+
+`,
+
+[req.params.id],
+
+
+(err,user)=>{
+
+
+
+res.json(user);
+
+
+
+}
+
+);
+
+
+
 });
 
 
@@ -650,13 +564,11 @@ reward:reward
 
 
 
+app.get(
 
+"/api/history/:telegram_id",
 
-
-// HISTORY
-
-
-app.get("/api/history/:id",(req,res)=>{
+(req,res)=>{
 
 
 db.all(
@@ -667,113 +579,22 @@ SELECT *
 
 FROM transactions
 
-WHERE user_id=?
+WHERE telegram_id=?
 
 ORDER BY id DESC
 
 `,
 
-[req.params.id],
+[req.params.telegram_id],
 
 
-
-(err,rows)=>{
-
-
-res.json(rows);
+(err,data)=>{
 
 
-}
-
-
-);
-
-
-});
-
-
-
-
-
-
-
-
-
-// RECOVERY
-
-
-app.post("/api/recover",(req,res)=>{
-
-
-let {
-
-username,
-
-recovery,
-
-newPassword
-
-}=req.body;
-
-
-
-db.run(
-
-`
-
-UPDATE users
-
-SET password=?
-
-WHERE username=?
-
-AND recovery=?
-
-`,
-
-[
-
-newPassword,
-
-username,
-
-recovery
-
-],
-
-
-
-function(){
-
-
-if(this.changes===0){
-
-
-return res.json({
-
-success:false,
-
-message:"Failed"
-
-});
+res.json(data);
 
 
 }
-
-
-
-
-res.json({
-
-success:true,
-
-message:"Password changed"
-
-});
-
-
-}
-
 
 
 );
@@ -790,7 +611,13 @@ message:"Password changed"
 
 
 
-app.listen(3000,()=>{
+const PORT=
+
+process.env.PORT || 10000;
+
+
+
+app.listen(PORT,()=>{
 
 
 console.log(
