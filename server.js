@@ -8,14 +8,20 @@ const db = require("./database");
 const app = express();
 
 
+
 app.use(express.json());
 
 
 app.use(
+
 express.static(
+
 path.join(__dirname,"public")
+
 )
+
 );
+
 
 
 
@@ -52,15 +58,13 @@ function(err){
 
 if(err){
 
-
 return res.json({
 
 success:false,
 
-message:"Username exists"
+message:"User exists"
 
 });
-
 
 }
 
@@ -75,13 +79,17 @@ id:this.lastID
 });
 
 
+
 }
+
 
 
 );
 
 
+
 });
+
 
 
 
@@ -121,12 +129,10 @@ password
 ],
 
 
+(err,user)=>{
 
-(err,row)=>{
 
-
-if(!row){
-
+if(!user){
 
 return res.json({
 
@@ -134,7 +140,6 @@ success:false
 
 });
 
-
 }
 
 
@@ -143,14 +148,13 @@ res.json({
 
 success:true,
 
-user:row
+user:user
 
 });
 
 
+
 }
-
-
 
 );
 
@@ -164,129 +168,17 @@ user:row
 
 
 
-// تعداد کاربران شبکه
+// Spin information
 
 
-app.get("/api/users",(req,res)=>{
+app.get("/api/spin/:id",(req,res)=>{
 
 
 db.get(
 
 `
 
-SELECT COUNT(*) total
-
-FROM users
-
-`,
-
-(err,row)=>{
-
-
-res.json({
-
-users:row.total
-
-});
-
-
-});
-
-
-});
-
-
-
-
-
-
-
-
-// شروع استخراج
-
-
-app.post("/api/startMining",(req,res)=>{
-
-
-let id=req.body.id;
-
-
-
-let end =
-
-Date.now()
-+
-(24*60*60*1000);
-
-
-
-
-db.run(
-
-`
-
-UPDATE users
-
-SET mining_start=?,
-
-mining_end=?
-
-WHERE id=?
-
-`,
-
-[
-
-Date.now(),
-
-end,
-
-id
-
-],
-
-
-
-()=>{
-
-
-res.json({
-
-success:true,
-
-end:end
-
-});
-
-
-}
-
-
-
-);
-
-
-
-});
-
-
-
-
-
-
-
-
-// اطلاعات کاربر
-
-
-app.get("/api/user/:id",(req,res)=>{
-
-
-db.get(
-
-`
-
-SELECT *
+SELECT spin_count
 
 FROM users
 
@@ -297,11 +189,14 @@ WHERE id=?
 [req.params.id],
 
 
-
 (err,row)=>{
 
 
-res.json(row);
+res.json({
+
+spins:row.spin_count
+
+});
 
 
 }
@@ -320,10 +215,76 @@ res.json(row);
 
 
 
-// پایان ماین و اضافه کردن درآمد
+
+// Watch Ad
 
 
-app.post("/api/claim",(req,res)=>{
+app.post("/api/spin/ad",(req,res)=>{
+
+
+let id=req.body.id;
+
+
+
+db.get(
+
+`
+
+SELECT spin_count
+
+FROM users
+
+WHERE id=?
+
+`,
+
+[id],
+
+
+(err,user)=>{
+
+
+if(user.spin_count>=5){
+
+
+return res.json({
+
+success:false,
+
+message:"Limit reached"
+
+});
+
+
+}
+
+
+
+
+res.json({
+
+success:true
+
+});
+
+
+});
+
+
+
+});
+
+
+
+
+
+
+
+
+// Spin reward
+
+
+app.post("/api/spin",(req,res)=>{
 
 
 let id=req.body.id;
@@ -350,27 +311,14 @@ WHERE id=?
 
 
 
-if(!user){
-
-return res.json({
-
-success:false
-
-});
-
-}
-
-
-
-
-if(Date.now() < user.mining_end){
+if(user.spin_count>=5){
 
 
 return res.json({
 
 success:false,
 
-message:"Mining not finished"
+message:"No spin"
 
 });
 
@@ -379,57 +327,33 @@ message:"Mining not finished"
 
 
 
+let rewards=[
 
-let usersCount=0;
+0.5,
 
+1,
 
+2,
 
-db.get(
+5,
 
-`
+10
 
-SELECT COUNT(*) total
-
-FROM users
-
-`,
-
-
-(err,row)=>{
-
-
-usersCount=row.total;
+];
 
 
 
+let reward=
 
-let rate;
+rewards[
 
+Math.floor(
 
+Math.random()*rewards.length
 
-if(usersCount < 10000){
+)
 
-rate=2;
-
-}
-
-else if(usersCount <100000){
-
-rate=1.2;
-
-}
-
-else if(usersCount <1000000){
-
-rate=0.5;
-
-}
-
-else{
-
-rate=0.1;
-
-}
+];
 
 
 
@@ -441,17 +365,17 @@ db.run(
 
 UPDATE users
 
-SET balance = balance + ?,
+SET
 
-mining_start=0,
+balance = balance + ?,
 
-mining_end=0
+spin_count = spin_count + 1
 
 WHERE id=?
 
 `,
 
-[rate,id],
+[reward,id],
 
 
 
@@ -462,29 +386,24 @@ res.json({
 
 success:true,
 
-reward:rate
+reward:reward
 
 });
 
 
+
 }
-
-
 
 );
 
 
 
-
-
-});
-
-
 });
 
 
 
 });
+
 
 
 
