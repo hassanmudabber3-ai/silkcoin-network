@@ -1,31 +1,62 @@
 const sqlite3 = require("sqlite3").verbose();
 
 
+// ساخت دیتابیس
 const db = new sqlite3.Database(
-"silkcoin.db"
+    "./silkcoin.db",
+    (err)=>{
+
+        if(err){
+
+            console.log(
+                "Database error:",
+                err
+            );
+
+        }else{
+
+            console.log(
+                "Silkcoin Database Connected"
+            );
+
+        }
+
+    }
 );
 
 
 
+
+// ساخت جدول کاربران
+
+db.serialize(()=>{
+
+
 db.run(`
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS users(
 
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-telegram_id TEXT UNIQUE,
+username TEXT UNIQUE,
 
-wallet TEXT UNIQUE,
+password TEXT,
 
-balance REAL DEFAULT 100,
+balance REAL DEFAULT 0,
 
-referrer TEXT,
+mining_start INTEGER DEFAULT 0,
 
-referrals INTEGER DEFAULT 0
+mining_end INTEGER DEFAULT 0
 
 )
 
 `);
+
+
+
+});
+
+
 
 
 
