@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
 
+
 <head>
+
 
 <meta charset="UTF-8">
 
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 
 <title>
 Silkcoin Login
@@ -22,15 +26,20 @@ Silkcoin Login
 <body>
 
 
+
 <div class="app">
+
+
 
 
 
 <div class="topbar">
 
 
-<h2>
-🪙 Silkcoin
+<h2 id="title">
+
+🪙 Silkcoin Login
+
 </h2>
 
 
@@ -48,11 +57,15 @@ Silkcoin Login
 
 
 
+
+
+
+
 <div class="card">
 
 
 
-<h2 id="title">
+<h2 id="loginText">
 
 Login
 
@@ -61,19 +74,32 @@ Login
 
 
 
-<input id="username"
-
-placeholder="Username">
 
 
+<input
+
+id="username"
+
+placeholder="Username"
+
+>
 
 
 
-<input id="password"
+
+
+
+<input
+
+id="password"
 
 type="password"
 
-placeholder="Password">
+placeholder="Password"
+
+>
+
+
 
 
 
@@ -81,9 +107,17 @@ placeholder="Password">
 
 <button onclick="login()">
 
-🔐 Login
+🔐
+
+<span id="loginBtn">
+
+Login
+
+</span>
 
 </button>
+
+
 
 
 
@@ -98,33 +132,38 @@ class="message">
 
 
 
-<button onclick="location.href='recover.html'">
-
-🔑 Forgot Password
-
-</button>
-
-
-
-
-<br><br>
-
 
 
 <button onclick="location.href='register.html'">
 
-Create Account
+➕ Register
 
 </button>
 
 
 
+
+
+<button onclick="location.href='recover.html'">
+
+🔑 Recovery
+
+</button>
+
+
+
+
+
 </div>
 
 
 
 
+
+
+
 </div>
+
 
 
 
@@ -136,8 +175,7 @@ Create Account
 
 
 
-
-let lang="en";
+let fa=false;
 
 
 
@@ -146,15 +184,32 @@ let lang="en";
 function changeLang(){
 
 
+fa=!fa;
 
-if(lang==="en"){
 
-
-lang="fa";
+if(fa){
 
 
 document.getElementById("title")
+.innerHTML="🪙 ورود سیلک کوین";
+
+
+document.getElementById("loginText")
 .innerHTML="ورود";
+
+
+document.getElementById("loginBtn")
+.innerHTML="ورود";
+
+
+
+document.getElementById("username")
+.placeholder="نام کاربری";
+
+
+document.getElementById("password")
+.placeholder="رمز عبور";
+
 
 
 }
@@ -162,15 +217,29 @@ document.getElementById("title")
 else{
 
 
-lang="en";
-
-
 document.getElementById("title")
+.innerHTML="🪙 Silkcoin Login";
+
+
+document.getElementById("loginText")
 .innerHTML="Login";
 
 
-}
+document.getElementById("loginBtn")
+.innerHTML="Login";
 
+
+
+document.getElementById("username")
+.placeholder="Username";
+
+
+document.getElementById("password")
+.placeholder="Password";
+
+
+
+}
 
 
 }
@@ -218,9 +287,11 @@ headers:{
 
 body:JSON.stringify({
 
+
 username,
 
 password
+
 
 })
 
@@ -253,7 +324,8 @@ JSON.stringify(data.user)
 document.getElementById("message")
 .innerHTML=
 
-"Login Successful 🎉";
+"✅ Login Successful";
+
 
 
 
@@ -276,9 +348,7 @@ else{
 document.getElementById("message")
 .innerHTML=
 
-"❌ "
-+
-data.message;
+"❌ "+data.message;
 
 
 
@@ -300,6 +370,9 @@ data.message;
 
 
 
+
+
 </body>
+
 
 </html>
