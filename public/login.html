@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
 
@@ -7,59 +7,75 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Silkcoin Login</title>
+<title>
+Silkcoin Login
+</title>
+
 
 <link rel="stylesheet" href="style.css">
 
+
 </head>
+
 
 
 <body>
 
 
+<div class="app">
 
-<div class="container">
 
 
-<h1>
-🪙 Silkcoin Network
-</h1>
+<div class="topbar">
+
+
+<h2>
+🪙 Silkcoin
+</h2>
+
+
+
+<button onclick="changeLang()">
+
+🌐
+
+</button>
+
+
+</div>
+
+
 
 
 
 <div class="card">
 
 
-<h2>
+
+<h2 id="title">
+
 Login
+
 </h2>
 
 
 
-<input 
-id="username"
-type="text"
-placeholder="Username"
->
+
+<input id="username"
+
+placeholder="Username">
 
 
 
-<br><br>
 
 
-<input
-
-id="password"
+<input id="password"
 
 type="password"
 
-placeholder="Password"
-
->
+placeholder="Password">
 
 
-
-<br><br>
 
 
 
@@ -71,27 +87,46 @@ placeholder="Password"
 
 
 
-<p id="message">
+
+<p id="message"
+
+class="message">
 
 </p>
 
 
 
-<br>
 
 
-<a href="register.html">
+<button onclick="location.href='recover.html'">
+
+🔑 Forgot Password
+
+</button>
+
+
+
+
+<br><br>
+
+
+
+<button onclick="location.href='register.html'">
 
 Create Account
 
-</a>
+</button>
 
 
 
 </div>
 
 
+
+
 </div>
+
+
 
 
 
@@ -101,17 +136,65 @@ Create Account
 
 
 
+
+let lang="en";
+
+
+
+
+
+function changeLang(){
+
+
+
+if(lang==="en"){
+
+
+lang="fa";
+
+
+document.getElementById("title")
+.innerHTML="ورود";
+
+
+}
+
+else{
+
+
+lang="en";
+
+
+document.getElementById("title")
+.innerHTML="Login";
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
 function login(){
 
 
 
-let username =
+let username=
+
 document.getElementById("username")
 .value;
 
 
 
-let password =
+let password=
+
 document.getElementById("password")
 .value;
 
@@ -130,25 +213,23 @@ headers:{
 
 "Content-Type":"application/json"
 
-
 },
 
 
 body:JSON.stringify({
 
-username:username,
+username,
 
-password:password
-
-})
-
+password
 
 })
 
 
+})
 
-.then(res=>res.json())
 
+
+.then(r=>r.json())
 
 
 .then(data=>{
@@ -158,8 +239,6 @@ password:password
 if(data.success){
 
 
-
-// ذخیره کاربر
 
 localStorage.setItem(
 
@@ -171,14 +250,10 @@ JSON.stringify(data.user)
 
 
 
-
-
 document.getElementById("message")
-.innerHTML =
+.innerHTML=
 
-"Login successful 🎉";
-
-
+"Login Successful 🎉";
 
 
 
@@ -188,19 +263,21 @@ setTimeout(()=>{
 location.href="index.html";
 
 
-},1000);
-
+},800);
 
 
 
 }
 
+
 else{
 
 
 document.getElementById("message")
-.innerHTML =
+.innerHTML=
 
+"❌ "
++
 data.message;
 
 
@@ -223,8 +300,6 @@ data.message;
 
 
 
-
 </body>
-
 
 </html>
