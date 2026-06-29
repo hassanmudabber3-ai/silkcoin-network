@@ -1,1 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Silkcoin Login</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+
+<div class="container">
+
+
+<h1>
+🪙 Silkcoin Network
+</h1>
+
+
+
+<div class="card">
+
+
+<h2>
+Login
+</h2>
+
+
+
+<input 
+id="username"
+type="text"
+placeholder="Username"
+>
+
+
+
+<br><br>
+
+
+<input
+
+id="password"
+
+type="password"
+
+placeholder="Password"
+
+>
+
+
+
+<br><br>
+
+
+
+<button onclick="login()">
+
+🔐 Login
+
+</button>
+
+
+
+<p id="message">
+
+</p>
+
+
+
+<br>
+
+
+<a href="register.html">
+
+Create Account
+
+</a>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<script>
+
+
+
+function login(){
+
+
+
+let username =
+document.getElementById("username")
+.value;
+
+
+
+let password =
+document.getElementById("password")
+.value;
+
+
+
+
+
+fetch("/api/login",{
+
+
+method:"POST",
+
+
+headers:{
+
+
+"Content-Type":"application/json"
+
+
+},
+
+
+body:JSON.stringify({
+
+username:username,
+
+password:password
+
+})
+
+
+})
+
+
+
+.then(res=>res.json())
+
+
+
+.then(data=>{
+
+
+
+if(data.success){
+
+
+
+// ذخیره کاربر
+
+localStorage.setItem(
+
+"user",
+
+JSON.stringify(data.user)
+
+);
+
+
+
+
+
+document.getElementById("message")
+.innerHTML =
+
+"Login successful 🎉";
+
+
+
+
+
+setTimeout(()=>{
+
+
+location.href="index.html";
+
+
+},1000);
+
+
+
+
+}
+
+else{
+
+
+document.getElementById("message")
+.innerHTML =
+
+data.message;
+
+
+
+}
+
+
+
+});
+
+
+
+
+
+}
+
+
+
+</script>
+
+
+
+
+</body>
+
+
+</html>
