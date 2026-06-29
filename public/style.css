@@ -2,20 +2,19 @@
 
 box-sizing:border-box;
 
-font-family:Arial,sans-serif;
+font-family:Arial;
 
 }
+
 
 
 body{
 
 margin:0;
 
-min-height:100vh;
-
 background:
 
-linear-gradient(135deg,#050014,#27005c);
+linear-gradient(135deg,#050014,#30006b);
 
 color:white;
 
@@ -23,9 +22,8 @@ color:white;
 
 
 
-.app{
 
-width:100%;
+.app{
 
 max-width:430px;
 
@@ -37,19 +35,25 @@ padding:20px;
 
 
 
+.hide{
+
+display:none;
+
+}
+
+
+
 #login{
 
 margin-top:80px;
 
 text-align:center;
 
-background:rgba(255,255,255,.08);
+background:#ffffff15;
 
 padding:30px;
 
 border-radius:25px;
-
-box-shadow:0 0 30px rgba(0,0,0,.4);
 
 }
 
@@ -57,11 +61,10 @@ box-shadow:0 0 30px rgba(0,0,0,.4);
 
 h1{
 
-font-size:32px;
-
 text-align:center;
 
 }
+
 
 
 
@@ -73,7 +76,7 @@ padding:15px;
 
 margin-top:15px;
 
-border:none;
+border:0;
 
 border-radius:18px;
 
@@ -87,23 +90,14 @@ font-size:17px;
 
 font-weight:bold;
 
-cursor:pointer;
-
-}
-
-
-
-button:active{
-
-transform:scale(.96);
-
 }
 
 
 
 
+.card,
+.wallet{
 
-.card,.wallet{
 
 margin-top:20px;
 
@@ -111,35 +105,28 @@ padding:20px;
 
 border-radius:22px;
 
-background:
+background:#ffffff12;
 
-rgba(255,255,255,.10);
+text-align:center;
 
-backdrop-filter:blur(10px);
-
-box-shadow:
-
-0 0 20px rgba(0,0,0,.3);
 
 }
 
 
 
 
-
 input{
+
 
 width:100%;
 
 padding:14px;
 
-margin-top:12px;
+margin-top:10px;
 
 border-radius:12px;
 
-border:none;
-
-font-size:16px;
+border:0;
 
 }
 
@@ -149,11 +136,12 @@ font-size:16px;
 
 #wheel{
 
+
 width:240px;
 
 height:240px;
 
-margin:25px auto;
+margin:20px auto;
 
 border-radius:50%;
 
@@ -163,17 +151,16 @@ display:flex;
 
 flex-wrap:wrap;
 
-border:5px solid white;
-
 transition:4s;
 
-transform:rotate(0deg);
 
 }
 
 
 
+
 #wheel div{
+
 
 width:50%;
 
@@ -181,31 +168,19 @@ height:50%;
 
 display:flex;
 
-justify-content:center;
-
 align-items:center;
 
-font-size:25px;
+justify-content:center;
 
-font-weight:bold;
+background:#8b2cff;
 
 border:1px solid white;
 
-background:
+font-size:25px;
 
-linear-gradient(135deg,#9b30ff,#0066ff);
 
 }
 
-
-
-
-
-.wheel-box{
-
-text-align:center;
-
-}
 
 
 
@@ -213,29 +188,9 @@ text-align:center;
 #mineMsg,
 #sendMsg{
 
-text-align:center;
 
 margin-top:15px;
 
 font-size:17px;
-
-}
-
-
-
-
-.hide{
-
-display:none;
-
-}
-
-
-
-.wallet h2{
-
-font-size:30px;
-
-color:#00ffcc;
 
 }
