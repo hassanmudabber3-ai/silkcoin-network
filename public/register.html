@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 
 <head>
 
+
 <meta charset="UTF-8">
+
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Silkcoin Register</title>
+
+<title>
+Silkcoin Register
+</title>
+
+
 
 <link rel="stylesheet" href="style.css">
+
+
 
 </head>
 
@@ -19,22 +29,45 @@
 
 
 
-<div class="container">
+<div class="app">
 
 
 
-<h1>
-🪙 Silkcoin Network
-</h1>
+<div class="topbar">
+
+
+<h2>
+
+🪙 Silkcoin
+
+</h2>
+
+
+
+<button onclick="changeLang()">
+
+🌐
+
+</button>
+
+
+</div>
+
+
+
 
 
 
 <div class="card">
 
 
-<h2>
+
+<h2 id="title">
+
 Create Account
+
 </h2>
+
 
 
 
@@ -42,15 +75,10 @@ Create Account
 
 id="username"
 
-type="text"
-
 placeholder="Username"
 
 >
 
-
-
-<br><br>
 
 
 
@@ -66,7 +94,23 @@ placeholder="Password"
 
 
 
-<br><br>
+
+<input
+
+id="recovery"
+
+placeholder="Recovery Code"
+
+>
+
+
+
+<p>
+
+Save this code for password recovery
+
+</p>
+
 
 
 
@@ -79,29 +123,33 @@ placeholder="Password"
 
 
 
-<p id="message">
+
+<p id="message"
+
+class="message">
 
 </p>
 
 
 
-<br>
+
+
+<button onclick="location.href='login.html'">
+
+Login
+
+</button>
 
 
 
-<a href="login.html">
 
-Already have account? Login
-
-</a>
+</div>
 
 
 
 </div>
 
 
-
-</div>
 
 
 
@@ -109,6 +157,57 @@ Already have account? Login
 
 
 <script>
+
+
+
+let lang="en";
+
+
+
+
+
+function changeLang(){
+
+
+
+if(lang==="en"){
+
+
+lang="fa";
+
+
+document.getElementById("title")
+.innerHTML=
+
+"ساخت حساب";
+
+
+
+}
+
+else{
+
+
+lang="en";
+
+
+document.getElementById("title")
+.innerHTML=
+
+"Create Account";
+
+
+}
+
+
+
+}
+
+
+
+
+
+
 
 
 
@@ -130,6 +229,13 @@ document.getElementById("password")
 
 
 
+let recovery =
+
+document.getElementById("recovery")
+.value;
+
+
+
 
 
 
@@ -144,18 +250,17 @@ headers:{
 
 "Content-Type":"application/json"
 
-
 },
-
 
 
 body:JSON.stringify({
 
 
-username:username,
+username,
 
+password,
 
-password:password
+recovery
 
 
 })
@@ -165,7 +270,7 @@ password:password
 
 
 
-.then(res=>res.json())
+.then(r=>r.json())
 
 
 
@@ -173,16 +278,14 @@ password:password
 
 
 
-document.getElementById("message")
-.innerHTML =
-
-data.message;
-
-
-
-
-
 if(data.success){
+
+
+
+document.getElementById("message")
+.innerHTML=
+
+"Account Created 🎉";
 
 
 
@@ -194,6 +297,19 @@ location.href="login.html";
 
 },1000);
 
+
+
+}
+
+else{
+
+
+document.getElementById("message")
+.innerHTML=
+
+"❌ "
++
+data.message;
 
 
 }
@@ -212,7 +328,7 @@ location.href="login.html";
 
 
 
-</body>
 
+</body>
 
 </html>
