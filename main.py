@@ -1,5 +1,6 @@
 import os
 import threading
+import asyncio
 
 from flask import Flask
 
@@ -19,36 +20,46 @@ from telegram.ext import (
 
 
 # ==========================
-# SETTINGS
+# RENDER ENV
 # ==========================
 
-BOT_TOKEN = "YOUR_BOT_TOKEN"
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
-WEB_APP_URL = "https://YOUR-SILKCOIN-WEBAPP.com"
+WEB_APP_URL = os.environ.get(
+    "WEB_APP_URL",
+    "https://silkcoin-network.onrender.com"
+)
+
 
 
 
 # ==========================
-# RENDER PORT SERVER
+# WEB SERVER FOR RENDER
 # ==========================
 
 server = Flask(__name__)
 
 
+
 @server.route("/")
-def index():
+def home():
 
-    return "🪙 Silkcoin Network Running"
+    return "🪙 Silkcoin Network Bot Running"
 
 
 
-def start_server():
+
+
+def run_web():
+
 
     port = int(
+
         os.environ.get(
             "PORT",
             10000
         )
+
     )
 
 
@@ -64,17 +75,21 @@ def start_server():
 
 
 
+
 # ==========================
-# START COMMAND
+# TELEGRAM START
 # ==========================
 
 async def start(
+
     update: Update,
+
     context: ContextTypes.DEFAULT_TYPE
+
 ):
 
 
-    user = update.effective_user
+    user = update.effective_user.first_name
 
 
 
@@ -100,37 +115,29 @@ async def start(
 
 
 
-    button = InlineKeyboardMarkup(
-
-        keyboard
-
-    )
-
-
-
-
     await update.message.reply_text(
-
 
 f"""
 💎 Silkcoin Network
 
 
-Welcome {user.first_name} 🚀
+Welcome {user} 🚀
 
 
-⛏ Mining
+⛏ Mining every 24 hours
 
 🎡 Lucky Spin
 
 💰 Wallet
 
 
-Open Silkcoin Network Coin below:
+Open Silkcoin Network Coin:
 
 """,
 
-        reply_markup=button
+        reply_markup=InlineKeyboardMarkup(
+            keyboard
+        )
 
     )
 
@@ -145,8 +152,11 @@ Open Silkcoin Network Coin below:
 # ==========================
 
 async def help_command(
+
     update: Update,
+
     context: ContextTypes.DEFAULT_TYPE
+
 ):
 
 
@@ -156,15 +166,12 @@ async def help_command(
 💎 Silkcoin Network
 
 
-Commands:
-
 /start
-Open Silkcoin App
+Open Silkcoin
 
 
 /help
 Help
-
 
 """
 
@@ -175,14 +182,15 @@ Help
 
 
 
+
 # ==========================
-# BOT RUN
+# BOT
 # ==========================
 
-def start_bot():
+async def run_bot():
 
 
-    app = Application.builder().token(
+    application = Application.builder().token(
 
         BOT_TOKEN
 
@@ -190,7 +198,7 @@ def start_bot():
 
 
 
-    app.add_handler(
+    application.add_handler(
 
         CommandHandler(
 
@@ -204,7 +212,7 @@ def start_bot():
 
 
 
-    app.add_handler(
+    application.add_handler(
 
         CommandHandler(
 
@@ -219,12 +227,28 @@ def start_bot():
 
 
     print(
+
         "🪙 Silkcoin Telegram Bot Started"
+
     )
 
 
 
-    app.run_polling()
+    await application.initialize()
+
+
+    await application.start()
+
+
+    await application.updater.start_polling()
+
+
+
+    while True:
+
+        await asyncio.sleep(60)
+
+
 
 
 
@@ -238,12 +262,17 @@ def start_bot():
 if __name__ == "__main__":
 
 
+
     threading.Thread(
 
-        target=start_server
+        target=run_web
 
     ).start()
 
 
 
-    start_bot()
+    asyncio.run(
+
+        run_bot()
+
+    )
