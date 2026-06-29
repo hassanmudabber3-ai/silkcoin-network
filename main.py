@@ -3,23 +3,34 @@ import threading
 
 from flask import Flask
 
-from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    WebAppInfo
+)
+
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes
+)
 
 
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
+WEB_APP_URL = "https://silkcoin-network.onrender.com"
 
 
+
+# برای Render
 server = Flask(__name__)
-
 
 
 @server.route("/")
 def home():
-    return "Silkcoin Bot OK"
-
+    return "Silkcoin Bot Running"
 
 
 
@@ -35,31 +46,66 @@ def run_server():
 
 
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+
+    keyboard = [
+
+        [
+
+            InlineKeyboardButton(
+
+                text="🚀 Open Silkcoin Network Coin",
+
+                web_app=WebAppInfo(
+
+                    url=WEB_APP_URL
+
+                )
+
+            )
+
+        ]
+
+    ]
+
+
     await update.message.reply_text(
-        "💎 Silkcoin Network Bot is working!"
+
+        "💎 Silkcoin Network\n\n"
+        "Welcome 🚀\n\n"
+        "Click Open to enter Silkcoin:",
+
+        reply_markup=InlineKeyboardMarkup(keyboard)
+
     )
+
 
 
 
 
 def run_bot():
 
+
     app = Application.builder().token(
         BOT_TOKEN
     ).build()
 
 
+
     app.add_handler(
+
         CommandHandler(
             "start",
             start
         )
+
     )
 
 
-    print("BOT STARTED")
+    print("🪙 Silkcoin Bot Started")
+
 
     app.run_polling()
 
@@ -68,6 +114,7 @@ def run_bot():
 
 
 if __name__ == "__main__":
+
 
     threading.Thread(
         target=run_server
