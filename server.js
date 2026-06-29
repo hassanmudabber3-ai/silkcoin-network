@@ -5,13 +5,10 @@ const path = require("path");
 const db = require("./database");
 
 
-
 const app = express();
 
 
-
 app.use(express.json());
-
 
 
 app.use(
@@ -23,38 +20,14 @@ path.join(__dirname,"public")
 
 
 
-
-// ---------------------
 // Register
-// ---------------------
 
 app.post("/api/register",(req,res)=>{
 
 
-const username =
-req.body.username;
+let username=req.body.username;
 
-
-const password =
-req.body.password;
-
-
-
-if(!username || !password){
-
-
-return res.json({
-
-success:false,
-
-message:"Fill all fields"
-
-});
-
-
-}
-
-
+let password=req.body.password;
 
 
 
@@ -62,8 +35,7 @@ db.run(
 
 `
 
-INSERT INTO users
-(username,password)
+INSERT INTO users(username,password)
 
 VALUES(?,?)
 
@@ -76,7 +48,6 @@ password
 
 
 function(err){
-
 
 
 if(err){
@@ -95,26 +66,19 @@ message:"Username exists"
 
 
 
-
 res.json({
 
 success:true,
-
-message:"Account created",
 
 id:this.lastID
 
 });
 
 
-
-
 }
 
 
-
 );
-
 
 
 });
@@ -125,22 +89,15 @@ id:this.lastID
 
 
 
-// ---------------------
 // Login
-// ---------------------
 
 
 app.post("/api/login",(req,res)=>{
 
 
-const username =
-req.body.username;
+let username=req.body.username;
 
-
-const password =
-req.body.password;
-
-
+let password=req.body.password;
 
 
 
@@ -165,19 +122,15 @@ password
 
 
 
-(err,user)=>{
+(err,row)=>{
 
 
-
-if(err || !user){
-
+if(!row){
 
 
 return res.json({
 
-success:false,
-
-message:"Wrong login"
+success:false
 
 });
 
@@ -186,16 +139,13 @@ message:"Wrong login"
 
 
 
-
 res.json({
 
 success:true,
 
-user:user
+user:row
 
 });
-
-
 
 
 }
@@ -205,7 +155,6 @@ user:user
 );
 
 
-
 });
 
 
@@ -215,9 +164,7 @@ user:user
 
 
 
-// ---------------------
-// Count Users
-// ---------------------
+// تعداد کاربران شبکه
 
 
 app.get("/api/users",(req,res)=>{
@@ -227,13 +174,11 @@ db.get(
 
 `
 
-SELECT COUNT(*) AS total
+SELECT COUNT(*) total
 
 FROM users
 
 `,
-
-
 
 (err,row)=>{
 
@@ -245,6 +190,74 @@ users:row.total
 });
 
 
+});
+
+
+});
+
+
+
+
+
+
+
+
+// شروع استخراج
+
+
+app.post("/api/startMining",(req,res)=>{
+
+
+let id=req.body.id;
+
+
+
+let end =
+
+Date.now()
++
+(24*60*60*1000);
+
+
+
+
+db.run(
+
+`
+
+UPDATE users
+
+SET mining_start=?,
+
+mining_end=?
+
+WHERE id=?
+
+`,
+
+[
+
+Date.now(),
+
+end,
+
+id
+
+],
+
+
+
+()=>{
+
+
+res.json({
+
+success:true,
+
+end:end
+
+});
+
 
 }
 
@@ -263,16 +276,57 @@ users:row.total
 
 
 
-// ---------------------
-// Get User Balance
-// ---------------------
+// اطلاعات کاربر
 
 
 app.get("/api/user/:id",(req,res)=>{
 
 
-let id =
-req.params.id;
+db.get(
+
+`
+
+SELECT *
+
+FROM users
+
+WHERE id=?
+
+`,
+
+[req.params.id],
+
+
+
+(err,row)=>{
+
+
+res.json(row);
+
+
+}
+
+
+);
+
+
+
+});
+
+
+
+
+
+
+
+
+// پایان ماین و اضافه کردن درآمد
+
+
+app.post("/api/claim",(req,res)=>{
+
+
+let id=req.body.id;
 
 
 
@@ -291,11 +345,126 @@ WHERE id=?
 [id],
 
 
+
+(err,user)=>{
+
+
+
+if(!user){
+
+return res.json({
+
+success:false
+
+});
+
+}
+
+
+
+
+if(Date.now() < user.mining_end){
+
+
+return res.json({
+
+success:false,
+
+message:"Mining not finished"
+
+});
+
+
+}
+
+
+
+
+let usersCount=0;
+
+
+
+db.get(
+
+`
+
+SELECT COUNT(*) total
+
+FROM users
+
+`,
+
+
 (err,row)=>{
 
 
-res.json(row);
+usersCount=row.total;
 
+
+
+
+let rate;
+
+
+
+if(usersCount < 10000){
+
+rate=2;
+
+}
+
+else if(usersCount <100000){
+
+rate=1.2;
+
+}
+
+else if(usersCount <1000000){
+
+rate=0.5;
+
+}
+
+else{
+
+rate=0.1;
+
+}
+
+
+
+
+
+db.run(
+
+`
+
+UPDATE users
+
+SET balance = balance + ?,
+
+mining_start=0,
+
+mining_end=0
+
+WHERE id=?
+
+`,
+
+[rate,id],
+
+
+
+()=>{
+
+
+res.json({
+
+success:true,
+
+reward:rate
+
+});
 
 
 }
@@ -303,6 +472,15 @@ res.json(row);
 
 
 );
+
+
+
+
+
+});
+
+
+});
 
 
 
@@ -320,7 +498,7 @@ app.listen(3000,()=>{
 
 console.log(
 
-"Silkcoin Server Running on 3000"
+"Silkcoin Server Running"
 
 );
 
