@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Silkcoin Mining</title>
+
+<title>Mining</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -11,184 +16,149 @@
 
 </head>
 
+
 <body>
 
-<div class="app">
 
-<h1>⛏️ Silkcoin Mining</h1>
+<div class="container">
+
 
 <div class="card">
 
-<h2 id="title">Mining Status</h2>
-
-<div class="coin">
-💎
-</div>
-
-<h3 id="balance">
-0 SILK
-</h3>
 
 
-<p>
-Next mining:
-</p>
+<button onclick="backHome()">
+
+⬅ Back
+
+</button>
+
+
+
+<h1>
+
+⛏ Mining
+
+</h1>
+
+
+
 
 <h2 id="timer">
+
 24:00:00
+
 </h2>
 
 
-<p id="reward">
-Estimated reward: 0 SILK
+
+<p>
+
+Mining Reward:
+
 </p>
 
 
-<button id="mineBtn">
-START MINING
+
+<h2>
+
++ <span id="reward">
+
+1
+
+</span>
+
+SILK
+
+</h2>
+
+
+
+
+<button id="mineBtn" onclick="startMining()">
+
+Start Mining
+
+</button>
+
+
+
+<button id="claimBtn" onclick="claimMining()" style="display:none">
+
+Claim SILK
+
+</button>
+
+
+
+
+<p id="status">
+
+Ready
+
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="bottom">
+
+
+<button onclick="go('index.html')">
+
+🏠<br>Home
+
+</button>
+
+
+<button onclick="go('mining.html')">
+
+⛏<br>Mining
+
+</button>
+
+
+<button onclick="go('spin.html')">
+
+🎡<br>Spin
+
+</button>
+
+
+<button onclick="go('wallet.html')">
+
+💰<br>Wallet
+
+</button>
+
+
+<button onclick="go('profile.html')">
+
+👤<br>Profile
+
 </button>
 
 
 </div>
 
 
-<div class="menu">
 
-<button onclick="location.href='index.html'">
-🏠 Home
-</button>
 
-<button onclick="location.href='spin.html'">
-🎡 Lucky Spin
-</button>
+<script src="app.js"></script>
 
-<button onclick="location.href='wallet.html'">
-💰 Wallet
-</button>
 
-</div>
+<script src="mining.js"></script>
 
-
-</div>
-
-
-
-<script>
-
-let miningTime = 24 * 60 * 60;
-
-
-let timer = localStorage.getItem("mineTimer");
-
-
-if(timer){
-
-miningTime = parseInt(timer);
-
-}
-
-
-let reward = (Math.random()*5+1).toFixed(2);
-
-
-
-function update(){
-
-let h=Math.floor(miningTime/3600);
-
-let m=Math.floor((miningTime%3600)/60);
-
-let s=miningTime%60;
-
-
-document.getElementById("timer").innerHTML =
-`${h}:${m}:${s}`;
-
-
-document.getElementById("reward").innerHTML =
-"Estimated reward: "+reward+" SILK";
-
-
-localStorage.setItem(
-"mineTimer",
-miningTime
-);
-
-
-
-if(miningTime>0){
-
-miningTime--;
-
-}
-else{
-
-document.getElementById("mineBtn").disabled=false;
-
-}
-
-}
-
-
-
-setInterval(update,1000);
-
-
-
-document.getElementById("mineBtn")
-.onclick=function(){
-
-
-if(miningTime<=0){
-
-
-let old =
-Number(localStorage.getItem("silkBalance")||0);
-
-
-old += Number(reward);
-
-
-localStorage.setItem(
-"silkBalance",
-old
-);
-
-
-reward=(Math.random()*5+1).toFixed(2);
-
-
-miningTime=86400;
-
-
-alert(
-"Mining completed +" +
-reward +
-" SILK"
-);
-
-
-}
-
-
-else{
-
-
-alert(
-"Mining is running. Wait for countdown."
-);
-
-
-}
-
-
-
-};
-
-
-
-</script>
 
 
 </body>
+
 </html>
