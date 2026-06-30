@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
 
@@ -7,9 +8,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Silkcoin</title>
+<title>Silkcoin Network</title>
 
 <link rel="stylesheet" href="style.css">
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 </head>
 
@@ -17,95 +20,43 @@
 <body>
 
 
-<div class="app">
+<div class="container">
 
 
-<div class="topbar">
+<div class="card">
 
 
-<h2 id="appTitle">
-🪙 Silkcoin
+<h1>💎 Silkcoin Network</h1>
+
+
+<p id="status">
+Connecting...
+</p>
+
+
+<h2 id="username">
 </h2>
 
 
-<button onclick="changeLang()">
+<div class="balance">
 
-🌐
+💰 Balance
 
-</button>
-
-
-</div>
-
-
-
-
-
-<div class="coin-box">
-
-
-<img src="https://cdn-icons-png.flaticon.com/512/600/600923.png">
-
-
-<h1>
+<br>
 
 <span id="balance">
-
 0
-
 </span>
 
 SILK
 
-</h1>
-
-
-<p id="balanceText">
-
-Balance
-
-</p>
-
-
-
 </div>
 
 
 
+<button onclick="openMining()">
 
-
-
-
-
-<div class="card">
-
-
-<button onclick="location.href='mining.html'">
-
-⛏ <span data-en="Mining" data-fa="ماین">
-
-Mining
-
-</span>
-
-</button>
-
-
-
-
-<button onclick="location.href='spin.html'">
-
-🎡 Lucky Spin
-
-</button>
-
-
-
-
-
-<button onclick="location.href='wallet.html'">
-
-💰 Wallet
+⛏ Start Mining
 
 </button>
 
@@ -115,278 +66,83 @@ Mining
 
 
 
-
-
-
-
-
-<div class="card">
-
-
-<h3>
-
-Network
-
-</h3>
-
-
-<p>
-
-👥 Users:
-
-<span id="users">
-
-0
-
-</span>
-
-</p>
-
-
-<p>
-
-⚡ Rate:
-
-<span id="rate">
-
-0
-
-</span>
-
-SILK/H
-
-</p>
-
-
 </div>
 
 
 
 
 
+<!-- Bottom Menu -->
+
+<div class="bottom">
 
 
-
-
-<div class="bottom-nav">
-
-
-<button onclick="location.href='index.html'">
+<button onclick="go('index.html')">
 
 🏠
 
+<br>
+
+Home
+
 </button>
 
 
-
-<button onclick="location.href='mining.html'">
+<button onclick="go('mining.html')">
 
 ⛏
 
+<br>
+
+Mining
+
 </button>
 
 
 
-<button onclick="location.href='spin.html'">
+<button onclick="go('spin.html')">
 
 🎡
 
+<br>
+
+Spin
+
 </button>
 
 
 
-<button onclick="location.href='wallet.html'">
+<button onclick="go('wallet.html')">
 
 💰
 
+<br>
+
+Wallet
+
 </button>
 
 
+
+<button onclick="go('profile.html')">
+
+👤
+
+<br>
+
+Profile
+
+</button>
+
+
+
 </div>
 
 
 
 
-</div>
 
-
-
-
-
-
-
-
-<script>
-
-
-
-let user = JSON.parse(
-
-localStorage.getItem("user")
-
-);
-
-
-
-if(!user){
-
-
-location.href="login.html";
-
-
-}
-
-
-
-
-
-
-
-function load(){
-
-
-
-fetch("/api/user/"+user.id)
-
-.then(r=>r.json())
-
-.then(data=>{
-
-
-document.getElementById("balance")
-.innerHTML=
-
-Number(data.balance)
-.toFixed(4);
-
-
-
-});
-
-
-
-
-
-
-fetch("/api/users")
-
-.then(r=>r.json())
-
-.then(data=>{
-
-
-let count=data.total;
-
-
-document.getElementById("users")
-.innerHTML=count;
-
-
-
-let rate;
-
-
-if(count<10000)
-
-rate=2;
-
-
-else if(count<100000)
-
-rate=1.2;
-
-
-else if(count<1000000)
-
-rate=.5;
-
-
-else
-
-rate=.1;
-
-
-
-
-document.getElementById("rate")
-.innerHTML=rate;
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-function changeLang(){
-
-
-
-let items=document.querySelectorAll("[data-en]");
-
-
-
-items.forEach(x=>{
-
-
-if(x.innerHTML.trim()=="Mining"){
-
-
-x.innerHTML=x.dataset.fa;
-
-
-}
-
-else{
-
-
-x.innerHTML=x.dataset.en;
-
-
-}
-
-
-
-});
-
-
-
-document.getElementById("balanceText")
-.innerHTML=
-
-document.getElementById("balanceText")
-.innerHTML=="Balance"
-
-?
-
-"موجودی"
-
-:
-
-"Balance";
-
-
-
-}
-
-
-
-
-
-
-
-load();
-
-
-
-</script>
-
+<script src="app.js"></script>
 
 
 </body>
