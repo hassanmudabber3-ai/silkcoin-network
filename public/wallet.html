@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
 
@@ -7,66 +8,61 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-Silkcoin Wallet
-</title>
+<title>Silkcoin Wallet</title>
 
 <link rel="stylesheet" href="style.css">
 
-</head>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+</head>
 
 
 <body>
 
 
-<div class="app">
+<div class="container">
+
+
+<div class="card">
 
 
 
-<div class="topbar">
+<button onclick="backHome()">
 
-
-<button onclick="location.href='index.html'">
-
-🏠
-
-</button>
-
-
-<h2>
-
-💰 Wallet
-
-</h2>
-
-
-
-<button onclick="location.href='spin.html'">
-
-🎡
+⬅ Back
 
 </button>
 
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="coin-box">
-
-
-<img src="https://cdn-icons-png.flaticon.com/512/600/600923.png">
 
 
 <h1>
+
+💰 Silkcoin Wallet
+
+</h1>
+
+
+
+
+<h3>
+
+Telegram ID
+
+</h3>
+
+
+
+<p id="telegramId">
+
+Loading...
+
+</p>
+
+
+
+
+<div class="balance">
+
 
 <span id="balance">
 
@@ -74,16 +70,11 @@ Silkcoin Wallet
 
 </span>
 
-SILK
 
-</h1>
+<br>
 
 
-<p>
-
-Total Balance
-
-</p>
+SILK 🪙
 
 
 </div>
@@ -92,102 +83,28 @@ Total Balance
 
 
 
-
-
-
-
-
-<div class="card">
-
-
-<h3>
-
-📥 Receive
-
-</h3>
-
-
-<input id="address" readonly>
-
-
-<button onclick="copyAddress()">
-
-Copy Address
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="card">
-
-
-<h3>
-
-📤 Send SILK
-
-</h3>
-
-
-<input id="to"
-
-placeholder="Receiver ID">
-
-
-<input id="amount"
-
-placeholder="Amount">
-
-
-
-<button onclick="sendCoin()">
-
-Send
-
-</button>
-
-
-
-<p id="sendMsg">
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="card">
-
-
-<h3>
+<h2>
 
 📜 Transaction History
 
-</h3>
+</h2>
+
+
 
 
 <div id="history">
+
 
 Loading...
 
 </div>
 
 
+
+
+</div>
+
+
 </div>
 
 
@@ -196,48 +113,69 @@ Loading...
 
 
 
+<div class="bottom">
 
 
-<div class="bottom-nav">
-
-
-<button onclick="location.href='index.html'">
+<button onclick="go('index.html')">
 
 🏠
 
+<br>
+
+Home
+
 </button>
 
 
-<button onclick="location.href='mining.html'">
+
+<button onclick="go('mining.html')">
 
 ⛏
 
+<br>
+
+Mining
+
 </button>
 
 
-<button onclick="location.href='spin.html'">
+
+<button onclick="go('spin.html')">
 
 🎡
 
+<br>
+
+Spin
+
 </button>
 
 
-<button>
+
+<button onclick="go('wallet.html')">
 
 💰
 
+<br>
+
+Wallet
+
+</button>
+
+
+
+<button onclick="go('profile.html')">
+
+👤
+
+<br>
+
+Profile
+
 </button>
 
 
 </div>
-
-
-
-
-
-</div>
-
-
 
 
 
@@ -248,120 +186,117 @@ Loading...
 <script>
 
 
+let user = JSON.parse(
 
-let user=
+localStorage.getItem(
 
-JSON.parse(
+"silkcoin_user"
 
-localStorage.getItem("user")
+)
 
 );
 
 
 
-if(!user){
-
-location.href="login.html";
-
-}
+if(user){
 
 
 
+fetch(
+
+"/wallet/" + user.id
+
+)
 
 
-
-function loadWallet(){
-
-
-
-fetch("/api/user/"+user.id)
-
-
-.then(r=>r.json())
+.then(res=>res.json())
 
 
 .then(data=>{
 
 
-document.getElementById("balance")
-.innerHTML=
 
-Number(data.balance)
-.toFixed(4);
+document.getElementById(
 
+"telegramId"
 
-});
+).innerHTML =
 
-
+data.id;
 
 
 
 
 
-fetch("/api/history/"+user.id)
+document.getElementById(
 
+"balance"
 
-.then(r=>r.json())
+).innerHTML =
 
-
-.then(data=>{
-
-
-let html="";
+data.balance;
 
 
 
-if(data.length==0){
 
 
-html="No transactions";
+let box =
+
+document.getElementById(
+
+"history"
+
+);
+
+
+
+
+
+box.innerHTML="";
+
+
+
+
+if(data.history.length==0){
+
+
+box.innerHTML =
+
+"No transactions yet";
 
 
 }
 
-
-
-data.forEach(tx=>{
-
-
-
-let icon=
-
-tx.type=="LUCKY_SPIN"
-
-?
-
-"🎡"
-
-:
-
-"⛏";
+else{
 
 
 
+data.history.reverse().forEach(item=>{
 
-html+=`
 
-<div class="card">
+box.innerHTML +=
 
-${icon}
 
-<b>${tx.type}</b>
+`
+
+<div>
+
+
+<b>${item.type}</b>
 
 <br>
 
-+ ${tx.amount} SILK
++${item.amount} SILK 🪙
 
 <br>
 
-<small>
-
-${new Date(tx.created).toLocaleString()}
-
-</small>
+${item.time}
 
 
 </div>
+
+<hr>
+
 
 `;
 
@@ -371,29 +306,13 @@ ${new Date(tx.created).toLocaleString()}
 
 
 
-document.getElementById("history")
-.innerHTML=html;
+}
 
 
 
 });
 
 
-
-
-
-
-document.getElementById("address")
-.value=
-
-"SILK-"+user.id+"-"+
-
-Math.random()
-.toString(36)
-.substring(2,10);
-
-
-
 }
 
 
@@ -402,109 +321,24 @@ Math.random()
 
 
 
+function backHome(){
 
-function copyAddress(){
+window.location.href=
 
-
-
-navigator.clipboard.writeText(
-
-document.getElementById("address").value
-
-);
-
-
-alert("Copied");
-
-
+"index.html";
 
 }
 
 
 
 
+function go(page){
 
+window.location.href=
 
-
-
-
-function sendCoin(){
-
-
-
-let to=
-
-document.getElementById("to").value;
-
-
-
-let amount=
-
-document.getElementById("amount").value;
-
-
-
-
-
-fetch("/api/send",{
-
-
-method:"POST",
-
-
-headers:{
-
-
-"Content-Type":"application/json"
-
-},
-
-
-body:JSON.stringify({
-
-from:user.id,
-
-to:to,
-
-amount:Number(amount)
-
-})
-
-
-})
-
-
-.then(r=>r.json())
-
-
-.then(data=>{
-
-
-document.getElementById("sendMsg")
-.innerHTML=
-
-data.message;
-
-
-
-loadWallet();
-
-
-
-});
-
-
+page;
 
 }
-
-
-
-
-
-
-
-
-loadWallet();
 
 
 
@@ -513,5 +347,6 @@ loadWallet();
 
 
 </body>
+
 
 </html>
