@@ -1,14 +1,18 @@
 import os
 import json
 import time
+import random
 import threading
+
 
 from flask import (
     Flask,
-    send_from_directory,
     request,
-    jsonify
+    jsonify,
+    send_from_directory
 )
+
+
 
 from telegram import (
     InlineKeyboardButton,
@@ -16,21 +20,38 @@ from telegram import (
     WebAppInfo
 )
 
+
 from telegram.ext import (
     Application,
     CommandHandler
 )
 
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
-WEB_APP_URL = "https://silkcoin-network.onrender.com"
+
+
+BOT_TOKEN = os.environ.get(
+    "BOT_TOKEN"
+)
+
+
+WEB_APP_URL = (
+"https://silkcoin-network.onrender.com"
+)
+
 
 
 DB_FILE = "users.json"
 
 
+
+
+
 app = Flask(__name__)
+
+
+
+
 
 
 
@@ -38,11 +59,15 @@ app = Flask(__name__)
 # DATABASE
 # =====================
 
+
 def load_users():
+
 
     if not os.path.exists(DB_FILE):
 
         return {}
+
+
 
     with open(
         DB_FILE,
@@ -50,25 +75,44 @@ def load_users():
         encoding="utf-8"
     ) as f:
 
+
         return json.load(f)
+
+
+
 
 
 
 
 def save_users(users):
 
+
     with open(
+
         DB_FILE,
+
         "w",
+
         encoding="utf-8"
+
     ) as f:
 
+
         json.dump(
+
             users,
+
             f,
+
             indent=4,
+
             ensure_ascii=False
+
         )
+
+
+
+
 
 
 
@@ -79,24 +123,36 @@ def save_users(users):
 # =====================
 
 
+
 @app.route("/")
+
 def home():
 
     return send_from_directory(
+
         "public",
+
         "index.html"
+
     )
 
 
 
 
 @app.route("/<path:file>")
+
 def files(file):
 
     return send_from_directory(
+
         "public",
+
         file
+
     )
+
+
+
 
 
 
@@ -108,10 +164,12 @@ def files(file):
 # =====================
 
 
+
 @app.route(
-    "/login",
-    methods=["POST"]
+"/login",
+methods=["POST"]
 )
+
 
 def login():
 
@@ -119,23 +177,26 @@ def login():
     data = request.json
 
 
+
     users = load_users()
 
 
 
     uid = str(
-        data.get("id")
+        data["id"]
     )
+
 
 
 
     if uid not in users:
 
 
+
         users[uid] = {
 
 
-            "id": uid,
+            "id":uid,
 
 
             "name":
@@ -152,25 +213,40 @@ def login():
             ),
 
 
+
             "balance":0,
+
 
 
             "mining_end":0,
 
 
-            "spin_left":5
+
+            "spin_left":5,
+
+
+
+            "history":[]
 
 
         }
+
 
 
         save_users(users)
 
 
 
+
+
+
     return jsonify(
+
         users[uid]
+
     )
+
+
 
 
 
@@ -183,60 +259,10 @@ def login():
 # =====================
 
 
-MINING_TIME = 24 * 60 * 60
+
+MINING_TIME = 86400
 
 MINING_REWARD = 1
-
-
-
-
-@app.route(
-"/check-mining/<uid>"
-)
-
-def check_mining(uid):
-
-
-    users = load_users()
-
-
-    if uid not in users:
-
-        return jsonify(
-            {
-            "error":"not found"
-            }
-        )
-
-
-    now = int(time.time())
-
-
-    end = users[uid].get(
-        "mining_end",
-        0
-    )
-
-
-    return jsonify({
-
-        "remaining":
-        max(
-            end-now,
-            0
-        ),
-
-
-        "reward":
-        MINING_REWARD,
-
-
-        "balance":
-        users[uid]["balance"]
-
-    })
-
-
 
 
 
@@ -253,7 +279,10 @@ def start_mining(uid):
     users = load_users()
 
 
-    now = int(time.time())
+    now = int(
+        time.time()
+    )
+
 
 
     if users[uid]["mining_end"] > now:
@@ -261,10 +290,11 @@ def start_mining(uid):
 
         return jsonify({
 
-        "message":
-        "already mining"
+            "message":
+            "Mining active"
 
         })
+
 
 
 
@@ -283,9 +313,59 @@ def start_mining(uid):
     return jsonify({
 
         "message":
-        "started"
+        "Mining started"
 
     })
+
+
+
+
+
+
+
+
+
+@app.route(
+"/check-mining/<uid>"
+)
+
+def check_mining(uid):
+
+
+    users = load_users()
+
+
+
+    now = int(
+        time.time()
+    )
+
+
+
+    remain = (
+
+        users[uid]["mining_end"]
+
+        -
+
+        now
+
+    )
+
+
+
+    return jsonify({
+
+        "remaining":
+        max(remain,0),
+
+
+        "reward":
+        MINING_REWARD
+
+    })
+
+
 
 
 
@@ -298,13 +378,17 @@ def start_mining(uid):
 methods=["POST"]
 )
 
-def claim(uid):
+def claim_mining(uid):
 
 
     users = load_users()
 
 
-    now = int(time.time())
+
+    now = int(
+        time.time()
+    )
+
 
 
     if now < users[uid]["mining_end"]:
@@ -312,10 +396,11 @@ def claim(uid):
 
         return jsonify({
 
-        "message":
-        "not finished"
+            "message":
+            "Not finished"
 
         })
+
 
 
 
@@ -323,7 +408,29 @@ def claim(uid):
     users[uid]["balance"] += MINING_REWARD
 
 
+
     users[uid]["mining_end"]=0
+
+
+
+
+    users[uid]["history"].append({
+
+        "type":
+        "Mining",
+
+
+        "amount":
+        MINING_REWARD,
+
+
+        "time":
+        time.strftime(
+            "%Y-%m-%d %H:%M"
+        )
+
+
+    })
 
 
 
@@ -331,15 +438,183 @@ def claim(uid):
 
 
 
+
     return jsonify({
 
         "message":
-        "Claimed +1 SILK",
-
-        "balance":
-        users[uid]["balance"]
+        "Mining reward added"
 
     })
+
+
+
+
+
+
+
+
+
+# =====================
+# SPIN
+# =====================
+
+
+
+SPIN_PRIZES=[
+
+0.5,
+
+1,
+
+1.5,
+
+2,
+
+2.5,
+
+3,
+
+3.5,
+
+4,
+
+4.5,
+
+5
+
+]
+
+
+
+
+
+
+@app.route(
+"/spin-play/<uid>",
+methods=["POST"]
+)
+
+def spin_play(uid):
+
+
+    users = load_users()
+
+
+
+
+    if users[uid]["spin_left"] <=0:
+
+
+        return jsonify({
+
+        "message":
+        "No spin"
+
+        })
+
+
+
+
+
+    reward = random.choice(
+
+        SPIN_PRIZES
+
+    )
+
+
+
+
+
+    users[uid]["balance"] += reward
+
+
+
+    users[uid]["spin_left"] -= 1
+
+
+
+
+
+
+    users[uid]["history"].append({
+
+
+        "type":
+        "Lucky Spin",
+
+
+
+        "amount":
+        reward,
+
+
+
+        "time":
+        time.strftime(
+            "%Y-%m-%d %H:%M"
+        )
+
+
+    })
+
+
+
+
+
+    save_users(users)
+
+
+
+
+    return jsonify({
+
+        "reward":
+        reward,
+
+
+        "balance":
+        users[uid]["balance"],
+
+
+        "spin_left":
+        users[uid]["spin_left"]
+
+
+    })
+
+
+
+
+
+
+
+
+
+# =====================
+# WALLET
+# =====================
+
+
+
+@app.route(
+"/wallet/<uid>"
+)
+
+
+def wallet(uid):
+
+
+    users = load_users()
+
+
+
+    return jsonify(
+
+        users[uid]
+
+    )
+
 
 
 
@@ -353,7 +628,10 @@ def claim(uid):
 # =====================
 
 
+
+
 async def start(update,context):
+
 
 
     keyboard=[
@@ -362,29 +640,40 @@ async def start(update,context):
 
     InlineKeyboardButton(
 
-    "🚀 Open Silkcoin Network",
+        "🚀 Open Silkcoin Network",
 
-    web_app=WebAppInfo(
-        url=WEB_APP_URL
-    )
+        web_app=WebAppInfo(
+
+            url=WEB_APP_URL
+
+        )
 
     )
 
     ]
 
     ]
+
+
 
 
     await update.message.reply_text(
 
-    "💎 Silkcoin Network",
+        "💎 Silkcoin Network",
 
-    reply_markup=
-    InlineKeyboardMarkup(
-        keyboard
+        reply_markup=
+
+        InlineKeyboardMarkup(
+
+            keyboard
+
+        )
+
     )
 
-    )
+
+
+
 
 
 
@@ -404,11 +693,15 @@ def run_bot():
     bot.add_handler(
 
         CommandHandler(
+
             "start",
+
             start
+
         )
 
     )
+
 
 
     print(
@@ -423,21 +716,29 @@ def run_bot():
 
 
 
+
 def run_web():
 
 
     app.run(
 
-    host="0.0.0.0",
+        host="0.0.0.0",
 
-    port=int(
-        os.environ.get(
-            "PORT",
-            10000
+        port=int(
+
+            os.environ.get(
+
+                "PORT",
+
+                10000
+
+            )
+
         )
-    )
 
     )
+
+
 
 
 
@@ -448,11 +749,12 @@ def run_web():
 if __name__=="__main__":
 
 
+
     threading.Thread(
 
-    target=run_web,
+        target=run_web,
 
-    daemon=True
+        daemon=True
 
     ).start()
 
