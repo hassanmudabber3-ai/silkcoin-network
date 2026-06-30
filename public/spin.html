@@ -1,371 +1,7 @@
-<!DOCTYPE html>
-<html lang="fa">
+let adWatched = false;
 
-<head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Silkcoin Lucky Spin</title>
-
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-
-<style>
-
-
-body{
-
-margin:0;
-
-background:#090014;
-
-color:white;
-
-font-family:tahoma,Arial;
-
-text-align:center;
-
-}
-
-
-
-.container{
-
-padding:20px;
-
-}
-
-
-
-.card{
-
-background:#17002d;
-
-padding:20px;
-
-border-radius:25px;
-
-box-shadow:0 0 30px #8b00ff;
-
-}
-
-
-
-
-#wheel{
-
-
-width:300px;
-
-height:300px;
-
-border-radius:50%;
-
-margin:30px auto;
-
-position:relative;
-
-
-background:
-
-conic-gradient(
-
-#ff0055 0deg 36deg,
-
-#ff9900 36deg 72deg,
-
-#00ff99 72deg 108deg,
-
-#00ccff 108deg 144deg,
-
-#6600ff 144deg 180deg,
-
-#ff0066 180deg 216deg,
-
-#ffff00 216deg 252deg,
-
-#00ffaa 252deg 288deg,
-
-#ff5500 288deg 324deg,
-
-#9900ff 324deg 360deg
-
-);
-
-
-transition:5s cubic-bezier(.17,.67,.83,.67);
-
-
-}
-
-
-
-
-
-.number{
-
-
-position:absolute;
-
-top:50%;
-
-left:50%;
-
-font-size:22px;
-
-font-weight:bold;
-
-
-transform-origin:0 0;
-
-
-}
-
-
-
-.n1{transform:rotate(18deg) translate(115px);}
-.n2{transform:rotate(54deg) translate(115px);}
-.n3{transform:rotate(90deg) translate(115px);}
-.n4{transform:rotate(126deg) translate(115px);}
-.n5{transform:rotate(162deg) translate(115px);}
-.n6{transform:rotate(198deg) translate(115px);}
-.n7{transform:rotate(234deg) translate(115px);}
-.n8{transform:rotate(270deg) translate(115px);}
-.n9{transform:rotate(306deg) translate(115px);}
-.n10{transform:rotate(342deg) translate(115px);}
-
-
-
-
-.center{
-
-
-position:absolute;
-
-width:70px;
-
-height:70px;
-
-background:#17002d;
-
-border-radius:50%;
-
-top:50%;
-
-left:50%;
-
-transform:translate(-50%,-50%);
-
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:30px;
-
-}
-
-
-
-
-
-button{
-
-
-background:#8b00ff;
-
-border:none;
-
-color:white;
-
-padding:15px 25px;
-
-margin:8px;
-
-border-radius:20px;
-
-font-size:16px;
-
-
-}
-
-
-
-button:disabled{
-
-opacity:.4;
-
-}
-
-
-
-
-
-.info{
-
-
-background:#250044;
-
-border-radius:20px;
-
-padding:15px;
-
-margin-top:20px;
-
-
-}
-
-
-</style>
-
-
-</head>
-
-
-<body>
-
-
-<div class="container">
-
-
-<h1>
-🎡 Silkcoin Lucky Spin
-</h1>
-
-
-
-<div class="card">
-
-
-
-<div id="wheel">
-
-
-<div class="number n1">0.5</div>
-<div class="number n2">1</div>
-<div class="number n3">1.5</div>
-<div class="number n4">2</div>
-<div class="number n5">2.5</div>
-<div class="number n6">3</div>
-<div class="number n7">3.5</div>
-<div class="number n8">4</div>
-<div class="number n9">4.5</div>
-<div class="number n10">5</div>
-
-
-
-<div class="center">
-🎁
-</div>
-
-
-</div>
-
-
-
-<h2 id="result">
-جایزه
-</h2>
-
-
-
-<p>
-
-اسپین باقی مانده:
-
-<b id="spinCount">
-0
-</b>
-
-از 5
-
-</p>
-
-
-
-
-<button id="adButton">
-
-📺 مشاهده تبلیغات
-
-</button>
-
-
-
-
-<button id="spinButton" disabled>
-
-🎡 شروع چرخش
-
-</button>
-
-
-
-
-<div class="info">
-
-
-تبلیغات دیده شده:
-
-<b id="adCount">
-0
-</b>
-
-از 5
-
-
-<br><br>
-
-
-موجودی:
-
-<b id="balance">
-0
-</b>
-
-SILK
-
-
-
-</div>
-
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<script>
-
-
-let ads =
-Number(localStorage.getItem("ads") || 0);
-
-
-
-let spins =
-Number(localStorage.getItem("spins") || 0);
-
-
-
-let balance =
-Number(localStorage.getItem("silkBalance") || 0);
-
-
-
-
-
-let rewards=[
+let prizes = [
 
 0.5,
 1,
@@ -382,193 +18,232 @@ let rewards=[
 
 
 
-
-
-function update(){
-
-
-spinCount.innerHTML=spins;
-
-adCount.innerHTML=ads;
-
-balance.innerHTML=balance;
-
-
-
-spinButton.disabled =
-spins<=0;
-
-
-
-if(ads>=5){
-
-adButton.disabled=true;
-
-}
-
-
-}
-
-
-
-update();
-
-
-
-
-
-
-
-adButton.onclick=function(){
-
-
-
-if(ads>=5)
-return;
-
-
-
-adButton.disabled=true;
-
-
-
-alert("در حال مشاهده تبلیغ...");
-
-
-
-setTimeout(()=>{
-
-
-
-ads++;
-
-spins++;
-
-
-
-localStorage.setItem("ads",ads);
-
-localStorage.setItem("spins",spins);
-
-
-
-adButton.disabled=false;
-
-
-
-update();
-
-
-
-alert("تبلیغ کامل شد +1 اسپین");
-
-
-
-},3000);
-
-
-
-};
-
-
-
-
-
-
-
-
-spinButton.onclick=function(){
-
-
-
-if(spins<=0)
-return;
-
-
-
-spins--;
-
-
-
-localStorage.setItem("spins",spins);
-
-
-
-let index =
-Math.floor(Math.random()*10);
-
-
-
-let degree =
-
-360*6 +
-
-(index*36)
-
-+18;
-
-
-
-wheel.style.transform=
-
-"rotate("+degree+"deg)";
-
-
-
-
-
-
-setTimeout(()=>{
-
-
-
-let win =
-rewards[index];
-
-
-
-balance += win;
-
-
-
-localStorage.setItem(
-
-"silkBalance",
-
-balance
+let user = JSON.parse(
+
+localStorage.getItem(
+"silkcoin_user"
+)
 
 );
 
 
 
-result.innerHTML=
-
-"🎉 برنده شدی: "
-
-+win+
-
-" SILK";
+function watchAd(){
 
 
+adWatched = true;
 
-update();
+
+document.getElementById(
+"spinBtn"
+).disabled = false;
 
 
 
-},5200);
+document.getElementById(
+"result"
+).innerHTML =
+
+"✅ Advertisement completed<br>Spin is ready";
+
+}
 
 
 
-};
+
+
+function spinWheel(){
+
+
+
+if(!adWatched){
+
+alert(
+"Watch ad first"
+);
+
+return;
+
+}
+
+
+
+if(user.spin_left <= 0){
+
+alert(
+"No spins left"
+);
+
+return;
+
+}
+
+
+
+
+let wheel =
+document.getElementById(
+"wheel"
+);
+
+
+
+let random =
+
+Math.floor(
+Math.random()*10
+);
+
+
+
+let reward = prizes[random];
 
 
 
 
 
-</script>
+let rotate =
+
+3600 +
+
+(random * 36);
 
 
 
-</body>
 
-</html>
+
+wheel.style.transform =
+
+"rotate(" +
+
+rotate +
+
+"deg)";
+
+
+
+
+
+
+document.getElementById(
+"result"
+).innerHTML =
+
+"🎡 Spinning...";
+
+
+
+
+
+
+setTimeout(()=>{
+
+
+
+// اضافه کردن سکه
+
+user.balance =
+
+Number(user.balance)
+
++
+
+Number(reward);
+
+
+
+
+// کم شدن اسپین
+
+user.spin_left--;
+
+
+
+
+
+localStorage.setItem(
+
+"silkcoin_user",
+
+JSON.stringify(user)
+
+);
+
+
+
+
+
+
+
+document.getElementById(
+"result"
+).innerHTML =
+
+
+
+"🎉 Congratulations!<br><br>" +
+
+"🏆 You won: " +
+
+reward +
+
+" SILK 🪙<br><br>" +
+
+"💰 Added to Wallet";
+
+
+
+
+
+document.getElementById(
+"spins"
+).innerHTML =
+
+"Spins: " +
+
+user.spin_left +
+
+"/5";
+
+
+
+
+
+
+adWatched=false;
+
+
+document.getElementById(
+"spinBtn"
+).disabled=true;
+
+
+
+
+},4000);
+
+
+
+}
+
+
+
+
+
+
+function backHome(){
+
+window.location.href =
+"index.html";
+
+}
+
+
+
+
+function go(page){
+
+window.location.href =
+page;
+
+}
