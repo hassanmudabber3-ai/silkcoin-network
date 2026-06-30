@@ -3,6 +3,7 @@ import json
 import time
 import random
 import threading
+import asyncio
 
 
 from flask import (
@@ -11,7 +12,6 @@ from flask import (
     jsonify,
     send_from_directory
 )
-
 
 
 from telegram import (
@@ -35,21 +35,13 @@ BOT_TOKEN = os.environ.get(
 )
 
 
-WEB_APP_URL = (
-"https://silkcoin-network.onrender.com"
-)
-
+WEB_APP_URL = "https://silkcoin-network.onrender.com"
 
 
 DB_FILE = "users.json"
 
 
-
-
-
 app = Flask(__name__)
-
-
 
 
 
@@ -68,17 +60,13 @@ def load_users():
         return {}
 
 
-
     with open(
         DB_FILE,
         "r",
         encoding="utf-8"
     ) as f:
 
-
         return json.load(f)
-
-
 
 
 
@@ -88,30 +76,17 @@ def save_users(users):
 
 
     with open(
-
         DB_FILE,
-
         "w",
-
         encoding="utf-8"
-
     ) as f:
 
-
         json.dump(
-
             users,
-
             f,
-
             indent=4,
-
             ensure_ascii=False
-
         )
-
-
-
 
 
 
@@ -123,34 +98,24 @@ def save_users(users):
 # =====================
 
 
-
 @app.route("/")
-
 def home():
 
     return send_from_directory(
-
         "public",
-
         "index.html"
-
     )
 
 
 
 
 @app.route("/<path:file>")
-
 def files(file):
 
     return send_from_directory(
-
         "public",
-
         file
-
     )
-
 
 
 
@@ -164,12 +129,10 @@ def files(file):
 # =====================
 
 
-
 @app.route(
 "/login",
 methods=["POST"]
 )
-
 
 def login():
 
@@ -177,9 +140,7 @@ def login():
     data = request.json
 
 
-
     users = load_users()
-
 
 
     uid = str(
@@ -188,9 +149,7 @@ def login():
 
 
 
-
     if uid not in users:
-
 
 
         users[uid] = {
@@ -213,17 +172,13 @@ def login():
             ),
 
 
-
             "balance":0,
-
 
 
             "mining_end":0,
 
 
-
             "spin_left":5,
-
 
 
             "history":[]
@@ -232,18 +187,13 @@ def login():
         }
 
 
-
         save_users(users)
 
 
 
 
-
-
     return jsonify(
-
         users[uid]
-
     )
 
 
@@ -259,10 +209,52 @@ def login():
 # =====================
 
 
-
 MINING_TIME = 86400
 
 MINING_REWARD = 1
+
+
+
+
+
+@app.route(
+"/check-mining/<uid>"
+)
+
+def check_mining(uid):
+
+
+    users = load_users()
+
+
+    now = int(
+        time.time()
+    )
+
+
+    remain = (
+
+        users[uid]["mining_end"]
+
+        -
+
+        now
+
+    )
+
+
+
+    return jsonify({
+
+        "remaining":
+        max(remain,0),
+
+        "reward":
+        MINING_REWARD
+
+    })
+
+
 
 
 
@@ -297,13 +289,11 @@ def start_mining(uid):
 
 
 
-
     users[uid]["mining_end"] = (
 
         now + MINING_TIME
 
     )
-
 
 
     save_users(users)
@@ -316,55 +306,6 @@ def start_mining(uid):
         "Mining started"
 
     })
-
-
-
-
-
-
-
-
-
-@app.route(
-"/check-mining/<uid>"
-)
-
-def check_mining(uid):
-
-
-    users = load_users()
-
-
-
-    now = int(
-        time.time()
-    )
-
-
-
-    remain = (
-
-        users[uid]["mining_end"]
-
-        -
-
-        now
-
-    )
-
-
-
-    return jsonify({
-
-        "remaining":
-        max(remain,0),
-
-
-        "reward":
-        MINING_REWARD
-
-    })
-
 
 
 
@@ -396,11 +337,10 @@ def claim_mining(uid):
 
         return jsonify({
 
-            "message":
-            "Not finished"
+        "message":
+        "Not finished"
 
         })
-
 
 
 
@@ -409,16 +349,14 @@ def claim_mining(uid):
 
 
 
-    users[uid]["mining_end"]=0
+    users[uid]["mining_end"] = 0
 
 
 
 
     users[uid]["history"].append({
 
-        "type":
-        "Mining",
-
+        "type":"Mining",
 
         "amount":
         MINING_REWARD,
@@ -429,13 +367,11 @@ def claim_mining(uid):
             "%Y-%m-%d %H:%M"
         )
 
-
     })
 
 
 
     save_users(users)
-
 
 
 
@@ -453,37 +389,25 @@ def claim_mining(uid):
 
 
 
-
 # =====================
 # SPIN
 # =====================
 
 
-
 SPIN_PRIZES=[
 
 0.5,
-
 1,
-
 1.5,
-
 2,
-
 2.5,
-
 3,
-
 3.5,
-
 4,
-
 4.5,
-
 5
 
 ]
-
 
 
 
@@ -501,17 +425,15 @@ def spin_play(uid):
 
 
 
-
-    if users[uid]["spin_left"] <=0:
+    if users[uid]["spin_left"] <= 0:
 
 
         return jsonify({
 
         "message":
-        "No spin"
+        "No spins"
 
         })
-
 
 
 
@@ -524,10 +446,7 @@ def spin_play(uid):
 
 
 
-
-
     users[uid]["balance"] += reward
-
 
 
     users[uid]["spin_left"] -= 1
@@ -536,18 +455,13 @@ def spin_play(uid):
 
 
 
-
     users[uid]["history"].append({
-
 
         "type":
         "Lucky Spin",
 
-
-
         "amount":
         reward,
-
 
 
         "time":
@@ -555,15 +469,12 @@ def spin_play(uid):
             "%Y-%m-%d %H:%M"
         )
 
-
     })
 
 
 
 
-
     save_users(users)
-
 
 
 
@@ -580,10 +491,7 @@ def spin_play(uid):
         "spin_left":
         users[uid]["spin_left"]
 
-
     })
-
-
 
 
 
@@ -601,18 +509,14 @@ def spin_play(uid):
 "/wallet/<uid>"
 )
 
-
 def wallet(uid):
 
 
     users = load_users()
 
 
-
     return jsonify(
-
         users[uid]
-
     )
 
 
@@ -629,31 +533,28 @@ def wallet(uid):
 
 
 
-
-async def start(update,context):
-
+async def start(update, context):
 
 
-    keyboard=[
+    keyboard = [
 
-    [
+        [
 
-    InlineKeyboardButton(
+        InlineKeyboardButton(
 
-        "🚀 Open Silkcoin Network",
+            "🚀 Open Silkcoin Network",
 
-        web_app=WebAppInfo(
+            web_app=WebAppInfo(
 
-            url=WEB_APP_URL
+                url=WEB_APP_URL
+
+            )
 
         )
 
-    )
+        ]
 
     ]
-
-    ]
-
 
 
 
@@ -679,7 +580,7 @@ async def start(update,context):
 
 
 
-def run_bot():
+async def bot_start():
 
 
     bot = Application.builder().token(
@@ -709,7 +610,35 @@ def run_bot():
     )
 
 
-    bot.run_polling()
+
+    await bot.initialize()
+
+
+    await bot.start()
+
+
+    await bot.updater.start_polling()
+
+
+
+    while True:
+
+        await asyncio.sleep(10)
+
+
+
+
+
+
+
+
+
+def run_bot():
+
+
+    asyncio.run(
+        bot_start()
+    )
 
 
 
@@ -737,7 +666,6 @@ def run_web():
         )
 
     )
-
 
 
 
