@@ -3,12 +3,11 @@ const tg = window.Telegram.WebApp;
 
 tg.ready();
 
-
 tg.expand();
 
 
 
-let userData = null;
+let currentUser = null;
 
 
 
@@ -27,10 +26,17 @@ async function loginUser(){
 
     if(!user){
 
-        document.getElementById(
-            "status"
-        ).innerHTML =
-        "Open from Telegram";
+
+        const status =
+        document.getElementById("status");
+
+
+        if(status){
+
+            status.innerHTML =
+            "Open from Telegram";
+
+        }
 
 
         return;
@@ -40,63 +46,73 @@ async function loginUser(){
 
 
 
+
     const response = await fetch(
+
         "/login",
+
         {
+
 
             method:"POST",
 
+
             headers:{
+
 
                 "Content-Type":
                 "application/json"
+
 
             },
 
 
             body:JSON.stringify({
 
+
                 id:user.id,
+
 
                 first_name:
                 user.first_name || "",
 
 
+
                 username:
                 user.username || ""
 
+
             })
 
+
         }
+
     );
 
 
 
-    userData = await response.json();
+
+    currentUser =
+    await response.json();
 
 
 
 
-    document.getElementById(
-        "status"
-    ).innerHTML =
-    "✅ Login Successful";
+    localStorage.setItem(
+
+        "silkcoin_user",
+
+        JSON.stringify(currentUser)
+
+    );
 
 
 
-    document.getElementById(
-        "username"
-    ).innerHTML =
-    "Welcome " +
-    userData.name;
 
 
+    showHome();
 
-    document.getElementById(
-        "balance"
-    ).innerHTML =
-    userData.balance;
-
+    showProfile();
 
 
 }
@@ -105,23 +121,232 @@ async function loginUser(){
 
 
 
+
 // =====================
-// NAVIGATION
+// HOME
+// =====================
+
+
+function showHome(){
+
+
+    const name =
+    document.getElementById(
+        "username"
+    );
+
+
+    const balance =
+    document.getElementById(
+        "balance"
+    );
+
+
+
+    if(name){
+
+        name.innerHTML =
+        "Welcome " +
+        currentUser.name;
+
+    }
+
+
+
+    if(balance){
+
+
+        balance.innerHTML =
+        currentUser.balance;
+
+
+    }
+
+
+
+
+    const status =
+    document.getElementById(
+        "status"
+    );
+
+
+    if(status){
+
+
+        status.innerHTML =
+        "✅ Logged in";
+
+
+    }
+
+
+}
+
+
+
+
+
+
+// =====================
+// PROFILE
+// =====================
+
+
+function showProfile(){
+
+
+    if(!currentUser){
+
+
+        let saved =
+        localStorage.getItem(
+            "silkcoin_user"
+        );
+
+
+        if(saved){
+
+            currentUser =
+            JSON.parse(saved);
+
+        }
+
+    }
+
+
+
+    if(!currentUser){
+
+        return;
+
+    }
+
+
+
+
+    let name =
+    document.getElementById(
+        "name"
+    );
+
+
+
+    let username =
+    document.getElementById(
+        "username"
+    );
+
+
+
+    let userid =
+    document.getElementById(
+        "userid"
+    );
+
+
+
+    let balance =
+    document.getElementById(
+        "balance"
+    );
+
+
+
+    let mining =
+    document.getElementById(
+        "mining"
+    );
+
+
+
+    let spin =
+    document.getElementById(
+        "spin"
+    );
+
+
+
+
+
+    if(name)
+
+        name.innerHTML =
+        "Name: "
+        + currentUser.name;
+
+
+
+    if(username)
+
+        username.innerHTML =
+        "Username: @"
+        + currentUser.username;
+
+
+
+    if(userid)
+
+        userid.innerHTML =
+        "Telegram ID: "
+        + currentUser.id;
+
+
+
+
+    if(balance)
+
+        balance.innerHTML =
+        currentUser.balance;
+
+
+
+
+    if(mining)
+
+        mining.innerHTML =
+        "⛏ Mining: Ready";
+
+
+
+    if(spin)
+
+        spin.innerHTML =
+        "🎡 Spin: "
+        + currentUser.spin_left
+        + "/5";
+
+
+}
+
+
+
+
+
+
+
+// =====================
+// MENU
 // =====================
 
 
 function go(page){
 
-    window.location.href = page;
-
-}
-
-
-
-function openMining(){
 
     window.location.href =
-    "mining.html";
+    page;
+
+
+}
+
+
+
+function backHome(){
+
+
+    window.location.href =
+    "index.html";
+
 
 }
 
@@ -130,6 +355,8 @@ function openMining(){
 
 
 
-// START
+// RUN
 
 loginUser();
+
+showProfile();
